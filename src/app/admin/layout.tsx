@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { sql } from "drizzle-orm";
 import { adminNav } from "@/components/admin/nav";
+import { CommandPalette } from "@/components/admin/command-palette";
+import { Toaster } from "@/components/admin/toaster";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { DashboardTopbar } from "@/components/dashboard/topbar";
 import { Badge } from "@/components/ui/misc";
@@ -35,17 +37,30 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const groups = adminNav(await counts())
     .map((g) => ({ ...g, items: g.items.filter((i) => !i.permission || user.permissions.has(i.permission)) }))
     .filter((g) => g.items.length);
+  const links = groups.flatMap((g) => g.items.map((i) => ({ href: i.href, label: i.label, group: g.label })));
   return (
-    <div className="min-h-dvh bg-sand-100">
-      <DashboardSidebar groups={groups} label="Company admin" />
-      <div className="lg:pl-64">
-        <DashboardTopbar
-          userName={user.name}
-          context={<span className="truncate">Signed in as <strong className="text-umber-800">{user.staffRoleName}</strong></span>}
-          badge={isDemoMode() ? <Badge tone="pending">Demo data</Badge> : null}
-        />
-        <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+    <div className="min-h-dvh bg-sand-100 print:bg-white">
+      <div className="print:hidden">
+        <DashboardSidebar groups={groups} label="Company admin" />
       </div>
+      <div className="lg:pl-64 print:pl-0">
+        <div className="print:hidden">
+          <DashboardTopbar
+            userName={user.name}
+            context={
+              <>
+                <CommandPalette links={links} />
+                <span className="hidden truncate 2xl:inline">
+                  Signed in as <strong className="text-umber-800">{user.staffRoleName}</strong>
+                </span>
+              </>
+            }
+            badge={isDemoMode() ? <Badge tone="pending">Demo data</Badge> : null}
+          />
+        </div>
+        <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8 print:max-w-none print:p-0">{children}</main>
+      </div>
+      <Toaster />
     </div>
   );
 }
