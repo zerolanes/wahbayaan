@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/*
+ * Wahbayaan design tokens — "heritage meets premium global marketplace".
+ * Palette drawn from the crafts themselves: indigo (Multani glaze, night sky),
+ * terracotta (kiln clay, Sindhi madder), aged gold (gilded calligraphy) and warm
+ * parchment neutrals (wasli paper).
+ */
+@theme {
+  --font-display: "Fraunces Variable", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+
+  --color-ink: #15192e;
+
+  --color-indigo-50: #f1f3fa;
+  --color-indigo-100: #e3e8f5;
+  --color-indigo-200: #c8d1ea;
+  --color-indigo-300: #9eadd8;
+  --color-indigo-400: #6f84bf;
+  --color-indigo-500: #4b62a6;
+  --color-indigo-600: #34498a;
+  --color-indigo-700: #283a70;
+  --color-indigo-800: #1f2b55;
+  --color-indigo-900: #171f3d;
+  --color-indigo-950: #0d1124;
+
+  --color-terracotta-50: #fcf2ec;
+  --color-terracotta-100: #f8e3d7;
+  --color-terracotta-200: #f0c5ae;
+  --color-terracotta-300: #e4a07f;
+  --color-terracotta-400: #d57c56;
+  --color-terracotta-500: #c4623a;
+  --color-terracotta-600: #a9502e;
+  --color-terracotta-700: #8a3f25;
+  --color-terracotta-800: #6d3220;
+  --color-terracotta-900: #4e2417;
+
+  --color-gold-50: #fbf6e8;
+  --color-gold-100: #f5ead0;
+  --color-gold-200: #ecd7a4;
+  --color-gold-300: #e0bf73;
+  --color-gold-400: #d0a652;
+  --color-gold-500: #b8893b;
+  --color-gold-600: #9a6f2d;
+  --color-gold-700: #7b5724;
+  --color-gold-800: #5e421d;
+  --color-gold-900: #3f2d15;
+
+  --color-parchment: #f6efe3;
+  --color-sand-50: #fcfaf5;
+  --color-sand-100: #f5eee2;
+  --color-sand-200: #ebe0cc;
+  --color-sand-300: #dccbac;
+  --color-sand-400: #c3aa82;
+  --color-sand-500: #a88c62;
+
+  --color-umber-50: #f6f2ee;
+  --color-umber-100: #e9e1d8;
+  --color-umber-200: #d2c3b3;
+  --color-umber-300: #b39f89;
+  --color-umber-400: #928069;
+  --color-umber-500: #76644f;
+  --color-umber-600: #5e4f3e;
+  --color-umber-700: #4a3d30;
+  --color-umber-800: #342a20;
+  --color-umber-900: #221a13;
+
+  --color-turquoise-50: #eaf7f8;
+  --color-turquoise-100: #d2eef0;
+  --color-turquoise-500: #2a9da8;
+  --color-turquoise-600: #1f8590;
+  --color-turquoise-700: #196a73;
+
+  --color-madder-500: #a3282b;
+  --color-madder-600: #8f1f24;
+
+  --color-success-50: #ecf6ef;
+  --color-success-600: #2f7a4f;
+  --color-success-700: #25623f;
+  --color-warning-50: #fdf5e6;
+  --color-warning-600: #b26b12;
+  --color-warning-700: #8f550e;
+  --color-danger-50: #fbeceb;
+  --color-danger-600: #b3261e;
+  --color-danger-700: #8f1e18;
+  --color-pending-50: #fbf3e2;
+  --color-pending-600: #a86a0c;
+
+  --radius-card: 1.25rem;
+  --shadow-soft: 0 1px 2px rgb(34 26 19 / 0.05), 0 8px 24px -12px rgb(34 26 19 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(34 26 19 / 0.06), 0 24px 48px -20px rgb(34 26 19 / 0.35);
+  --shadow-glow: 0 0 0 1px rgb(184 137 59 / 0.35), 0 12px 40px -12px rgb(184 137 59 / 0.45);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fade-up: fade-up 0.8s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-parchment);
+    color: var(--color-umber-900);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-variation-settings: "SOFT" 50, "WONK" 0;
+    letter-spacing: -0.015em;
+  }
+  ::selection {
+    background: var(--color-gold-200);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  [lang="ur"],
+  .font-urdu {
+    font-family: var(--font-urdu);
+    line-height: 2.1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Wasli-paper grain for large parchment surfaces. */
+  .paper {
+    background-color: var(--color-parchment);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .18 0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  /* Night-indigo surface with a faint eight-point star lattice. */
+  .night {
+    background-color: var(--color-indigo-950);
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgb(52 73 138 / 0.45), transparent 60%),
+      radial-gradient(ellipse at 90% 100%, rgb(169 80 46 / 0.25), transparent 55%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><path d='M32 14l4.2 9.8L46 28l-9.8 4.2L32 42l-4.2-9.8L18 28l9.8-4.2z' fill='none' stroke='%23b8893b' stroke-opacity='.12'/></svg>");
+    color: var(--color-sand-100);
+  }
+  .gold-text {
+    background: linear-gradient(100deg, #f4dd9a, #c89b45 45%, #f0d589 70%, #b8893b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gold-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-gold-400), transparent);
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-sand-200), var(--color-sand-100), var(--color-sand-200));
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+  .prose-heritage {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--color-umber-800);
+  }
+  .prose-heritage h2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin: 2.5rem 0 0.75rem;
+    color: var(--color-ink);
+  }
+  .prose-heritage h3 {
+    font-size: 1.35rem;
+    margin: 2rem 0 0.5rem;
+    color: var(--color-ink);
+  }
+  .prose-heritage p,
+  .prose-heritage ul,
+  .prose-heritage ol {
+    margin: 0 0 1.1rem;
+  }
+  .prose-heritage ul {
+    list-style: disc;
+    padding-left: 1.4rem;
+  }
+  .prose-heritage ol {
+    list-style: decimal;
+    padding-left: 1.4rem;
+  }
+  .prose-heritage li {
+    margin: 0.35rem 0;
+  }
+  .prose-heritage a {
+    color: var(--color-terracotta-600);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-heritage blockquote {
+    border-left: 3px solid var(--color-gold-400);
+    background: var(--color-gold-50);
+    padding: 0.9rem 1.2rem;
+    border-radius: 0 0.75rem 0.75rem 0;
+    margin: 1.5rem 0;
+    color: var(--color-umber-700);
+  }
+  .prose-heritage strong {
+    color: var(--color-ink);
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
