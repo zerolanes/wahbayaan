@@ -43,7 +43,7 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
         </nav>
       </div>
 
-      <div className="absolute left-1/2 -translate-x-1/2">
+      <div className="absolute left-1/2 -translate-x-1/2 max-sm:static max-sm:translate-x-0">
         <Logo tone="current" compact />
       </div>
 
