@@ -3,7 +3,7 @@ import { activeChips, clearFiltersHref, pageCount, parseShopQuery, priceBands, s
 import { COMPARE_MAX, parseCompareCookie, serializeCompare, toggleCompareId, valuesDiffer } from "@/lib/compare";
 import { countdownParts, isUpcomingDrop } from "@/lib/countdown";
 import { bundleSavingFor, computeBundleSavings } from "@/lib/commerce/bundles";
-import { buyerOrderActions, disputeStep, orderCostLines, orderJourneyStep } from "@/lib/commerce/order-view";
+import { buyerOrderActions, disputeStep, joinCostLabels, orderCostLines, orderJourneyStep } from "@/lib/commerce/order-view";
 import type { FxQuote } from "@/lib/money/currency";
 
 const USD: FxQuote = { currency: "USD", pkrPerUnit: 100, source: "test", status: "manual" };
@@ -142,5 +142,10 @@ describe("buyer order view", () => {
     expect(shipped).toMatchObject({ canPay: false, canConfirmDelivery: true, canOpenCase: true, canCancel: false });
     expect(buyerOrderActions({ ...{ status: "delivered", paymentStatus: "paid", totalComplete: true, vendorStatuses: ["delivered"] }, hasOpenDispute: true }).canOpenCase).toBe(false);
     expect(disputeStep("under_review")).toBe(2);
+  });
+
+  it("joins pending cost labels into a sentence, keeping the brand capitalised", () => {
+    expect(joinCostLabels(["International shipping", "Import duty", "Wahbayaan handling"])).toBe("international shipping, import duty and Wahbayaan handling");
+    expect(joinCostLabels(["Import duty"])).toBe("import duty");
   });
 });

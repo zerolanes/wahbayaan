@@ -45,6 +45,13 @@ export function orderCostLines(o: OrderCostSource): { lines: OrderCostLine[]; to
   return { lines, total: o.total, complete: o.totalComplete && pendingCount === 0, pendingCount };
 }
 
+/** "international shipping, import duty and Wahbayaan handling" — for sentences about pending lines. */
+export function joinCostLabels(labels: string[]) {
+  const words = labels.map((l) => (/^Wahbayaan/.test(l) ? l : l.charAt(0).toLowerCase() + l.slice(1)));
+  if (words.length <= 1) return words.join("");
+  return `${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}`;
+}
+
 export const ORDER_JOURNEY = [
   { key: "placed", label: "Order placed", detail: "Your pieces are reserved." },
   { key: "paid", label: "Paid — funds held", detail: "Wahbayaan holds your payment; the artisan isn't paid yet." },

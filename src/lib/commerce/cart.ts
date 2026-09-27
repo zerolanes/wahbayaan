@@ -5,6 +5,8 @@ import { db } from "@/lib/db/client";
 import { cartItems, carts, categories, coupons, productImages, products, vendors, wishlistItems } from "@/lib/db/schema";
 import { getBuyerContext } from "@/lib/buyer-context";
 import { getPublicVendorIds } from "@/lib/queries/catalog";
+import { getPublicCollections } from "@/lib/queries/storefront";
+import { computeBundleSavings } from "./bundles";
 import { computeLandedCost, buyerUnitPrice, type LandedCost, type LcItem } from "./landed-cost";
 import { getRateContext } from "./rates";
 import { applyBps, convert } from "@/lib/money/currency";
@@ -163,6 +165,17 @@ export async function loadCart(): Promise<CartView> {
   }
 
   const available = lines.filter((l) => !l.unavailableReason);
+
+  // Bundle savings: a published bundle's discount applies once all its pieces are in the cart.
+  if (fx && available.length > 1) {
+    const bundles = (await getPublicCollections()).filter((c) => c.kind === "bundle" && c.bundleDiscountBps);
+    const saving = computeBundleSavings(
+      bundles.map((b) => ({ slug: b.slug, title: b.title, bundleDiscountBps: b.bundleDiscountBps, productIds: b.products.map((p) => p.id) })),
+      available.map((l) => ({ productId: l.productId, unitPrice: l.unitPrice, qty: l.qty })),
+    );
+    if (saving) discount = discount ? { amount: discount.amount + saving.amount, label: `${discount.label} + ${saving.label}` } : { amount: saving.amount, label: saving.label };
+  }
+
   let landed: LandedCost | null = null;
   if (fx && available.length) {
     const rates = await getRateContext(ctx.destination);
