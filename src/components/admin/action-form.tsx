@@ -33,12 +33,17 @@ export function ActionForm({
   encType?: "multipart/form-data";
   onResult?: (s: ActionState) => void;
 }) {
-  const [state, formAction] = useActionState<ActionState, FormData>(action, null);
+  // Toast from the action itself so feedback survives the form unmounting
+  // after refresh() (e.g. a status button that disappears once used).
+  const [state, formAction] = useActionState<ActionState, FormData>(async (prev, fd) => {
+    const res = await action(prev, fd);
+    if (res?.error) toast("error", res.error);
+    else if (res?.message) toast("success", res.message);
+    return res;
+  }, null);
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (!state?.at) return;
-    if (state.error) toast("error", state.error);
-    else if (state.message) toast("success", state.message);
     if (state.ok && resetOnSuccess) ref.current?.reset();
     onResult?.(state);
     // eslint-disable-next-line react-hooks/exhaustive-deps

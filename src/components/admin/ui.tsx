@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Search } from "lucide-react";
 import { Badge, Card, CardHeader, type Tone } from "@/components/ui/misc";
-import { Input } from "@/components/ui/form";
 import { humanize, toneFor } from "@/lib/admin/labels";
 import { orderMoney } from "@/lib/admin/money";
 import { cn } from "@/lib/utils/cn";
@@ -20,7 +19,7 @@ export function StatusBadge({ kind, status, label, className }: { kind: string; 
 export function DemoBadge({ show = true }: { show?: boolean | null }) {
   if (!show) return null;
   return (
-    <Badge tone="neutral" className="px-1.5 py-0 text-[10px] tracking-wide uppercase" title="Seeded demo data">
+    <Badge tone="neutral" className="px-1.5 py-0 font-sans text-[10px] tracking-wide uppercase" title="Seeded demo data">
       Demo
     </Badge>
   );
@@ -70,11 +69,18 @@ export function KV({ items, className }: { items: [ReactNode, ReactNode][]; clas
 /** GET filter form: search box + any filter controls; state lives in the URL. */
 export function FilterBar({ action, q, placeholder = "Search…", children, extra }: { action: string; q?: string; placeholder?: string; children?: ReactNode; extra?: ReactNode }) {
   return (
-    <form method="get" action={action} className="flex flex-wrap items-end gap-2">
+    <form method="get" action={action} className="flex flex-wrap items-center gap-2">
       {q !== undefined ? (
-        <div className="relative min-w-56 flex-1">
+        <div className="relative w-full max-w-sm min-w-56 flex-1 sm:w-auto">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-umber-400" />
-          <Input name="q" defaultValue={q} placeholder={placeholder} className="h-9 rounded-full pl-9 text-sm" data-admin-search aria-label="Search" />
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder={placeholder}
+            data-admin-search
+            aria-label="Search"
+            className="h-9 w-full rounded-full border border-umber-200 bg-white/90 pr-3 pl-9 text-sm text-umber-900 placeholder:text-umber-400 focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none"
+          />
         </div>
       ) : null}
       {children}
@@ -89,29 +95,30 @@ export function FilterBar({ action, q, placeholder = "Search…", children, extr
 
 export function FilterSelect({ name, value, options, label }: { name: string; value: string; options: { value: string; label: string }[]; label: string }) {
   return (
-    <label className="flex flex-col gap-1 text-[11px] font-medium tracking-wide text-umber-500 uppercase">
-      {label}
-      <select
-        name={name}
-        defaultValue={value}
-        className="h-9 rounded-full border border-umber-200 bg-white/90 px-3 pr-7 text-sm font-normal tracking-normal text-umber-900 normal-case focus:border-gold-500 focus:outline-none"
-      >
-        <option value="">All</option>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <select
+      name={name}
+      defaultValue={value}
+      aria-label={label}
+      className={cn(
+        "h-9 max-w-52 rounded-full border bg-white/90 pr-7 pl-3 text-sm focus:border-gold-500 focus:outline-none",
+        value ? "border-indigo-300 text-indigo-900" : "border-umber-200 text-umber-600",
+      )}
+    >
+      <option value="">{label}: all</option>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {label}: {o.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
 export function FilterDate({ name, value, label }: { name: string; value: string; label: string }) {
   return (
-    <label className="flex flex-col gap-1 text-[11px] font-medium tracking-wide text-umber-500 uppercase">
-      {label}
-      <input type="date" name={name} defaultValue={value} className="h-9 rounded-full border border-umber-200 bg-white/90 px-3 text-sm font-normal text-umber-900 focus:border-gold-500 focus:outline-none" />
+    <label className="flex h-9 items-center gap-1.5 rounded-full border border-umber-200 bg-white/90 pr-2 pl-3 text-sm focus-within:border-gold-500">
+      <span className="text-umber-500">{label}</span>
+      <input type="date" name={name} defaultValue={value} className="bg-transparent text-umber-900 focus:outline-none" />
     </label>
   );
 }
@@ -143,7 +150,7 @@ export function MiniStat({ label, value, hint, tone, href }: { label: ReactNode;
   const inner = (
     <>
       <p className="text-[11px] font-medium tracking-wider text-umber-500 uppercase">{label}</p>
-      <p className={cn("mt-1.5 font-display text-2xl tabular-nums", tone === "danger" ? "text-danger-700" : tone === "pending" ? "text-pending-600" : "text-umber-900")}>{value}</p>
+      <p className={cn("mt-1.5 font-display tabular-nums", typeof value === "string" && value.length > 14 ? "text-lg leading-snug" : "text-2xl", tone === "danger" ? "text-danger-700" : tone === "pending" ? "text-pending-600" : "text-umber-900")}>{value}</p>
       {hint ? <p className="mt-0.5 text-xs text-umber-500">{hint}</p> : null}
     </>
   );

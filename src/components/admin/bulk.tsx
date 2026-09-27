@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import type { AdminAction } from "@/lib/admin/action-state";
-import { Select } from "@/components/ui/form";
 import { ActionForm, SubmitButton } from "./action-form";
 
 /**
@@ -15,11 +14,14 @@ export function BulkBar({
   action,
   options,
   hidden,
+  extra,
 }: {
   formId: string;
   action: AdminAction;
   options: { value: string; label: string; confirm?: string }[];
   hidden?: Record<string, string>;
+  /** Extra inputs submitted with the bulk action (e.g. a payment reference). */
+  extra?: React.ReactNode;
 }) {
   const [count, setCount] = useState(0);
   const [op, setOp] = useState(options[0]?.value ?? "");
@@ -47,13 +49,14 @@ export function BulkBar({
         <input key={k} type="hidden" name={k} value={v} />
       ))}
       <span className="text-sm text-umber-500 tabular-nums">{count} selected</span>
-      <Select name="op" value={op} onChange={(e) => setOp(e.target.value)} className="h-8 w-auto rounded-full py-0 pr-8 pl-3 text-sm" aria-label="Bulk action">
+      <select name="op" value={op} onChange={(e) => setOp(e.target.value)} className="h-8 rounded-full border border-umber-200 bg-white/90 pr-7 pl-3 text-sm text-umber-900 focus:border-gold-500 focus:outline-none" aria-label="Bulk action">
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}
-      </Select>
+      </select>
+      {extra}
       <SubmitButton variant="outline" disabled={count === 0}>
         Apply
       </SubmitButton>

@@ -33,6 +33,7 @@ export function Toaster() {
         <div
           key={t.id}
           role={t.kind === "error" ? "alert" : "status"}
+          data-toast={t.kind}
           className={cn(
             "pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-lift backdrop-blur animate-fade-up",
             t.kind === "error" ? "border-danger-600/30 bg-danger-50/95 text-danger-700" : "border-umber-200 bg-sand-50/95 text-umber-800",

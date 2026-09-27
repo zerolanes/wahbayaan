@@ -1,11 +1,11 @@
 import { and, desc, eq } from "drizzle-orm";
 import { StickyNote } from "lucide-react";
 import { addAdminNote, deleteAdminNote } from "@/app/actions/admin/notes";
-import { Textarea } from "@/components/ui/form";
 import { db } from "@/lib/db/client";
 import { adminNotes, auditLog, users } from "@/lib/db/schema";
 import { formatDateTime, timeAgo } from "@/lib/utils/format";
 import { ActionButton, ActionForm, SubmitButton } from "./action-form";
+import { TextArea } from "./controls";
 import { Panel } from "./ui";
 
 /** Internal notes on any entity (never shown to buyers or artisans). */
@@ -22,7 +22,7 @@ export async function NotesPanel({ entity, entityId, currentUserId }: { entity: 
       <ActionForm action={addAdminNote} resetOnSuccess className="space-y-2">
         <input type="hidden" name="entity" value={entity} />
         <input type="hidden" name="entityId" value={entityId} />
-        <Textarea name="body" rows={2} placeholder="Add a note for the team…" className="min-h-16 text-sm" required />
+        <TextArea name="body" rows={2} placeholder="Add a note for the team…" className="min-h-16" required />
         <div className="flex justify-end">
           <SubmitButton>Add note</SubmitButton>
         </div>
