@@ -1,0 +1,104 @@
+/**
+ * Staff permissions for the company admin panel. Roles are editable in
+ * Admin → Staff & roles; these presets are what a fresh install starts with.
+ */
+export const PERMISSIONS = {
+  "dashboard.view": "See the operations dashboard",
+  "orders.view": "View orders",
+  "orders.manage": "Update orders, send quotes, add tracking",
+  "orders.refund": "Issue refunds",
+  "escrow.release": "Release or freeze held buyer funds",
+  "disputes.view": "View disputes",
+  "disputes.resolve": "Resolve disputes",
+  "vendors.view": "View artisans and applications",
+  "vendors.verify": "Run verification checks and approve artisans",
+  "vendors.manage": "Edit, suspend and feature artisans; set commission overrides",
+  "products.view": "View all listings",
+  "products.moderate": "Approve, reject and feature listings",
+  "products.manage": "Edit any listing",
+  "categories.manage": "Manage categories and cover photography",
+  "customers.view": "View customers",
+  "customers.manage": "Suspend customers, approve wholesale accounts",
+  "reviews.moderate": "Publish or hide reviews",
+  "payouts.view": "View payouts",
+  "payouts.manage": "Create and mark payouts as paid",
+  "rates.view": "View FX, shipping and duty rates",
+  "rates.manage": "Edit FX, shipping, duty, import rules and fees",
+  "content.manage": "Edit journal, pages, FAQ, collections and homepage",
+  "marketing.manage": "Coupons, referrals, loyalty, newsletter, announcements",
+  "requests.manage": "Custom requests, wholesale leads, waitlists",
+  "support.manage": "Contact messages and buyer–artisan conversations",
+  "reports.view": "Sales, country and artisan reports; CSV exports",
+  "settings.manage": "Site settings, feature flags, maintenance mode",
+  "staff.manage": "Staff accounts and roles",
+  "audit.view": "Audit log",
+  "media.manage": "Media library",
+} as const;
+
+export type Permission = keyof typeof PERMISSIONS;
+export const ALL_PERMISSIONS = Object.keys(PERMISSIONS) as Permission[];
+
+export const ROLE_PRESETS: { name: string; description: string; permissions: Permission[] }[] = [
+  { name: "Owner", description: "Full control of the company and system", permissions: ALL_PERMISSIONS },
+  {
+    name: "Operations",
+    description: "Orders, shipping, disputes and day-to-day fulfilment",
+    permissions: [
+      "dashboard.view",
+      "orders.view",
+      "orders.manage",
+      "disputes.view",
+      "disputes.resolve",
+      "vendors.view",
+      "products.view",
+      "customers.view",
+      "rates.view",
+      "requests.manage",
+      "support.manage",
+      "reports.view",
+    ],
+  },
+  {
+    name: "Artisan relations",
+    description: "Onboarding, verification and listing quality",
+    permissions: [
+      "dashboard.view",
+      "vendors.view",
+      "vendors.verify",
+      "vendors.manage",
+      "products.view",
+      "products.moderate",
+      "products.manage",
+      "categories.manage",
+      "reviews.moderate",
+      "requests.manage",
+      "media.manage",
+    ],
+  },
+  {
+    name: "Finance",
+    description: "Payments, escrow, payouts and rates",
+    permissions: [
+      "dashboard.view",
+      "orders.view",
+      "orders.refund",
+      "escrow.release",
+      "payouts.view",
+      "payouts.manage",
+      "rates.view",
+      "rates.manage",
+      "reports.view",
+      "audit.view",
+    ],
+  },
+  {
+    name: "Content editor",
+    description: "Journal, pages, collections and homepage",
+    permissions: ["dashboard.view", "content.manage", "marketing.manage", "media.manage", "products.view", "categories.manage"],
+  },
+  {
+    name: "Support",
+    description: "Buyer and artisan support",
+    permissions: ["dashboard.view", "orders.view", "disputes.view", "customers.view", "support.manage", "vendors.view"],
+  },
+];
