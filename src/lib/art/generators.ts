@@ -80,6 +80,12 @@ export const ART_KINDS: ArtKind[] = [
 ];
 
 type Canvas = { w: number; h: number };
+export type SurfaceOpts = { surface?: boolean };
+
+/** In surface mode the wall, floor and vignette are dropped so the design fills the texture. */
+function layers(bg: ReturnType<typeof wall>, opts: SurfaceOpts) {
+  return opts.surface ? { ...bg, back: "", floor: "", front: "" } : bg;
+}
 
 // ── Backdrops ───────────────────────────────────────────────────────────────
 
@@ -127,7 +133,7 @@ function wall(c: Canvas, r: Rng, tone: "light" | "dark" = "light") {
 
 // ── Rug (hand-knotted, Bukhara-style guls) ──────────────────────────────────
 
-export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
+export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: SurfaceOpts = {}) {
   const r = rng(seed);
   const schemes = [
     { field: "#8f1f24", ground2: "#6d1419", gul: "#f0e2c4", accent: "#1c2445", line: "#2a1a14" },
@@ -139,10 +145,10 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   const s = pick(r, schemes);
   const bg = wall(c, r);
   const portrait = c.h >= c.w;
-  const rw = portrait ? c.w * 0.64 : c.w * 0.44;
-  const rh = portrait ? rw * 1.45 : c.h * 0.8;
-  const x0 = (c.w - rw) / 2;
-  const y0 = (c.h - rh) / 2 - (portrait ? c.h * 0.02 : 0);
+  const rw = opts.surface ? c.w : portrait ? c.w * 0.64 : c.w * 0.44;
+  const rh = opts.surface ? c.h : portrait ? rw * 1.45 : c.h * 0.8;
+  const x0 = opts.surface ? 0 : (c.w - rw) / 2;
+  const y0 = opts.surface ? 0 : (c.h - rh) / 2 - (portrait ? c.h * 0.02 : 0);
   const b = rw * 0.1; // border width
 
   const defs = [
@@ -245,7 +251,7 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   return svgDoc(
     c.w,
     c.h,
-    [bg.back, bg.floor, fringe.join(""), el("g", { filter: "url(#wool)" }, rugBody), bg.front].join(""),
+    opts.surface ? el("g", { filter: "url(#wool)" }, rugBody) : [bg.back, bg.floor, fringe.join(""), el("g", { filter: "url(#wool)" }, rugBody), bg.front].join(""),
     defs,
     "Illustration: hand-knotted rug",
   );
@@ -266,7 +272,7 @@ const PHRASE_SIZE: Record<NastaliqPhraseKey, number> = {
   khushamdeed: 0.16,
 };
 
-export function calligraphy(seed: number, c: Canvas = { w: 1200, h: 1500 }, phrase?: NastaliqPhraseKey) {
+export function calligraphy(seed: number, c: Canvas = { w: 1200, h: 1500 }, phrase?: NastaliqPhraseKey, opts: SurfaceOpts = {}) {
   const r = rng(seed);
   const key = phrase ?? CALLIGRAPHY_KEYS[seed % CALLIGRAPHY_KEYS.length];
   const p = NASTALIQ_PHRASES[key];
@@ -277,14 +283,14 @@ export function calligraphy(seed: number, c: Canvas = { w: 1200, h: 1500 }, phra
     { panel: "#6d1419", panel2: "#4f0d11", ink: "url(#goldInk)", mat: "#b8893b" },
   ];
   const s = pick(r, schemes);
-  const bg = wall(c, r);
+  const bg = layers(wall(c, r), opts);
   const portrait = c.h >= c.w;
   const long = key === "iqbal" || key === "khushamdeed" || key === "wahbayaan";
-  const fw = portrait ? c.w * 0.72 : c.w * 0.5;
-  const fh = portrait ? (long ? fw * 0.62 : fw * 1.22) : c.h * 0.7;
-  const x0 = (c.w - fw) / 2;
-  const y0 = (c.h - fh) / 2 - c.h * 0.03;
-  const frame = fw * 0.055;
+  const fw = opts.surface ? c.w : portrait ? c.w * 0.72 : c.w * 0.5;
+  const fh = opts.surface ? c.h : portrait ? (long ? fw * 0.62 : fw * 1.22) : c.h * 0.7;
+  const x0 = opts.surface ? 0 : (c.w - fw) / 2;
+  const y0 = opts.surface ? 0 : (c.h - fh) / 2 - c.h * 0.03;
+  const frame = opts.surface ? 0 : fw * 0.055;
   const mat = fw * 0.07;
 
   const defs = [
@@ -491,16 +497,16 @@ export function pottery(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
 
 // ── Truck-art painting ──────────────────────────────────────────────────────
 
-export function truckart(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
+export function truckart(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: SurfaceOpts = {}) {
   const r = rng(seed);
-  const bg = wall(c, r);
+  const bg = layers(wall(c, r), opts);
   const colors = ["#e63946", "#f4a261", "#2a9d8f", "#e9c46a", "#264653", "#ff006e", "#8338ec", "#06d6a0", "#ffbe0b", "#3a86ff"];
   const ground = pick(r, ["#12264f", "#1b1b3a", "#0f3d3e", "#5b0e2d"]);
   const portrait = c.h >= c.w;
-  const pw = portrait ? c.w * 0.7 : c.w * 0.56;
-  const ph = portrait ? pw * 1.25 : c.h * 0.74;
-  const x0 = (c.w - pw) / 2;
-  const y0 = (c.h - ph) / 2 - c.h * 0.03;
+  const pw = opts.surface ? c.w : portrait ? c.w * 0.7 : c.w * 0.56;
+  const ph = opts.surface ? c.h : portrait ? pw * 1.25 : c.h * 0.74;
+  const x0 = opts.surface ? 0 : (c.w - pw) / 2;
+  const y0 = opts.surface ? 0 : (c.h - ph) / 2 - c.h * 0.03;
   const cx = x0 + pw / 2;
   const cy = y0 + ph / 2;
 
@@ -809,9 +815,9 @@ export function wood(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
 
 // ── Heritage print / poster ─────────────────────────────────────────────────
 
-export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
+export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: SurfaceOpts = {}) {
   const r = rng(seed);
-  const bg = wall(c, r);
+  const bg = layers(wall(c, r), opts);
   const scheme = pick(r, [
     { sky: "#f0dcc0", sun: "#c4623a", arch: "#25305a", water: "#34498a" },
     { sky: "#1b2140", sun: "#e2c27a", arch: "#b5532e", water: "#25305a" },
@@ -819,10 +825,10 @@ export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
     { sky: "#f6e6d0", sun: "#8f1f24", arch: "#1f7a5a", water: "#2a9da8" },
   ]);
   const portrait = c.h >= c.w;
-  const pw = portrait ? c.w * 0.64 : c.w * 0.44;
-  const ph = portrait ? pw * 1.38 : c.h * 0.78;
-  const x0 = (c.w - pw) / 2;
-  const y0 = (c.h - ph) / 2 - c.h * 0.03;
+  const pw = opts.surface ? c.w : portrait ? c.w * 0.64 : c.w * 0.44;
+  const ph = opts.surface ? c.h : portrait ? pw * 1.38 : c.h * 0.78;
+  const x0 = opts.surface ? 0 : (c.w - pw) / 2;
+  const y0 = opts.surface ? 0 : (c.h - ph) / 2 - c.h * 0.03;
   const m = pw * 0.07;
   const ax = x0 + m;
   const aw = pw - 2 * m;
@@ -872,7 +878,7 @@ export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
 
 // ── Ajrak block print (Sindh) ───────────────────────────────────────────────
 
-function ajrakPattern(id: string, size: number, seed: number) {
+export function ajrakPattern(id: string, size: number, seed: number) {
   const r = rng(seed);
   const red = pick(r, ["#8f1f24", "#9e2a2b", "#7a1a1f"]);
   const indigo = pick(r, ["#1b2140", "#1f2a4f"]);
@@ -895,14 +901,14 @@ function ajrakPattern(id: string, size: number, seed: number) {
   ]);
 }
 
-export function ajrak(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
+export function ajrak(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: SurfaceOpts = {}) {
   const r = rng(seed);
-  const bg = wall(c, r);
+  const bg = layers(wall(c, r), opts);
   const portrait = c.h >= c.w;
-  const pw = portrait ? c.w * 0.66 : c.w * 0.5;
-  const ph = portrait ? pw * 1.3 : c.h * 0.76;
-  const x0 = (c.w - pw) / 2;
-  const y0 = (c.h - ph) / 2 - c.h * 0.02;
+  const pw = opts.surface ? c.w : portrait ? c.w * 0.66 : c.w * 0.5;
+  const ph = opts.surface ? c.h : portrait ? pw * 1.3 : c.h * 0.76;
+  const x0 = opts.surface ? 0 : (c.w - pw) / 2;
+  const y0 = opts.surface ? 0 : (c.h - ph) / 2 - c.h * 0.02;
   const band = pw * 0.07;
   const defs = [
     bg.defs,
@@ -944,7 +950,7 @@ export function ajrak(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
 
 // ── Kashi tile (Multan / Hala) ──────────────────────────────────────────────
 
-function tilePattern(id: string, s: number, seed: number) {
+export function tilePattern(id: string, s: number, seed: number) {
   const r = rng(seed);
   const blue = pick(r, ["#2f5ea8", "#1f4f9a", "#25305a"]);
   const turq = pick(r, ["#2a9da8", "#3aa7b0"]);

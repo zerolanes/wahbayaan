@@ -51,7 +51,7 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
         <div className="hidden sm:block">
           <CurrencySwitcher destination={ctx.destination} currency={ctx.currency} currencyChosen={ctx.currencyChosen} tone="dark" />
         </div>
-        <Link href="/search" className={iconLink} aria-label="Search">
+        <Link href="/search" className={`${iconLink} hidden sm:grid`} aria-label="Search">
           <Search className="size-[18px]" />
         </Link>
         <Link href="/wishlist" className={iconLink} aria-label={`Wishlist (${wishlist.size})`}>

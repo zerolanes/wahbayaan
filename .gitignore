@@ -11,3 +11,6 @@ test-results/
 playwright-report/
 screenshots/
 .DS_Store
+
+# Local agent worktrees
+.claude/worktrees/

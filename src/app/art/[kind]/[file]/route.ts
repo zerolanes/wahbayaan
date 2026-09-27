@@ -1,4 +1,5 @@
 import { ART_KINDS, renderArt, type ArtKind } from "@/lib/art/generators";
+import { renderSurface } from "@/lib/art/surfaces";
 
 const SIZES = {
   portrait: { w: 1200, h: 1500 },
@@ -14,11 +15,14 @@ const SIZES = {
  */
 export async function GET(_req: Request, ctx: RouteContext<"/art/[kind]/[file]">) {
   const { kind, file } = await ctx.params;
-  const match = /^(\d{1,9})(?:-(portrait|wide|square|banner|avatar))?\.svg$/.exec(file);
+  const match = /^(\d{1,9})(?:-(portrait|wide|square|banner|avatar|surface))?\.svg$/.exec(file);
   if (!match || !ART_KINDS.includes(kind as ArtKind)) return new Response("Not found", { status: 404 });
   const seed = Number(match[1]);
-  const size = match[2] ? SIZES[match[2] as keyof typeof SIZES] : undefined;
-  const svg = renderArt(kind as ArtKind, seed, size);
+  const variant = match[2];
+  const svg =
+    variant === "surface"
+      ? renderSurface(kind as ArtKind, seed)
+      : renderArt(kind as ArtKind, seed, variant ? SIZES[variant as keyof typeof SIZES] : undefined);
   return new Response(svg, {
     headers: {
       "content-type": "image/svg+xml; charset=utf-8",
