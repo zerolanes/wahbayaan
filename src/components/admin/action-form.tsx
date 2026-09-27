@@ -38,7 +38,7 @@ export function ActionForm({
   const [state, formAction] = useActionState<ActionState, FormData>(async (prev, fd) => {
     const res = await action(prev, fd);
     if (res?.error) toast("error", res.error);
-    else if (res?.message) toast("success", res.message);
+    else if (res?.message) toast("success", res.message, res.data);
     return res;
   }, null);
   const ref = useRef<HTMLFormElement>(null);
