@@ -22,7 +22,7 @@ export default async function SellerLayout({ children }: { children: React.React
   const row = (Array.isArray(r) ? r : ((r as { rows?: unknown[] }).rows ?? []))[0] as { orders: number; requests: number; messages: number } | undefined;
   const groups = sellerNav({ newOrders: row?.orders ?? 0, newRequests: row?.requests ?? 0, unreadMessages: row?.messages ?? 0 });
   return (
-    <div className="min-h-dvh bg-sand-100">
+    <div className="bg-sand-100 min-h-dvh">
       <DashboardSidebar groups={groups} label="Artisan dashboard" />
       <div className="lg:pl-64">
         <DashboardTopbar

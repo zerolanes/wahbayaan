@@ -50,6 +50,8 @@
     "@types/three": "^0.186.0",
     "drizzle-kit": "^0.31.11",
     "postcss": "^8.5.28",
+    "prettier": "^3.9.9",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "5.9",

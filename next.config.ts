@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     localPatterns: [{ pathname: "/media/**" }, { pathname: "/art/**" }, { pathname: "/demo/**" }, { pathname: "/brand/**" }],
   },
   experimental: {
-    serverActions: { bodySizeLimit: "12mb" },
+    serverActions: { bodySizeLimit: "60mb" },
   },
 };
 
