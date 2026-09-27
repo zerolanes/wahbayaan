@@ -19,10 +19,10 @@ type Holder = { db?: Promise<Db>; close?: () => Promise<void> };
 const globalHolder = globalThis as unknown as { __wahbayaanDb?: Holder };
 const holder: Holder = (globalHolder.__wahbayaanDb ??= {});
 
-const MIGRATIONS_DIR = path.join(process.cwd(), "drizzle");
+const MIGRATIONS_DIR = path.join(/*turbopackIgnore: true*/ process.cwd(), "drizzle");
 
 export function pgliteDir() {
-  return path.resolve(process.cwd(), process.env.PGLITE_DIR || ".data/pglite");
+  return path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.PGLITE_DIR || ".data/pglite");
 }
 
 function lockPath() {

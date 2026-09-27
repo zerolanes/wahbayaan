@@ -20,9 +20,9 @@ export function proxy(request: NextRequest) {
     if (geo && SUPPORTED_DESTINATIONS.has(geo.toUpperCase())) setOnRequest[DESTINATION_COOKIE] = geo.toUpperCase();
   }
 
-  if (!Object.keys(setOnRequest).length) return NextResponse.next();
-
   for (const [name, value] of Object.entries(setOnRequest)) request.cookies.set(name, value);
+  // Lets not-found.tsx look up admin-managed redirects for the requested path.
+  request.headers.set("x-wb-path", request.nextUrl.pathname);
   const response = NextResponse.next({ request: { headers: request.headers } });
   for (const [name, value] of Object.entries(setOnRequest)) {
     response.cookies.set(name, value, { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365, httpOnly: name === VISITOR_COOKIE });

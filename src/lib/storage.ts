@@ -16,7 +16,7 @@ const ALLOWED = new Map([
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 export function uploadDir() {
-  return path.resolve(process.cwd(), process.env.UPLOAD_DIR || "uploads");
+  return path.resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.UPLOAD_DIR || "uploads");
 }
 
 /**
@@ -30,7 +30,7 @@ export async function saveUpload(file: File, opts: { uploadedById?: string | nul
   if (!ext) throw new Error("Unsupported file type. Use JPG, PNG, WebP, AVIF, MP4 or GLB.");
   if (file.size > MAX_UPLOAD_BYTES) throw new Error("File is larger than 10 MB.");
   const name = `${new Date().toISOString().slice(0, 7)}/${crypto.randomBytes(12).toString("hex")}${ext}`;
-  const target = path.join(uploadDir(), name);
+  const target = path.join(/*turbopackIgnore: true*/ uploadDir(), name);
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.writeFile(target, Buffer.from(await file.arrayBuffer()));
   const url = `/media/${name}`;
