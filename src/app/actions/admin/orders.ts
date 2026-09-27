@@ -11,8 +11,8 @@ import {
   refundOrder,
   releaseFunds,
   sendQuote,
+  vendorOrderAction,
 } from "@/lib/commerce/orders";
-import { staffVendorOrderAction } from "@/lib/admin/fulfilment";
 import { sendEmail } from "@/lib/email";
 import { adminAction, AdminError } from "@/lib/admin/action";
 import { orderMoney } from "@/lib/admin/money";
@@ -65,7 +65,7 @@ export const vendorOrderStatusAction = adminAction(
     const d = await db();
     const vo = await d.query.vendorOrders.findFirst({ where: eq(vendorOrders.id, data.vendorOrderId), with: { order: true, vendor: true } });
     if (!vo) throw new AdminError("Sub-order not found");
-    await staffVendorOrderAction(vo.id, { type: data.type }, user.id);
+    await vendorOrderAction(vo.id, { type: data.type }, { userId: user.id, isStaff: true });
     await audit({
       action: `vendor_order.${data.type}`,
       entity: "order",
@@ -89,10 +89,10 @@ export const shipVendorOrderAction = adminAction(
     const d = await db();
     const vo = await d.query.vendorOrders.findFirst({ where: eq(vendorOrders.id, data.vendorOrderId), with: { order: true, vendor: true } });
     if (!vo) throw new AdminError("Sub-order not found");
-    await staffVendorOrderAction(
+    await vendorOrderAction(
       vo.id,
       { type: "ship", courier: data.courier, trackingNumber: data.trackingNumber, trackingUrl: data.trackingUrl, packageWeightG: data.packageWeightG },
-      user.id,
+      { userId: user.id, isStaff: true },
     );
     await audit({ action: "vendor_order.ship", entity: "order", entityId: vo.orderId, summary: `Added tracking ${data.courier} ${data.trackingNumber} for ${vo.vendor.displayName} on ${vo.order.number}`, data });
     return { message: "Tracking saved and buyer notified" };
@@ -328,7 +328,7 @@ export const bulkShipmentsAction = adminAction(
         continue;
       }
       try {
-        await staffVendorOrderAction(vo.id, { type: "delivered" }, user.id);
+        await vendorOrderAction(vo.id, { type: "delivered" }, { userId: user.id, isStaff: true });
         done++;
       } catch {
         failed.push(vo.order.number);
