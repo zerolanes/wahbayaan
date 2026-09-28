@@ -7,22 +7,7 @@
  * launch-readiness check as "needs real photography".
  */
 import { NASTALIQ_PHRASES, type NastaliqPhraseKey } from "./nastaliq-subsets";
-import {
-  el,
-  f,
-  grainFilter,
-  int,
-  linear,
-  pick,
-  polygon,
-  radial,
-  range,
-  rng,
-  shadowFilter,
-  starPoints,
-  svgDoc,
-  type Rng,
-} from "./svg";
+import { el, f, grainFilter, int, linear, pick, polygon, radial, range, rng, shadowFilter, starPoints, svgDoc, type Rng } from "./svg";
 
 export const PALETTE = {
   ink: "#15192e",
@@ -51,18 +36,7 @@ export const PALETTE = {
 };
 
 export type ArtKind =
-  | "rug"
-  | "calligraphy"
-  | "pottery"
-  | "truckart"
-  | "stone"
-  | "salt"
-  | "wood"
-  | "print"
-  | "ajrak"
-  | "tile"
-  | "avatar"
-  | "banner";
+  "rug" | "calligraphy" | "pottery" | "truckart" | "stone" | "salt" | "wood" | "print" | "ajrak" | "tile" | "furniture" | "snooker" | "avatar" | "banner";
 
 export const ART_KINDS: ArtKind[] = [
   "rug",
@@ -75,6 +49,8 @@ export const ART_KINDS: ArtKind[] = [
   "print",
   "ajrak",
   "tile",
+  "furniture",
+  "snooker",
   "avatar",
   "banner",
 ];
@@ -155,23 +131,23 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surfac
     bg.defs,
     shadowFilter("shadow", 24, 26, 0.4),
     grainFilter("wool", 0.35, 1.4),
-    el(
-      "pattern",
-      { id: "borderMotif", width: b * 0.9, height: b * 0.9, patternUnits: "userSpaceOnUse" },
-      [
-        el("rect", { width: b * 0.9, height: b * 0.9, fill: s.accent }),
-        el("polygon", { points: starPoints(b * 0.45, b * 0.45, b * 0.36, b * 0.16, 8), fill: s.gul }),
-        el("circle", { cx: b * 0.45, cy: b * 0.45, r: b * 0.08, fill: s.field }),
-      ],
-    ),
-    el(
-      "pattern",
-      { id: "guard", width: b * 0.3, height: b * 0.3, patternUnits: "userSpaceOnUse" },
-      [
-        el("rect", { width: b * 0.3, height: b * 0.3, fill: s.gul }),
-        el("polygon", { points: polygon([[0, b * 0.15], [b * 0.15, 0], [b * 0.3, b * 0.15], [b * 0.15, b * 0.3]]), fill: s.field }),
-      ],
-    ),
+    el("pattern", { id: "borderMotif", width: b * 0.9, height: b * 0.9, patternUnits: "userSpaceOnUse" }, [
+      el("rect", { width: b * 0.9, height: b * 0.9, fill: s.accent }),
+      el("polygon", { points: starPoints(b * 0.45, b * 0.45, b * 0.36, b * 0.16, 8), fill: s.gul }),
+      el("circle", { cx: b * 0.45, cy: b * 0.45, r: b * 0.08, fill: s.field }),
+    ]),
+    el("pattern", { id: "guard", width: b * 0.3, height: b * 0.3, patternUnits: "userSpaceOnUse" }, [
+      el("rect", { width: b * 0.3, height: b * 0.3, fill: s.gul }),
+      el("polygon", {
+        points: polygon([
+          [0, b * 0.15],
+          [b * 0.15, 0],
+          [b * 0.3, b * 0.15],
+          [b * 0.15, b * 0.3],
+        ]),
+        fill: s.field,
+      }),
+    ]),
   ].join("");
 
   // Field guls
@@ -219,12 +195,26 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surfac
           }),
         );
       }
-      guls.push(el("polygon", { points: starPoints(cx, cy, Math.min(gw, gh) * 0.42, Math.min(gw, gh) * 0.18, 8), fill: s.field, stroke: s.gul, "stroke-width": 2 }));
+      guls.push(
+        el("polygon", { points: starPoints(cx, cy, Math.min(gw, gh) * 0.42, Math.min(gw, gh) * 0.18, 8), fill: s.field, stroke: s.gul, "stroke-width": 2 }),
+      );
       // Minor gul between rows
       if (j < rows - 1) {
         const my = cy + ch / 2;
         const m = Math.min(cw, ch) * 0.12;
-        guls.push(el("polygon", { points: polygon([[cx, my - m], [cx + m * 1.4, my], [cx, my + m], [cx - m * 1.4, my]]), fill: s.accent, stroke: s.gul, "stroke-width": 2 }));
+        guls.push(
+          el("polygon", {
+            points: polygon([
+              [cx, my - m],
+              [cx + m * 1.4, my],
+              [cx, my + m],
+              [cx - m * 1.4, my],
+            ]),
+            fill: s.accent,
+            stroke: s.gul,
+            "stroke-width": 2,
+          }),
+        );
       }
     }
     // Vertical lines linking guls (the "tree" of a Bukhara field)
@@ -235,8 +225,20 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surfac
   const fringe: string[] = [];
   for (let x = x0 + 6; x < x0 + rw - 4; x += 7) {
     const len = range(r, 22, 34);
-    fringe.push(el("line", { x1: f(x), y1: f(y0), x2: f(x + range(r, -3, 3)), y2: f(y0 - len), stroke: "#efe4cc", "stroke-width": 3, "stroke-linecap": "round" }));
-    fringe.push(el("line", { x1: f(x), y1: f(y0 + rh), x2: f(x + range(r, -3, 3)), y2: f(y0 + rh + len), stroke: "#efe4cc", "stroke-width": 3, "stroke-linecap": "round" }));
+    fringe.push(
+      el("line", { x1: f(x), y1: f(y0), x2: f(x + range(r, -3, 3)), y2: f(y0 - len), stroke: "#efe4cc", "stroke-width": 3, "stroke-linecap": "round" }),
+    );
+    fringe.push(
+      el("line", {
+        x1: f(x),
+        y1: f(y0 + rh),
+        x2: f(x + range(r, -3, 3)),
+        y2: f(y0 + rh + len),
+        stroke: "#efe4cc",
+        "stroke-width": 3,
+        "stroke-linecap": "round",
+      }),
+    );
   }
 
   const rugBody = el("g", { filter: "url(#shadow)" }, [
@@ -251,7 +253,9 @@ export function rug(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surfac
   return svgDoc(
     c.w,
     c.h,
-    opts.surface ? el("g", { filter: "url(#wool)" }, rugBody) : [bg.back, bg.floor, fringe.join(""), el("g", { filter: "url(#wool)" }, rugBody), bg.front].join(""),
+    opts.surface
+      ? el("g", { filter: "url(#wool)" }, rugBody)
+      : [bg.back, bg.floor, fringe.join(""), el("g", { filter: "url(#wool)" }, rugBody), bg.front].join(""),
     defs,
     "Illustration: hand-knotted rug",
   );
@@ -342,7 +346,11 @@ export function calligraphy(seed: number, c: Canvas = { w: 1200, h: 1500 }, phra
   // Illuminated corners (tezhip)
   const corner = (x: number, y: number, sx: number, sy: number) =>
     el("g", { transform: `translate(${f(x)} ${f(y)}) scale(${sx} ${sy})` }, [
-      el("path", { d: `M0 0 Q ${f(iw * 0.16)} 0 ${f(iw * 0.16)} ${f(iw * 0.05)} Q ${f(iw * 0.05)} ${f(iw * 0.05)} ${f(iw * 0.05)} ${f(iw * 0.16)} Q 0 ${f(iw * 0.16)} 0 0Z`, fill: "url(#goldInk)", opacity: 0.85 }),
+      el("path", {
+        d: `M0 0 Q ${f(iw * 0.16)} 0 ${f(iw * 0.16)} ${f(iw * 0.05)} Q ${f(iw * 0.05)} ${f(iw * 0.05)} ${f(iw * 0.05)} ${f(iw * 0.16)} Q 0 ${f(iw * 0.16)} 0 0Z`,
+        fill: "url(#goldInk)",
+        opacity: 0.85,
+      }),
       el("circle", { cx: f(iw * 0.045), cy: f(iw * 0.045), r: f(iw * 0.018), fill: s.mat }),
     ]);
 
@@ -520,7 +528,18 @@ export function truckart(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: S
         const a = (i / petals) * Math.PI * 2 + l * 0.2;
         const px = x + Math.cos(a) * rr * 0.55;
         const py = y + Math.sin(a) * rr * 0.55;
-        out.push(el("ellipse", { cx: f(px), cy: f(py), rx: f(rr * 0.42), ry: f(rr * 0.17), transform: `rotate(${f((a * 180) / Math.PI)} ${f(px)} ${f(py)})`, fill: col, stroke: "#fff", "stroke-width": 2 }));
+        out.push(
+          el("ellipse", {
+            cx: f(px),
+            cy: f(py),
+            rx: f(rr * 0.42),
+            ry: f(rr * 0.17),
+            transform: `rotate(${f((a * 180) / Math.PI)} ${f(px)} ${f(py)})`,
+            fill: col,
+            stroke: "#fff",
+            "stroke-width": 2,
+          }),
+        );
       }
     }
     out.push(el("circle", { cx: f(x), cy: f(y), r: f(R * 0.18), fill: "#ffbe0b", stroke: "#fff", "stroke-width": 3 }));
@@ -538,8 +557,22 @@ export function truckart(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: S
   for (let i = 0; i < scallops; i++) {
     const col = colors[(i + seed) % colors.length];
     const sx = x0 + (i / scallops) * pw;
-    border.push(el("path", { d: `M${f(sx)} ${f(y0 + bw)} q ${f(pw / scallops / 2)} ${f(bw * 0.9)} ${f(pw / scallops)} 0 Z`, fill: col, stroke: "#fff", "stroke-width": 2 }));
-    border.push(el("path", { d: `M${f(sx)} ${f(y0 + ph - bw)} q ${f(pw / scallops / 2)} ${f(-bw * 0.9)} ${f(pw / scallops)} 0 Z`, fill: col, stroke: "#fff", "stroke-width": 2 }));
+    border.push(
+      el("path", {
+        d: `M${f(sx)} ${f(y0 + bw)} q ${f(pw / scallops / 2)} ${f(bw * 0.9)} ${f(pw / scallops)} 0 Z`,
+        fill: col,
+        stroke: "#fff",
+        "stroke-width": 2,
+      }),
+    );
+    border.push(
+      el("path", {
+        d: `M${f(sx)} ${f(y0 + ph - bw)} q ${f(pw / scallops / 2)} ${f(-bw * 0.9)} ${f(pw / scallops)} 0 Z`,
+        fill: col,
+        stroke: "#fff",
+        "stroke-width": 2,
+      }),
+    );
   }
   for (let i = 0; i < 40; i++) {
     const t = i / 40;
@@ -551,8 +584,26 @@ export function truckart(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: S
   for (let i = 0; i < tn; i++) {
     const ty = y0 + bw * 1.6 + (i / tn) * (ph - bw * 3.2);
     const col = colors[(i * 2 + seed) % colors.length];
-    triangles.push(el("polygon", { points: polygon([[x0, ty], [x0 + bw, ty + (ph - bw * 3.2) / tn / 2], [x0, ty + (ph - bw * 3.2) / tn]]), fill: col }));
-    triangles.push(el("polygon", { points: polygon([[x0 + pw, ty], [x0 + pw - bw, ty + (ph - bw * 3.2) / tn / 2], [x0 + pw, ty + (ph - bw * 3.2) / tn]]), fill: col }));
+    triangles.push(
+      el("polygon", {
+        points: polygon([
+          [x0, ty],
+          [x0 + bw, ty + (ph - bw * 3.2) / tn / 2],
+          [x0, ty + (ph - bw * 3.2) / tn],
+        ]),
+        fill: col,
+      }),
+    );
+    triangles.push(
+      el("polygon", {
+        points: polygon([
+          [x0 + pw, ty],
+          [x0 + pw - bw, ty + (ph - bw * 3.2) / tn / 2],
+          [x0 + pw, ty + (ph - bw * 3.2) / tn],
+        ]),
+        fill: col,
+      }),
+    );
   }
 
   const defs = [bg.defs, shadowFilter("shadow", 26, 24, 0.4), grainFilter("paint", 0.14, 1.2)].join("");
@@ -642,7 +693,10 @@ export function stone(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   const stupa = [
     el("rect", { x: cx - nw * 0.34, y: sb - ph * 0.06, width: nw * 0.68, height: ph * 0.06, fill: "url(#relief)" }),
     el("rect", { x: cx - nw * 0.28, y: sb - ph * 0.12, width: nw * 0.56, height: ph * 0.06, fill: "url(#relief)" }),
-    el("path", { d: `M${f(cx - nw * 0.26)} ${f(sb - ph * 0.12)} A${f(nw * 0.26)} ${f(nw * 0.26)} 0 0 1 ${f(cx + nw * 0.26)} ${f(sb - ph * 0.12)} Z`, fill: "url(#relief)" }),
+    el("path", {
+      d: `M${f(cx - nw * 0.26)} ${f(sb - ph * 0.12)} A${f(nw * 0.26)} ${f(nw * 0.26)} 0 0 1 ${f(cx + nw * 0.26)} ${f(sb - ph * 0.12)} Z`,
+      fill: "url(#relief)",
+    }),
     el("rect", { x: cx - nw * 0.06, y: sb - ph * 0.12 - nw * 0.3, width: nw * 0.12, height: nw * 0.06, fill: "url(#relief)" }),
     el("rect", { x: cx - 3, y: sb - ph * 0.12 - nw * 0.52, width: 6, height: nw * 0.24, fill: "#8d9188" }),
     ...[0, 1, 2].map((i) =>
@@ -654,7 +708,16 @@ export function stone(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
     el("g", {}, [
       el("rect", { x: x - pw * 0.035, y: archTop + nw * 0.2, width: pw * 0.07, height: nb - archTop - nw * 0.2, fill: "url(#relief)" }),
       el("rect", { x: x - pw * 0.055, y: archTop + nw * 0.16, width: pw * 0.11, height: pw * 0.05, fill: "#a4a89e" }),
-      ...[0, 1, 2].map((k) => el("line", { x1: f(x - pw * 0.02 + k * pw * 0.02), y1: f(archTop + nw * 0.24), x2: f(x - pw * 0.02 + k * pw * 0.02), y2: f(nb - 8), stroke: "#4c514b", "stroke-width": 2 })),
+      ...[0, 1, 2].map((k) =>
+        el("line", {
+          x1: f(x - pw * 0.02 + k * pw * 0.02),
+          y1: f(archTop + nw * 0.24),
+          x2: f(x - pw * 0.02 + k * pw * 0.02),
+          y2: f(nb - 8),
+          stroke: "#4c514b",
+          "stroke-width": 2,
+        }),
+      ),
     ]);
 
   const body = [
@@ -669,7 +732,9 @@ export function stone(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
       pil(x0 + pw * 0.9),
       ...stupa,
       el("rect", { x: x0, y: y0 + ph * 0.06, width: pw, height: ph * 0.05, fill: "#6b7068" }),
-      ...Array.from({ length: 9 }, (_, i) => el("rect", { x: f(x0 + (i + 0.3) * (pw / 9)), y: f(y0 + ph * 0.065), width: f(pw / 18), height: f(ph * 0.04), fill: "#8e9389" })),
+      ...Array.from({ length: 9 }, (_, i) =>
+        el("rect", { x: f(x0 + (i + 0.3) * (pw / 9)), y: f(y0 + ph * 0.065), width: f(pw / 18), height: f(ph * 0.04), fill: "#8e9389" }),
+      ),
       el("rect", { x: x0, y: y0, width: pw, height: ph, fill: "url(#spot)" }),
     ]),
     bg.front,
@@ -697,7 +762,13 @@ export function salt(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   for (let i = 0; i < n; i += 2) {
     const a = pts[i];
     const b = pts[(i + 1) % n];
-    facets.push(el("polygon", { points: polygon([a, b, [cx + range(r, -R * 0.2, R * 0.2), cy + range(r, -R * 0.3, R * 0.3)]]), fill: "#ffd9b0", opacity: f(range(r, 0.06, 0.22)) }));
+    facets.push(
+      el("polygon", {
+        points: polygon([a, b, [cx + range(r, -R * 0.2, R * 0.2), cy + range(r, -R * 0.3, R * 0.3)]]),
+        fill: "#ffd9b0",
+        opacity: f(range(r, 0.06, 0.22)),
+      }),
+    );
   }
   const baseY = cy + R * 1.14;
   const defs = [
@@ -842,7 +913,10 @@ export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surf
   const minaret = (x: number, h: number) =>
     el("g", {}, [
       el("rect", { x: f(x - aw * 0.018), y: f(horizon - h), width: f(aw * 0.036), height: f(h), fill: scheme.arch }),
-      el("path", { d: `M${f(x - aw * 0.03)} ${f(horizon - h)} Q ${f(x)} ${f(horizon - h - aw * 0.07)} ${f(x + aw * 0.03)} ${f(horizon - h)} Z`, fill: scheme.arch }),
+      el("path", {
+        d: `M${f(x - aw * 0.03)} ${f(horizon - h)} Q ${f(x)} ${f(horizon - h - aw * 0.07)} ${f(x + aw * 0.03)} ${f(horizon - h)} Z`,
+        fill: scheme.arch,
+      }),
       el("rect", { x: f(x - aw * 0.03), y: f(horizon - h * 0.7), width: f(aw * 0.06), height: 6, fill: scheme.arch }),
     ]);
   const skyline = [
@@ -852,7 +926,13 @@ export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surf
     el("path", { d: dome(cx + aw * 0.22, aw * 0.14, ah * 0.36), fill: scheme.arch }),
     ...[-0.42, 0.42].map((k) => minaret(cx + aw * k, ah * 0.52)),
     ...[-0.28, 0.28].map((k) => minaret(cx + aw * k, ah * 0.36)),
-    ...[-0.2, 0, 0.2].map((k) => el("path", { d: `M${f(cx + aw * k - aw * 0.04)} ${f(horizon)} V${f(horizon - ah * 0.1)} A${f(aw * 0.04)} ${f(aw * 0.04)} 0 0 1 ${f(cx + aw * k + aw * 0.04)} ${f(horizon - ah * 0.1)} V${f(horizon)} Z`, fill: scheme.sky, opacity: 0.9 })),
+    ...[-0.2, 0, 0.2].map((k) =>
+      el("path", {
+        d: `M${f(cx + aw * k - aw * 0.04)} ${f(horizon)} V${f(horizon - ah * 0.1)} A${f(aw * 0.04)} ${f(aw * 0.04)} 0 0 1 ${f(cx + aw * k + aw * 0.04)} ${f(horizon - ah * 0.1)} V${f(horizon)} Z`,
+        fill: scheme.sky,
+        opacity: 0.9,
+      }),
+    ),
   ];
   const defs = [bg.defs, shadowFilter("shadow", 22, 18, 0.35), grainFilter("ink", 0.2, 1.3)].join("");
   const body = [
@@ -864,7 +944,16 @@ export function print(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surf
         el("circle", { cx: f(cx), cy: f(ay + ah * 0.3), r: f(aw * 0.24), fill: scheme.sun, opacity: 0.9 }),
         ...skyline,
         el("rect", { x: ax, y: horizon, width: aw, height: ay + ah - horizon, fill: scheme.water }),
-        ...Array.from({ length: 6 }, (_, i) => el("rect", { x: f(ax + aw * (0.1 + i * 0.13)), y: f(horizon + (ay + ah - horizon) * (0.2 + (i % 3) * 0.25)), width: f(aw * 0.08), height: 3, fill: scheme.sky, opacity: 0.5 })),
+        ...Array.from({ length: 6 }, (_, i) =>
+          el("rect", {
+            x: f(ax + aw * (0.1 + i * 0.13)),
+            y: f(horizon + (ay + ah - horizon) * (0.2 + (i % 3) * 0.25)),
+            width: f(aw * 0.08),
+            height: 3,
+            fill: scheme.sky,
+            opacity: 0.5,
+          }),
+        ),
       ]),
       el("rect", { x: ax, y: f(ay + ah + ph * 0.05), width: f(aw * 0.5), height: f(ph * 0.022), fill: scheme.arch }),
       el("rect", { x: ax, y: f(ay + ah + ph * 0.1), width: f(aw * 0.32), height: f(ph * 0.012), fill: "#b9ab92" }),
@@ -915,7 +1004,17 @@ export function ajrak(seed: number, c: Canvas = { w: 1200, h: 1500 }, opts: Surf
     ajrakPattern("ajrak", pw / 5, seed),
     el("pattern", { id: "ajrakBorder", width: band, height: band, patternUnits: "userSpaceOnUse" }, [
       el("rect", { width: band, height: band, fill: "#1b2140" }),
-      el("polygon", { points: polygon([[band / 2, band * 0.1], [band * 0.9, band / 2], [band / 2, band * 0.9], [band * 0.1, band / 2]]), fill: "#8f1f24", stroke: "#f3ead6", "stroke-width": 2 }),
+      el("polygon", {
+        points: polygon([
+          [band / 2, band * 0.1],
+          [band * 0.9, band / 2],
+          [band / 2, band * 0.9],
+          [band * 0.1, band / 2],
+        ]),
+        fill: "#8f1f24",
+        stroke: "#f3ead6",
+        "stroke-width": 2,
+      }),
     ]),
     shadowFilter("shadow", 24, 20, 0.35),
     grainFilter("cloth", 0.28, 1.6),
@@ -964,14 +1063,37 @@ export function tilePattern(id: string, s: number, seed: number) {
       [s, 0],
       [0, s],
       [s, s],
-    ].map(([x, y]) => el("polygon", { points: polygon([[x, y - s * 0.16], [x + s * 0.16, y], [x, y + s * 0.16], [x - s * 0.16, y]]), fill: turq })),
+    ].map(([x, y]) =>
+      el("polygon", {
+        points: polygon([
+          [x, y - s * 0.16],
+          [x + s * 0.16, y],
+          [x, y + s * 0.16],
+          [x - s * 0.16, y],
+        ]),
+        fill: turq,
+      }),
+    ),
     el("rect", { width: s, height: s, fill: "none", stroke: "#d9d2c0", "stroke-width": 1.5 }),
   ]);
 }
 
 export function tile(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   const size = Math.min(c.w, c.h) / int(rng(seed), 4, 6);
-  const defs = [tilePattern("tile", size, seed), grainFilter("glaze", 0.1, 1.1), radial("shine", [[0, "#fff", 0.25], [1, "#fff", 0]], 0.3, 0.2, 0.7)].join("");
+  const defs = [
+    tilePattern("tile", size, seed),
+    grainFilter("glaze", 0.1, 1.1),
+    radial(
+      "shine",
+      [
+        [0, "#fff", 0.25],
+        [1, "#fff", 0],
+      ],
+      0.3,
+      0.2,
+      0.7,
+    ),
+  ].join("");
   return svgDoc(
     c.w,
     c.h,
@@ -1038,6 +1160,283 @@ export function banner(seed: number, c: Canvas = { w: 2000, h: 700 }) {
   );
 }
 
+// ── Heritage furniture (Chiniot carved sheesham) ───────────────────────────
+
+export function furniture(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
+  const r = rng(seed);
+  const bg = wall(c, r);
+  const tone = pick(r, [
+    ["#7a4a28", "#3d2412"],
+    ["#8f5a33", "#4a2c16"],
+    ["#5e3a20", "#2c190b"],
+  ]);
+  const defs = [
+    bg.defs,
+    linear(
+      "fWood",
+      [
+        [0, tone[0]],
+        [1, tone[1]],
+      ],
+      1,
+      1,
+    ),
+    el("filter", { id: "fGrain", x: 0, y: 0, width: "100%", height: "100%" }, [
+      el("feTurbulence", { type: "fractalNoise", baseFrequency: "0.005 0.08", numOctaves: 3, seed: seed % 40, result: "n" }),
+      el("feColorMatrix", { in: "n", type: "matrix", values: "0 0 0 0 0.2  0 0 0 0 0.1  0 0 0 0 0.03  0 0 0 0.55 0", result: "g" }),
+      el("feComposite", { in: "g", in2: "SourceGraphic", operator: "atop" }),
+    ]),
+    shadowFilter("fShadow", 20, 18, 0.4),
+  ].join("");
+  const dark = "#1f1208";
+  const cx = c.w / 2;
+  const floorY = bg.floorY;
+  const parts: string[] = [];
+  const rosette = (x: number, y: number, rad: number) => [
+    el("polygon", { points: starPoints(x, y, rad, rad * 0.45, 8), fill: dark, opacity: 0.85 }),
+    el("circle", { cx: f(x), cy: f(y), r: f(rad * 0.28), fill: "url(#fWood)" }),
+  ];
+  if (seed % 2 === 0) {
+    // Sideboard with two arched, carved doors on turned legs.
+    const w = c.w * 0.72;
+    const h = w * 0.62;
+    const x0 = cx - w / 2;
+    const legH = h * 0.18;
+    const y0 = floorY - legH - h;
+    parts.push(
+      el("rect", { x: f(x0 - w * 0.03), y: f(y0 - h * 0.06), width: f(w * 1.06), height: f(h * 0.07), rx: 6, fill: "url(#fWood)", filter: "url(#fGrain)" }),
+    );
+    parts.push(el("rect", { x: f(x0), y: f(y0), width: f(w), height: f(h), fill: "url(#fWood)", filter: "url(#fGrain)" }));
+    parts.push(el("rect", { x: f(x0), y: f(y0), width: f(w), height: f(h), fill: "none", stroke: dark, "stroke-width": 5 }));
+    const dw = (w - w * 0.12) / 2;
+    for (const k of [0, 1]) {
+      const dx = x0 + w * 0.04 + k * (dw + w * 0.04);
+      const dy = y0 + h * 0.08;
+      const dh = h * 0.84;
+      const ar = dw / 2 - dw * 0.1;
+      const ix = dx + dw * 0.1;
+      const iw = dw * 0.8;
+      parts.push(el("rect", { x: f(dx), y: f(dy), width: f(dw), height: f(dh), fill: dark, opacity: 0.35 }));
+      parts.push(
+        el("path", {
+          d: `M${f(ix)} ${f(dy + dh - dh * 0.08)} V${f(dy + ar + dh * 0.08)} A${f(ar)} ${f(ar)} 0 0 1 ${f(ix + iw)} ${f(dy + ar + dh * 0.08)} V${f(dy + dh - dh * 0.08)} Z`,
+          fill: "url(#fWood)",
+          stroke: dark,
+          "stroke-width": 3,
+        }),
+      );
+      parts.push(...rosette(ix + iw / 2, dy + ar + dh * 0.1, iw * 0.2));
+      for (let j = 0; j < 3; j++)
+        parts.push(el("circle", { cx: f(ix + iw / 2), cy: f(dy + dh * (0.58 + j * 0.1)), r: f(iw * 0.06), fill: dark, opacity: 0.7 }));
+      parts.push(el("circle", { cx: f(k === 0 ? dx + dw - dw * 0.06 : dx + dw * 0.06), cy: f(dy + dh * 0.55), r: 7, fill: PALETTE.goldLight }));
+    }
+    for (const lx of [x0 + w * 0.04, x0 + w - w * 0.04 - w * 0.05]) {
+      parts.push(
+        el("path", {
+          d: `M${f(lx)} ${f(y0 + h)} h${f(w * 0.05)} l${f(-w * 0.008)} ${f(legH * 0.5)} q${f(w * 0.012)} ${f(legH * 0.2)} 0 ${f(legH * 0.5)} h${f(-w * 0.034)} q${f(-w * 0.012)} ${f(-legH * 0.3)} 0 ${f(-legH * 0.5)} z`,
+          fill: "url(#fWood)",
+          stroke: dark,
+          "stroke-width": 2,
+        }),
+      );
+    }
+  } else {
+    // Armchair with an arched, pierced back.
+    const w = c.w * 0.46;
+    const seatY = floorY - w * 0.55;
+    const x0 = cx - w / 2;
+    const backTop = seatY - w * 1.0;
+    const ar = w * 0.42;
+    parts.push(
+      el("path", {
+        d: `M${f(x0 + w * 0.08)} ${f(seatY)} V${f(backTop + ar)} A${f(ar)} ${f(ar)} 0 0 1 ${f(x0 + w * 0.92)} ${f(backTop + ar)} V${f(seatY)} Z`,
+        fill: "url(#fWood)",
+        filter: "url(#fGrain)",
+        stroke: dark,
+        "stroke-width": 5,
+      }),
+    );
+    const iw = w * 0.6;
+    const ix = cx - iw / 2;
+    const iar = iw / 2;
+    parts.push(
+      el("path", {
+        d: `M${f(ix)} ${f(seatY - w * 0.08)} V${f(backTop + ar + w * 0.02)} A${f(iar)} ${f(iar)} 0 0 1 ${f(ix + iw)} ${f(backTop + ar + w * 0.02)} V${f(seatY - w * 0.08)} Z`,
+        fill: dark,
+        opacity: 0.55,
+      }),
+    );
+    parts.push(...rosette(cx, backTop + ar + w * 0.02, iw * 0.24));
+    for (let j = 0; j < 3; j++) parts.push(...rosette(cx, backTop + ar + w * (0.3 + j * 0.2), iw * 0.1));
+    parts.push(
+      el("rect", { x: f(x0 - w * 0.04), y: f(seatY), width: f(w * 1.08), height: f(w * 0.1), rx: 8, fill: "url(#fWood)", stroke: dark, "stroke-width": 3 }),
+    );
+    parts.push(
+      el("rect", {
+        x: f(x0 + w * 0.04),
+        y: f(seatY - w * 0.12),
+        width: f(w * 0.92),
+        height: f(w * 0.12),
+        rx: 14,
+        fill: pick(r, [PALETTE.madder, PALETTE.indigo, "#1f5a4a"]),
+      }),
+    );
+    for (const lx of [x0, x0 + w - w * 0.08])
+      parts.push(
+        el("rect", {
+          x: f(lx),
+          y: f(seatY + w * 0.1),
+          width: f(w * 0.08),
+          height: f(floorY - seatY - w * 0.1),
+          fill: "url(#fWood)",
+          stroke: dark,
+          "stroke-width": 2,
+        }),
+      );
+    parts.push(el("rect", { x: f(x0 + w * 0.08), y: f(seatY + w * 0.34), width: f(w * 0.84), height: f(w * 0.04), fill: dark, opacity: 0.8 }));
+  }
+  const body = [bg.back, bg.floor, el("g", { filter: "url(#fShadow)" }, parts), bg.front].join("");
+  return svgDoc(c.w, c.h, body, defs, "Illustration: Chiniot carved furniture");
+}
+
+// ── Snooker & games tables ─────────────────────────────────────────────────
+
+export function snooker(seed: number, c: Canvas = { w: 1600, h: 1000 }) {
+  const r = rng(seed);
+  const bg = wall(c, r, "dark");
+  const cloth = pick(r, [
+    ["#1f7a4a", "#12532f"],
+    ["#2a6f9a", "#174a6b"],
+    ["#8f1f24", "#5c1216"],
+  ]);
+  const woodTone = pick(r, [
+    ["#6e4526", "#2f1a0b"],
+    ["#8a5a34", "#3d2412"],
+  ]);
+  const landscape = c.w >= c.h;
+  const tw = landscape ? c.w * 0.8 : c.w * 0.62;
+  const th = landscape ? tw * 0.52 : tw * 1.9;
+  const x0 = (c.w - tw) / 2;
+  const y0 = (c.h - th) / 2;
+  const rail = Math.min(tw, th) * 0.07;
+  const defs = [
+    radial(
+      "cloth",
+      [
+        [0, cloth[0]],
+        [1, cloth[1]],
+      ],
+      0.5,
+      0.5,
+      0.7,
+    ),
+    linear(
+      "rail",
+      [
+        [0, woodTone[0]],
+        [1, woodTone[1]],
+      ],
+      1,
+      1,
+    ),
+    radial(
+      "lamp",
+      [
+        [0, "#fff6d8", 0.35],
+        [1, "#fff6d8", 0],
+      ],
+      0.5,
+      0.5,
+      0.5,
+    ),
+    shadowFilter("tShadow", 26, 30, 0.6),
+    bg.defs,
+  ].join("");
+  const ix = x0 + rail;
+  const iy = y0 + rail;
+  const iw = tw - rail * 2;
+  const ih = th - rail * 2;
+  const pocketR = rail * 0.55;
+  const pockets = landscape
+    ? [
+        [ix, iy],
+        [ix + iw / 2, iy - rail * 0.15],
+        [ix + iw, iy],
+        [ix, iy + ih],
+        [ix + iw / 2, iy + ih + rail * 0.15],
+        [ix + iw, iy + ih],
+      ]
+    : [
+        [ix, iy],
+        [ix + iw, iy],
+        [ix - rail * 0.15, iy + ih / 2],
+        [ix + iw + rail * 0.15, iy + ih / 2],
+        [ix, iy + ih],
+        [ix + iw, iy + ih],
+      ];
+  const ball = Math.min(iw, ih) * 0.028;
+  // Rack of reds as a triangle near the top/right end.
+  const balls: string[] = [];
+  const along = (t: number, across: number) => (landscape ? [ix + iw * t, iy + ih / 2 + across] : [ix + iw / 2 + across, iy + ih * (1 - t)]);
+  for (let row = 0; row < 5; row++)
+    for (let k = 0; k <= row; k++) {
+      const [bx, by] = along(0.74 + row * 0.022, (k - row / 2) * ball * 2.05);
+      balls.push(el("circle", { cx: f(bx), cy: f(by), r: f(ball), fill: "#b3121c" }));
+    }
+  const colours: [number, number, string][] = [
+    [0.715, 0, "#f06aa6"],
+    [0.9, 0, "#111"],
+    [0.5, 0, "#2255c4"],
+    [0.2, 0, "#7a4a28"],
+    [0.2, ih * 0.08, "#1b8a3a"],
+    [0.2, -ih * 0.08, "#e7c32a"],
+    [0.12, ih * 0.03, "#f7f3ea"],
+  ];
+  for (const [t, a, col] of colours) {
+    const [bx, by] = along(t, landscape ? a : a * (iw / ih));
+    balls.push(el("circle", { cx: f(bx), cy: f(by), r: f(ball), fill: col }));
+  }
+  const [bl1x, bl1y] = along(0.2, landscape ? -ih / 2 : -iw / 2);
+  const [bl2x, bl2y] = along(0.2, landscape ? ih / 2 : iw / 2);
+  const [dcx, dcy] = along(0.2, 0);
+  const dR = (landscape ? ih : iw) * 0.08;
+  const dArc = landscape
+    ? `M${f(dcx)} ${f(dcy - dR)} A${f(dR)} ${f(dR)} 0 0 0 ${f(dcx)} ${f(dcy + dR)}`
+    : `M${f(dcx - dR)} ${f(dcy)} A${f(dR)} ${f(dR)} 0 0 0 ${f(dcx + dR)} ${f(dcy)}`;
+  const body = [
+    bg.back,
+    el("ellipse", { cx: c.w / 2, cy: c.h / 2, rx: f(tw * 0.6), ry: f(th * 0.7), fill: "url(#lamp)" }),
+    el("g", { filter: "url(#tShadow)" }, [
+      el("rect", { x: f(x0), y: f(y0), width: f(tw), height: f(th), rx: f(rail * 0.6), fill: "url(#rail)" }),
+      el("rect", {
+        x: f(x0 + rail * 0.3),
+        y: f(y0 + rail * 0.3),
+        width: f(tw - rail * 0.6),
+        height: f(th - rail * 0.6),
+        rx: f(rail * 0.4),
+        fill: "none",
+        stroke: PALETTE.goldLight,
+        "stroke-opacity": 0.35,
+        "stroke-width": 2,
+      }),
+      el("rect", { x: f(ix), y: f(iy), width: f(iw), height: f(ih), fill: "url(#cloth)" }),
+      el("rect", { x: f(ix), y: f(iy), width: f(iw), height: f(ih), fill: "none", stroke: "#000", "stroke-opacity": 0.35, "stroke-width": rail * 0.18 }),
+    ]),
+    el("line", { x1: f(bl1x), y1: f(bl1y), x2: f(bl2x), y2: f(bl2y), stroke: "#fff", "stroke-opacity": 0.5, "stroke-width": 2 }),
+    el("path", { d: dArc, fill: "none", stroke: "#fff", "stroke-opacity": 0.5, "stroke-width": 2 }),
+    ...pockets.map(([px, py]) => el("circle", { cx: f(px), cy: f(py), r: f(pocketR), fill: "#0a0705" })),
+    ...Array.from({ length: 9 }, (_, i) => {
+      const t = (i + 1) / 10;
+      return landscape
+        ? el("circle", { cx: f(x0 + tw * t), cy: f(y0 + rail * 0.5), r: 4, fill: PALETTE.goldPale, opacity: 0.8 })
+        : el("circle", { cx: f(x0 + rail * 0.5), cy: f(y0 + th * t), r: 4, fill: PALETTE.goldPale, opacity: 0.8 });
+    }),
+    ...balls,
+    bg.front,
+  ].join("");
+  return svgDoc(c.w, c.h, body, defs, "Illustration: snooker table");
+}
+
 // ── Dispatcher ──────────────────────────────────────────────────────────────
 
 export function renderArt(kind: ArtKind, seed: number, size?: { w: number; h: number }) {
@@ -1062,6 +1461,10 @@ export function renderArt(kind: ArtKind, seed: number, size?: { w: number; h: nu
       return ajrak(seed, size);
     case "tile":
       return tile(seed, size);
+    case "furniture":
+      return furniture(seed, size);
+    case "snooker":
+      return snooker(seed, size);
     case "avatar":
       return avatar(seed, size);
     case "banner":

@@ -73,6 +73,24 @@ export const CATEGORIES = [
     seed: 71,
   },
   {
+    slug: "furniture",
+    name: "Heritage Furniture",
+    tagline: "Chiniot carving, made to last generations",
+    description:
+      "Sideboards, chairs, beds and chests carved in seasoned sheesham and walnut by the furniture makers of Chiniot — shipped by freight, fully assembled or flat-packed with fittings.",
+    art: "furniture",
+    seed: 2,
+  },
+  {
+    slug: "games-tables",
+    name: "Snooker & Games Tables",
+    tagline: "Full-size tables, built and levelled by hand",
+    description:
+      "Snooker, pool and games tables with slate beds and carved hardwood frames, made to order in Lahore and delivered by freight with installation guidance.",
+    art: "snooker",
+    seed: 4,
+  },
+  {
     slug: "bespoke",
     name: "Customize & Bespoke",
     tagline: "Commission a piece made for you",
@@ -341,6 +359,23 @@ export const DEMO_VENDORS: DemoVendor[] = [
     languages: ["Punjabi", "Urdu"],
     responseTimeHours: 16,
     art: "wood",
+  },
+  {
+    slug: "ravi-table-works",
+    displayName: "Ravi Table Works",
+    craft: "Snooker & games tables",
+    category: "games-tables",
+    tagline: "Slate, sheesham and a spirit level",
+    story:
+      "A Lahore workshop building full-size snooker and pool tables for clubs and homes — frames carved from sheesham, beds of Italian slate, and cloth fitted by hand on site or before crating.",
+    craftHistory:
+      "The workshop began repairing club tables along the Ravi road in the 1980s and now builds new tables from the frame up. Every table is assembled, levelled and play-tested before it is crated for freight.",
+    city: "Lahore",
+    region: "punjab",
+    foundedYear: 1986,
+    languages: ["Punjabi", "Urdu", "English"],
+    responseTimeHours: 12,
+    art: "snooker",
   },
 ];
 
@@ -879,6 +914,89 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
       { id: "wood", label: "Wood", kind: "select", choices: ["Sheesham", "Walnut"], required: true },
       { id: "size", label: "Width × height (cm)", kind: "text", required: true, maxLength: 40 },
     ],
+  },
+  // Heritage furniture — Chiniot Jharokha Works
+  {
+    vendor: "chiniot-jharokha-works",
+    category: "furniture",
+    title: "Carved sheesham sideboard with arched doors",
+    summary: "A two-door sideboard with hand-carved arches and brass fittings.",
+    description:
+      "A full-size sideboard in seasoned sheesham: two arched doors carved with rosettes, an adjustable shelf behind each, and turned legs. Finished with natural oil and wax, with solid brass pulls. Ships by freight, fully assembled and crated.",
+    pricePkr: 685000,
+    availability: "made_to_order",
+    timeToMakeDays: 45,
+    dims: [160, 90, 45],
+    weightG: 85000,
+    materials: ["sheesham wood", "brass", "natural oil"],
+    techniques: ["hand carving", "mortise and tenon joinery"],
+    care: "Dust with a dry cloth; re-wax once a year. Keep away from radiators.",
+    art: "furniture",
+    seeds: [2, 6],
+    featured: true,
+    customization: [{ id: "finish", label: "Finish", kind: "select", choices: ["Natural oil", "Dark walnut stain", "Honey"], required: true }],
+  },
+  {
+    vendor: "chiniot-jharokha-works",
+    category: "furniture",
+    title: "Chiniot armchair with a pierced arched back",
+    summary: "A carved armchair with a rosette jali back and a cushioned seat.",
+    description:
+      "A single armchair in sheesham with a tall arched back, pierced and carved with rosettes, and a loose seat cushion in handloom cotton. Built with traditional joinery — no screws in the frame.",
+    pricePkr: 245000,
+    availability: "made_to_order",
+    timeToMakeDays: 30,
+    dims: [65, 105, 60],
+    weightG: 22000,
+    materials: ["sheesham wood", "handloom cotton"],
+    techniques: ["hand carving", "jali piercing"],
+    care: "Dust regularly; the cushion cover is removable and hand-washable.",
+    art: "furniture",
+    seeds: [3, 7],
+    customization: [{ id: "cushion", label: "Cushion colour", kind: "select", choices: ["Madder red", "Indigo", "Bottle green"], required: true }],
+  },
+
+  // Snooker & games tables — Ravi Table Works
+  {
+    vendor: "ravi-table-works",
+    category: "games-tables",
+    title: "Full-size 12 ft snooker table in carved sheesham",
+    summary: "A tournament-size table with a five-piece slate bed and carved frame.",
+    description:
+      "A 12 ft × 6 ft snooker table built on a five-piece, 45 mm Italian slate bed, with a carved sheesham frame, steel-block cushions and pockets hand-stitched in leather. Supplied with a set of balls, two cues, rest and cover. Shipped by freight in crates; the workshop sends a step-by-step levelling guide and joins a video call for installation.",
+    pricePkr: 3400000,
+    availability: "made_to_order",
+    timeToMakeDays: 75,
+    dims: [382, 86, 204],
+    weightG: 1250000,
+    materials: ["sheesham wood", "Italian slate", "worsted wool cloth", "leather"],
+    techniques: ["hand carving", "slate levelling", "cloth fitting"],
+    care: "Brush the cloth after each session and keep the cover on. Re-level after moving.",
+    art: "snooker",
+    seeds: [1, 7],
+    featured: true,
+    customization: [
+      { id: "cloth", label: "Cloth colour", kind: "select", choices: ["Tournament green", "Royal blue", "Claret"], required: true },
+      { id: "engraving", label: "Name plate (optional)", kind: "text", maxLength: 30, extraPricePkr: 8000 },
+    ],
+  },
+  {
+    vendor: "ravi-table-works",
+    category: "games-tables",
+    title: "8 ft pool table with slate bed",
+    summary: "A home-size pool table in solid wood with a one-piece slate bed.",
+    description:
+      "An 8 ft pool table with a 25 mm slate bed, solid sheesham frame and drop pockets. Comes with balls, two cues and a triangle. Ships by freight on a single pallet with legs detached.",
+    pricePkr: 1150000,
+    availability: "made_to_order",
+    timeToMakeDays: 40,
+    dims: [254, 80, 142],
+    weightG: 420000,
+    materials: ["sheesham wood", "slate", "wool-blend cloth"],
+    techniques: ["joinery", "slate levelling"],
+    care: "Brush the cloth weekly and keep out of direct sunlight.",
+    art: "snooker",
+    seeds: [4],
   },
 ];
 

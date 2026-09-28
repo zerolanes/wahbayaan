@@ -133,6 +133,9 @@ export function buyerUnitPrice(unitPricePkr: number, fx: FxQuote) {
   return convertFromPkr(unitPricePkr, fx);
 }
 
+/** Above this, a shipment (furniture, snooker tables) travels as freight rather than by courier. */
+export const FREIGHT_THRESHOLD_G = 70_000;
+
 function quoteShipments(input: LcInput): ShipmentQuote[] {
   const byVendor = new Map<string, LcItem[]>();
   for (const item of input.items) {
@@ -172,7 +175,11 @@ function quoteShipments(input: LcInput): ShipmentQuote[] {
 
     const best = candidates[0];
     if (!best) {
-      quotes.push({ vendorId, weightG, status: "pending", reason: "No confirmed courier rate for this destination and weight" });
+      const reason =
+        weightG > FREIGHT_THRESHOLD_G
+          ? "Freight shipment — our logistics team quotes delivery for large pieces; nothing is charged until you approve it"
+          : "No confirmed courier rate for this destination and weight";
+      quotes.push({ vendorId, weightG, status: "pending", reason });
       continue;
     }
     quotes.push({
