@@ -52,7 +52,7 @@ export default async function ShopPage(props: PageProps<"/shop">) {
           </div>
 
           <nav aria-label="Crafts" className="-mx-4 mt-10 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-            <ul className="flex snap-x gap-4 lg:grid lg:grid-cols-8">
+            <ul className="flex snap-x gap-4 lg:grid lg:auto-cols-fr lg:grid-flow-col">
               {categories.map((c) => {
                 const active = query.category === c.slug;
                 return (

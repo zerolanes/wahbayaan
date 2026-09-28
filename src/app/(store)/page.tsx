@@ -150,7 +150,7 @@ export default async function HomePage() {
             <Heading eyebrow="Our collections" title="Shop by craft" action={{ href: "/shop", label: "Shop everything" }}>
               Each craft is made, photographed and shipped by the people who practise it.
             </Heading>
-            <ul className="mt-10 flex snap-x gap-5 overflow-x-auto pb-2 scrollbar-none md:grid md:grid-cols-4 md:gap-8 md:overflow-visible lg:grid-cols-8">
+            <ul className="mt-10 flex snap-x gap-5 overflow-x-auto pb-2 scrollbar-none md:grid md:grid-cols-5 md:gap-8 md:overflow-visible lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none lg:gap-6">
               {crafts.map((c) => (
                 <li key={c.slug} className="w-32 shrink-0 snap-start md:w-auto">
                   <Link href={`/category/${c.slug}`} className="group block text-center">

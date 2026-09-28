@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, Search, ShoppingBag, User } from "lucide-react";
+import { Heart, ShoppingBag, User } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getBuyerContext } from "@/lib/buyer-context";
@@ -8,6 +8,7 @@ import { getPublicCategories } from "@/lib/queries/catalog";
 import { CurrencySwitcher } from "./currency-switcher";
 import { HeaderFrame } from "./header-frame";
 import { MenuOverlay } from "./menu-overlay";
+import { SearchDialog } from "./search-dialog";
 
 export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
   const [ctx, user, categories] = await Promise.all([getBuyerContext(), getCurrentUser(), getPublicCategories()]);
@@ -51,9 +52,7 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
         <div className="hidden sm:block">
           <CurrencySwitcher destination={ctx.destination} currency={ctx.currency} currencyChosen={ctx.currencyChosen} tone="dark" />
         </div>
-        <Link href="/search" className={`${iconLink} hidden sm:grid`} aria-label="Search">
-          <Search className="size-[18px]" />
-        </Link>
+        <SearchDialog categories={categories.map((c) => ({ slug: c.slug, name: c.name }))} className={iconLink} />
         <Link href="/wishlist" className={iconLink} aria-label={`Wishlist (${wishlist.size})`}>
           <Heart className="size-[18px]" />
           {count(wishlist.size)}
