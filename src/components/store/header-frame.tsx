@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Sticky header chrome. On the 3D homepage it floats transparently over the
+ * Sticky header chrome. On the haveli walk-through it floats transparently over the
  * scene and turns into a frosted parchment bar once you scroll.
  */
 export function HeaderFrame({ overlay, children }: { overlay: boolean; children: ReactNode }) {
@@ -13,7 +13,7 @@ export function HeaderFrame({ overlay, children }: { overlay: boolean; children:
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 24);
-      // On the 3D homepage stay dark glass until the parchment sections begin.
+      // On the haveli walk-through stay dark glass until the parchment sections begin.
       const after = overlay ? document.getElementById("after-tour") : null;
       setOverDark(!!after && after.getBoundingClientRect().top > 64);
     };

@@ -15,7 +15,7 @@ await page.goto(url, { waitUntil: "networkidle", timeout: 90000 });
 if (full === "true") {
   // Scroll through so lazy images load.
   const height = await page.evaluate(() => document.body.scrollHeight);
-  for (let y = 0; y < height; y += 600) { await page.evaluate((yy) => window.scrollTo(0, yy), y); await page.waitForTimeout(120); }
+  for (let y = 0; y < height; y += 600) { await page.evaluate((yy) => window.scrollTo(0, yy), y); await page.waitForTimeout(350); }
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForLoadState("networkidle");
 }
