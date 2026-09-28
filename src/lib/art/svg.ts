@@ -51,11 +51,19 @@ export function polygon(points: [number, number][]) {
 }
 
 /** Regular star polygon (e.g. the 8-point Mughal star) centred on cx,cy. */
+/**
+ * A petal rosette (phool) — rounded lobes between `inner` and `outer` radii.
+ * Used wherever the artwork needs a central motif; the art deliberately avoids
+ * sharp stars and hexagon lattices.
+ */
 export function starPoints(cx: number, cy: number, outer: number, inner: number, points: number, rotation = 0) {
   const out: [number, number][] = [];
-  for (let i = 0; i < points * 2; i++) {
-    const r = i % 2 === 0 ? outer : inner;
-    const a = rotation + (Math.PI * i) / points;
+  const steps = points * 12;
+  const base = inner + (outer - inner) * 0.15;
+  for (let i = 0; i < steps; i++) {
+    const a = rotation + (2 * Math.PI * i) / steps;
+    const lobe = Math.pow(Math.abs(Math.cos((points * (a - rotation)) / 2)), 0.9);
+    const r = base + (outer - base) * lobe;
     out.push([cx + r * Math.sin(a), cy - r * Math.cos(a)]);
   }
   return polygon(out);
