@@ -113,10 +113,156 @@ export async function seedBase(db: Db) {
   }
 }
 
+type CatLookup = (slug: string) => string;
+
+/** One demo artisan: login, verified vendor profile and passed checks. */
+async function insertDemoVendor(db: Db, v: (typeof DEMO_VENDORS)[number], i: number, pw: string, catId: CatLookup, checkerId: string) {
+  const [u] = await db
+    .insert(t.users)
+    .values({ email: `${v.slug}@artisans.wahbayaan.test`, name: v.displayName, passwordHash: pw, role: "seller", country: "PK", isDemo: true })
+    .returning();
+  const [vendor] = await db
+    .insert(t.vendors)
+    .values({
+      userId: u.id,
+      slug: v.slug,
+      displayName: v.displayName,
+      craft: v.craft,
+      primaryCategoryId: catId(v.category),
+      tagline: v.tagline,
+      story: v.story,
+      craftHistory: v.craftHistory,
+      workshopCity: v.city,
+      workshopRegion: v.region,
+      foundedYear: v.foundedYear,
+      languages: v.languages,
+      profilePhotoUrl: art("avatar", 100 + i, "avatar"),
+      profilePhotoKind: "illustration",
+      bannerUrl: art("banner", 200 + i, "banner"),
+      status: "verified",
+      verifiedAt: daysAgo(200 - i * 10),
+      locationVerified: true,
+      responseTimeHours: v.responseTimeHours,
+      isFeatured: !!v.featured,
+      payoutMethod: "bank",
+      payoutAccountTitle: v.displayName,
+      payoutBankName: "Demo Bank",
+      payoutAccountLast4: String(1000 + i * 37).slice(-4),
+      isDemo: true,
+    })
+    .returning();
+  for (const kind of ["identity", "workshop", "samples", "video_call"] as const)
+    await db.insert(t.verificationChecks).values({
+      vendorId: vendor.id,
+      kind,
+      status: "passed",
+      notes: "Demo verification",
+      checkedById: checkerId,
+      checkedAt: daysAgo(200 - i * 10),
+    });
+  return vendor.id;
+}
+
+/** One demo listing with its illustrated images. */
+async function insertDemoProduct(db: Db, p: (typeof DEMO_PRODUCTS)[number], i: number, vendorId: string, catId: CatLookup) {
+  const vendorSeed = DEMO_VENDORS.find((v) => v.slug === p.vendor)!;
+  const [row] = await db
+    .insert(t.products)
+    .values({
+      vendorId,
+      categoryId: catId(p.category),
+      slug: slugify(p.title.replace(/[“”—]/g, " ")),
+      title: p.title,
+      summary: p.summary,
+      description: p.description,
+      story: p.story,
+      pricePkr: p.pricePkr * 100,
+      compareAtPricePkr: p.compareAtPricePkr ? p.compareAtPricePkr * 100 : null,
+      status: "active",
+      availability: p.availability,
+      stockQty: p.stockQty ?? 1,
+      isOneOfAKind: !!p.oneOfAKind,
+      timeToMakeDays: p.timeToMakeDays ?? null,
+      dispatchDays: p.dispatchDays ?? null,
+      widthCm: String(p.dims[0]),
+      heightCm: String(p.dims[1]),
+      depthCm: String(p.dims[2]),
+      weightG: p.weightG,
+      materials: p.materials,
+      techniques: p.techniques ?? [],
+      careInstructions: p.care,
+      region: vendorSeed.region,
+      customizable: !!p.customization?.length,
+      customizationOptions: p.customization ?? [],
+      model3d: { source: "procedural", kind: p.art, seed: p.seeds[0] },
+      isFeatured: !!p.featured,
+      isLimitedDrop: !!p.limitedDrop,
+      dropStartsAt: p.limitedDrop ? daysFromNow(p.limitedDrop.startsInDays) : null,
+      editionSize: p.limitedDrop?.editionSize ?? null,
+      wholesaleEnabled: !!p.wholesale,
+      wholesaleMinQty: p.wholesale?.minQty ?? null,
+      wholesalePricePkr: p.wholesale ? p.wholesale.pricePkr * 100 : null,
+      viewCount: 40 + ((i * 53) % 400),
+      publishedAt: daysAgo(90 - i * 2),
+      isDemo: true,
+    })
+    .returning();
+  await db.insert(t.productImages).values(
+    p.seeds.map((seed, sort) => ({
+      productId: row.id,
+      url: art(p.art, seed),
+      alt: `${p.title} — illustration ${sort + 1}`,
+      kind: "illustration" as const,
+      sort,
+    })),
+  );
+  return row;
+}
+
+/**
+ * For an existing demo catalogue: add demo artisans and listings that were
+ * added to seed-data after the database was first seeded (matched by slug),
+ * and a first announcement. Never touches existing rows, orders or users.
+ */
+async function topUpDemo(db: Db) {
+  const cats = await db.select().from(t.categories);
+  const catId = (slug: string) => cats.find((c) => c.slug === slug)!.id;
+  const [ownerUser] = await db.select().from(t.users).where(eq(t.users.email, "admin@wahbayaan.test"));
+  if (!ownerUser) return;
+  const pw = await hashPassword(DEMO_PASSWORD);
+  const vendorRows = await db.select({ id: t.vendors.id, slug: t.vendors.slug }).from(t.vendors);
+  const vendorIds = new Map(vendorRows.map((v) => [v.slug, v.id]));
+  let addedVendors = 0;
+  for (const [i, v] of DEMO_VENDORS.entries()) {
+    if (vendorIds.has(v.slug)) continue;
+    vendorIds.set(v.slug, await insertDemoVendor(db, v, i, pw, catId, ownerUser.id));
+    addedVendors++;
+  }
+  const slugs = new Set((await db.select({ slug: t.products.slug }).from(t.products)).map((r) => r.slug));
+  let addedProducts = 0;
+  for (const [i, p] of DEMO_PRODUCTS.entries()) {
+    if (slugs.has(slugify(p.title.replace(/[“”—]/g, " ")))) continue;
+    const vendorId = vendorIds.get(p.vendor);
+    if (!vendorId) continue;
+    await insertDemoProduct(db, p, i, vendorId, catId);
+    addedProducts++;
+  }
+  const [{ n: announcementCount }] = await db.select({ n: sql<number>`count(*)::int` }).from(t.announcements);
+  if (!announcementCount) await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
+  console.log(`Demo top-up: ${addedVendors} new artisans, ${addedProducts} new listings.`);
+}
+
+const DEMO_ANNOUNCEMENT = {
+  message: "New: carved Chiniot furniture and full-size snooker tables — made to order, delivered by freight",
+  link: "/category/furniture",
+  isActive: true,
+};
+
 export async function seedDemo(db: Db) {
   const [{ n: existing }] = await db.select({ n: sql<number>`count(*)::int` }).from(t.products);
   if (existing) {
-    console.log("Catalogue already has products — skipping demo data.");
+    console.log("Catalogue already has products — topping up new demo rows only.");
+    await topUpDemo(db);
     return;
   }
   const pw = await hashPassword(DEMO_PASSWORD);
@@ -165,60 +311,44 @@ export async function seedDemo(db: Db) {
   }
   const [usBuyer, ukBuyer, caBuyer] = buyerRows;
   await db.insert(t.addresses).values([
-    { userId: usBuyer.id, label: "Home", fullName: "Demo Buyer", line1: "100 Example Street", city: "Springfield", region: "IL", postalCode: "62701", country: "US", isDefault: true },
-    { userId: ukBuyer.id, label: "Home", fullName: "Demo Buyer", line1: "1 Example Road", city: "Manchester", postalCode: "M1 1AA", country: "GB", isDefault: true },
-    { userId: caBuyer.id, label: "Home", fullName: "Demo Buyer", line1: "1 Example Avenue", city: "Toronto", region: "ON", postalCode: "M5V 1A1", country: "CA", isDefault: true },
+    {
+      userId: usBuyer.id,
+      label: "Home",
+      fullName: "Demo Buyer",
+      line1: "100 Example Street",
+      city: "Springfield",
+      region: "IL",
+      postalCode: "62701",
+      country: "US",
+      isDefault: true,
+    },
+    {
+      userId: ukBuyer.id,
+      label: "Home",
+      fullName: "Demo Buyer",
+      line1: "1 Example Road",
+      city: "Manchester",
+      postalCode: "M1 1AA",
+      country: "GB",
+      isDefault: true,
+    },
+    {
+      userId: caBuyer.id,
+      label: "Home",
+      fullName: "Demo Buyer",
+      line1: "1 Example Avenue",
+      city: "Toronto",
+      region: "ON",
+      postalCode: "M5V 1A1",
+      country: "CA",
+      isDefault: true,
+    },
   ]);
   await db.insert(t.referralCodes).values({ code: "DEMO-FRIEND", userId: usBuyer.id });
 
   // Artisans
   const vendorIds = new Map<string, string>();
-  for (const [i, v] of DEMO_VENDORS.entries()) {
-    const [u] = await db
-      .insert(t.users)
-      .values({ email: `${v.slug}@artisans.wahbayaan.test`, name: v.displayName, passwordHash: pw, role: "seller", country: "PK", isDemo: true })
-      .returning();
-    const [vendor] = await db
-      .insert(t.vendors)
-      .values({
-        userId: u.id,
-        slug: v.slug,
-        displayName: v.displayName,
-        craft: v.craft,
-        primaryCategoryId: catId(v.category),
-        tagline: v.tagline,
-        story: v.story,
-        craftHistory: v.craftHistory,
-        workshopCity: v.city,
-        workshopRegion: v.region,
-        foundedYear: v.foundedYear,
-        languages: v.languages,
-        profilePhotoUrl: art("avatar", 100 + i, "avatar"),
-        profilePhotoKind: "illustration",
-        bannerUrl: art("banner", 200 + i, "banner"),
-        status: "verified",
-        verifiedAt: daysAgo(200 - i * 10),
-        locationVerified: true,
-        responseTimeHours: v.responseTimeHours,
-        isFeatured: !!v.featured,
-        payoutMethod: "bank",
-        payoutAccountTitle: v.displayName,
-        payoutBankName: "Demo Bank",
-        payoutAccountLast4: String(1000 + i * 37).slice(-4),
-        isDemo: true,
-      })
-      .returning();
-    vendorIds.set(v.slug, vendor.id);
-    for (const kind of ["identity", "workshop", "samples", "video_call"] as const)
-      await db.insert(t.verificationChecks).values({
-        vendorId: vendor.id,
-        kind,
-        status: "passed",
-        notes: "Demo verification",
-        checkedById: ownerUser.id,
-        checkedAt: daysAgo(200 - i * 10),
-      });
-  }
+  for (const [i, v] of DEMO_VENDORS.entries()) vendorIds.set(v.slug, await insertDemoVendor(db, v, i, pw, catId, ownerUser.id));
 
   // Two unfinished stores that reproduce the old site's problem (shared template
   // banner, no photo, no story). The visibility guards keep them off the storefront
@@ -285,60 +415,9 @@ export async function seedDemo(db: Db) {
   const productIds = new Map<string, string>();
   const productRows: (typeof t.products.$inferSelect)[] = [];
   for (const [i, p] of DEMO_PRODUCTS.entries()) {
-    const vendorId = vendorIds.get(p.vendor)!;
-    const vendorSeed = DEMO_VENDORS.find((v) => v.slug === p.vendor)!;
-    const [row] = await db
-      .insert(t.products)
-      .values({
-        vendorId,
-        categoryId: catId(p.category),
-        slug: slugify(p.title.replace(/[“”—]/g, " ")),
-        title: p.title,
-        summary: p.summary,
-        description: p.description,
-        story: p.story,
-        pricePkr: p.pricePkr * 100,
-        compareAtPricePkr: p.compareAtPricePkr ? p.compareAtPricePkr * 100 : null,
-        status: "active",
-        availability: p.availability,
-        stockQty: p.stockQty ?? 1,
-        isOneOfAKind: !!p.oneOfAKind,
-        timeToMakeDays: p.timeToMakeDays ?? null,
-        dispatchDays: p.dispatchDays ?? null,
-        widthCm: String(p.dims[0]),
-        heightCm: String(p.dims[1]),
-        depthCm: String(p.dims[2]),
-        weightG: p.weightG,
-        materials: p.materials,
-        techniques: p.techniques ?? [],
-        careInstructions: p.care,
-        region: vendorSeed.region,
-        customizable: !!p.customization?.length,
-        customizationOptions: p.customization ?? [],
-        model3d: { source: "procedural", kind: p.art, seed: p.seeds[0] },
-        isFeatured: !!p.featured,
-        isLimitedDrop: !!p.limitedDrop,
-        dropStartsAt: p.limitedDrop ? daysFromNow(p.limitedDrop.startsInDays) : null,
-        editionSize: p.limitedDrop?.editionSize ?? null,
-        wholesaleEnabled: !!p.wholesale,
-        wholesaleMinQty: p.wholesale?.minQty ?? null,
-        wholesalePricePkr: p.wholesale ? p.wholesale.pricePkr * 100 : null,
-        viewCount: 40 + ((i * 53) % 400),
-        publishedAt: daysAgo(90 - i * 2),
-        isDemo: true,
-      })
-      .returning();
+    const row = await insertDemoProduct(db, p, i, vendorIds.get(p.vendor)!, catId);
     productIds.set(p.title, row.id);
     productRows.push(row);
-    await db.insert(t.productImages).values(
-      p.seeds.map((seed, sort) => ({
-        productId: row.id,
-        url: art(p.art, seed),
-        alt: `${p.title} — illustration ${sort + 1}`,
-        kind: "illustration" as const,
-        sort,
-      })),
-    );
   }
 
   // A pending listing and a draft, so moderation queues aren't empty.
@@ -441,14 +520,117 @@ export async function seedDemo(db: Db) {
     gift?: boolean;
   };
   const specs: Spec[] = [
-    { buyer: usBuyer, currency: "USD", fx: fxUSD, status: "completed", vendorStatus: "delivered", products: ["Madder-red Bukhara, 6×9 ft"], shipping: 185_00, duty: 0, tax: 0, daysAgo: 70, tracking: true, funds: "released", paid: true },
-    { buyer: ukBuyer, currency: "GBP", fx: "375", status: "delivered", vendorStatus: "delivered", products: ["Multani blue charger plate, 45 cm", "Blue pottery bowl"], shipping: 64_00, duty: 0, tax: 38_00, daysAgo: 21, tracking: true, funds: "held", paid: true },
-    { buyer: caBuyer, currency: "CAD", fx: "205", status: "shipped", vendorStatus: "shipped", products: ["Stupa niche relief in grey schist"], shipping: 240_00, duty: 0, tax: 70_00, daysAgo: 9, tracking: true, funds: "held", paid: true },
-    { buyer: usBuyer, currency: "USD", fx: fxUSD, status: "in_fulfilment", vendorStatus: "in_production", products: ["Your name in Nastaliq — commissioned panel"], shipping: 60_00, duty: 0, tax: 0, daysAgo: 5, funds: "held", paid: true, gift: true },
-    { buyer: usBuyer, currency: "USD", fx: fxUSD, status: "paid", vendorStatus: "pending", products: ["Phool — truck-art panel on wood", "Badshahi skyline — screen print"], shipping: 72_00, duty: 0, tax: 0, daysAgo: 1, funds: "held", paid: true },
-    { buyer: ukBuyer, currency: "GBP", fx: "375", status: "awaiting_quote", vendorStatus: "pending", products: ["Carved jharokha panel in sheesham"], daysAgo: 0, funds: "none", paid: false },
-    { buyer: caBuyer, currency: "CAD", fx: "205", status: "disputed", vendorStatus: "delivered", products: ["Hand-shaped salt lamp on sheesham base, large"], shipping: 58_00, duty: 0, tax: 9_00, daysAgo: 30, tracking: true, funds: "frozen", paid: true },
-    { buyer: usBuyer, currency: "USD", fx: fxUSD, status: "cancelled", vendorStatus: "cancelled", products: ["Tall floral vase"], daysAgo: 40, funds: "none", paid: false },
+    {
+      buyer: usBuyer,
+      currency: "USD",
+      fx: fxUSD,
+      status: "completed",
+      vendorStatus: "delivered",
+      products: ["Madder-red Bukhara, 6×9 ft"],
+      shipping: 185_00,
+      duty: 0,
+      tax: 0,
+      daysAgo: 70,
+      tracking: true,
+      funds: "released",
+      paid: true,
+    },
+    {
+      buyer: ukBuyer,
+      currency: "GBP",
+      fx: "375",
+      status: "delivered",
+      vendorStatus: "delivered",
+      products: ["Multani blue charger plate, 45 cm", "Blue pottery bowl"],
+      shipping: 64_00,
+      duty: 0,
+      tax: 38_00,
+      daysAgo: 21,
+      tracking: true,
+      funds: "held",
+      paid: true,
+    },
+    {
+      buyer: caBuyer,
+      currency: "CAD",
+      fx: "205",
+      status: "shipped",
+      vendorStatus: "shipped",
+      products: ["Stupa niche relief in grey schist"],
+      shipping: 240_00,
+      duty: 0,
+      tax: 70_00,
+      daysAgo: 9,
+      tracking: true,
+      funds: "held",
+      paid: true,
+    },
+    {
+      buyer: usBuyer,
+      currency: "USD",
+      fx: fxUSD,
+      status: "in_fulfilment",
+      vendorStatus: "in_production",
+      products: ["Your name in Nastaliq — commissioned panel"],
+      shipping: 60_00,
+      duty: 0,
+      tax: 0,
+      daysAgo: 5,
+      funds: "held",
+      paid: true,
+      gift: true,
+    },
+    {
+      buyer: usBuyer,
+      currency: "USD",
+      fx: fxUSD,
+      status: "paid",
+      vendorStatus: "pending",
+      products: ["Phool — truck-art panel on wood", "Badshahi skyline — screen print"],
+      shipping: 72_00,
+      duty: 0,
+      tax: 0,
+      daysAgo: 1,
+      funds: "held",
+      paid: true,
+    },
+    {
+      buyer: ukBuyer,
+      currency: "GBP",
+      fx: "375",
+      status: "awaiting_quote",
+      vendorStatus: "pending",
+      products: ["Carved jharokha panel in sheesham"],
+      daysAgo: 0,
+      funds: "none",
+      paid: false,
+    },
+    {
+      buyer: caBuyer,
+      currency: "CAD",
+      fx: "205",
+      status: "disputed",
+      vendorStatus: "delivered",
+      products: ["Hand-shaped salt lamp on sheesham base, large"],
+      shipping: 58_00,
+      duty: 0,
+      tax: 9_00,
+      daysAgo: 30,
+      tracking: true,
+      funds: "frozen",
+      paid: true,
+    },
+    {
+      buyer: usBuyer,
+      currency: "USD",
+      fx: fxUSD,
+      status: "cancelled",
+      vendorStatus: "cancelled",
+      products: ["Tall floral vase"],
+      daysAgo: 40,
+      funds: "none",
+      paid: false,
+    },
   ];
 
   let orderSeq = 1000;
@@ -475,7 +657,14 @@ export async function seedDemo(db: Db) {
         fxPkrPerUnit: spec.fx,
         fxSource: "Placeholder (demo)",
         destinationCountry: spec.buyer.country!,
-        shippingAddress: { fullName: addr!.fullName, line1: addr!.line1, city: addr!.city, region: addr!.region, postalCode: addr!.postalCode, country: addr!.country },
+        shippingAddress: {
+          fullName: addr!.fullName,
+          line1: addr!.line1,
+          city: addr!.city,
+          region: addr!.region,
+          postalCode: addr!.postalCode,
+          country: addr!.country,
+        },
         status: spec.status,
         paymentStatus: spec.paid ? "paid" : "unpaid",
         fundsState: spec.funds,
@@ -584,8 +773,18 @@ export async function seedDemo(db: Db) {
         })
         .returning();
       await db.insert(t.disputeMessages).values([
-        { disputeId: dispute.id, authorRole: "buyer", authorUserId: spec.buyer.id, body: "Photos attached. The outer box looked fine but the lamp was chipped." },
-        { disputeId: dispute.id, authorRole: "staff", authorUserId: ownerUser.id, body: "Thank you — we've frozen the held funds and asked the studio to respond." },
+        {
+          disputeId: dispute.id,
+          authorRole: "buyer",
+          authorUserId: spec.buyer.id,
+          body: "Photos attached. The outer box looked fine but the lamp was chipped.",
+        },
+        {
+          disputeId: dispute.id,
+          authorRole: "staff",
+          authorUserId: ownerUser.id,
+          body: "Thank you — we've frozen the held funds and asked the studio to respond.",
+        },
       ]);
     }
   }
@@ -613,8 +812,19 @@ export async function seedDemo(db: Db) {
   }
 
   // Collections & a bundle
-  const coll = async (slug: string, title: string, description: string, kind: "collection" | "bundle", titles: string[], cover: string, bundleDiscountBps?: number) => {
-    const [c] = await db.insert(t.collections).values({ slug, title, description, kind, isPublished: true, coverImageUrl: cover, bundleDiscountBps, isDemo: true }).returning();
+  const coll = async (
+    slug: string,
+    title: string,
+    description: string,
+    kind: "collection" | "bundle",
+    titles: string[],
+    cover: string,
+    bundleDiscountBps?: number,
+  ) => {
+    const [c] = await db
+      .insert(t.collections)
+      .values({ slug, title, description, kind, isPublished: true, coverImageUrl: cover, bundleDiscountBps, isDemo: true })
+      .returning();
     await db.insert(t.collectionProducts).values(titles.map((ti, sort) => ({ collectionId: c.id, productId: productIds.get(ti)!, sort })));
   };
   await coll(
@@ -638,7 +848,13 @@ export async function seedDemo(db: Db) {
     "Gifts that travel well",
     "Lighter pieces that ship quickly and arrive gift-ready.",
     "collection",
-    ["Classic ajrak — hand block-printed cloth", "Salt tealight holders, set of four", "Badshahi skyline — screen print", "Ajrak cushion covers, pair", "Blue pottery bowl"],
+    [
+      "Classic ajrak — hand block-printed cloth",
+      "Salt tealight holders, set of four",
+      "Badshahi skyline — screen print",
+      "Ajrak cushion covers, pair",
+      "Blue pottery bowl",
+    ],
     art("ajrak", 779, "wide"),
   );
 
@@ -703,7 +919,14 @@ export async function seedDemo(db: Db) {
   });
   await db.insert(t.contactMessages).values([
     { name: "Demo Visitor", email: "visitor@example.test", topic: "Duties", message: "Roughly how much duty would I pay on a rug to Canada?", status: "new" },
-    { name: "Demo Buyer (US)", email: usBuyer.email, topic: "Order", orderNumber: "WB-1005", message: "Can I change the gift message on my order?", status: "open" },
+    {
+      name: "Demo Buyer (US)",
+      email: usBuyer.email,
+      topic: "Order",
+      orderNumber: "WB-1005",
+      message: "Can I change the gift message on my order?",
+      status: "open",
+    },
   ]);
   await db.insert(t.newsletterSubscribers).values([
     { email: "reader1@example.test", source: "footer" },
@@ -712,11 +935,21 @@ export async function seedDemo(db: Db) {
   await db.insert(t.waitlistEntries).values({ productId: productIds.get("Carved salt sculpture — minaret")!, email: usBuyer.email, userId: usBuyer.id });
   const [conv] = await db
     .insert(t.conversations)
-    .values({ buyerId: usBuyer.id, vendorId: vendorIds.get("qila-rug-workshop")!, productId: productIds.get("Madder-red Bukhara, 6×9 ft"), subject: "Question about the Bukhara rug" })
+    .values({
+      buyerId: usBuyer.id,
+      vendorId: vendorIds.get("qila-rug-workshop")!,
+      productId: productIds.get("Madder-red Bukhara, 6×9 ft"),
+      subject: "Question about the Bukhara rug",
+    })
     .returning();
   await db.insert(t.messages).values([
     { conversationId: conv.id, senderUserId: usBuyer.id, body: "Is the red closer to brick or to wine in daylight?", createdAt: daysAgo(3) },
-    { conversationId: conv.id, senderUserId: (await db.query.vendors.findFirst({ where: eq(t.vendors.slug, "qila-rug-workshop") }))!.userId, body: "Closer to wine — I can send a daylight video tomorrow.", createdAt: daysAgo(2) },
+    {
+      conversationId: conv.id,
+      senderUserId: (await db.query.vendors.findFirst({ where: eq(t.vendors.slug, "qila-rug-workshop") }))!.userId,
+      body: "Closer to wine — I can send a daylight video tomorrow.",
+      createdAt: daysAgo(2),
+    },
   ]);
   await db.insert(t.coupons).values({ code: "WELCOME-DEMO", description: "Demo coupon — 10% off", kind: "percent", percentBps: 1000, isActive: true });
   await db.insert(t.notifications).values([
@@ -725,11 +958,7 @@ export async function seedDemo(db: Db) {
   ]);
   await db.insert(t.auditLog).values({ actorUserId: ownerUser.id, action: "seed", entity: "system", summary: "Demo data loaded" });
 
-  await db.insert(t.announcements).values({
-    message: "New: carved Chiniot furniture and full-size snooker tables — made to order, delivered by freight",
-    link: "/category/furniture",
-    isActive: true,
-  });
+  await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
 
   console.log(`Demo data: ${DEMO_VENDORS.length} artisans, ${DEMO_PRODUCTS.length} listings, ${reviewCount} sample reviews, ${specs.length} orders.`);
   console.log(`Demo logins (password "${DEMO_PASSWORD}"): admin@wahbayaan.test · buyer@wahbayaan.test · noor-calligraphy-atelier@artisans.wahbayaan.test`);
