@@ -1,9 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import {
+  announcements,
   certificates,
   collectionProducts,
   collections,
@@ -121,12 +122,35 @@ export async function getPublicCollection(slug: string) {
 
 // ── Journal & content ───────────────────────────────────────────────────────
 
+/** Published and not scheduled for later (a future `publishedAt` means scheduled). */
+export function journalPostLive() {
+  return and(eq(journalPosts.status, "published"), or(isNull(journalPosts.publishedAt), lte(journalPosts.publishedAt, sql`now()`)));
+}
+
+/** The site banner: the newest switched-on announcement inside its date window. */
+export const getActiveAnnouncement = cache(async () => {
+  const d = await db();
+  const [row] = await d
+    .select()
+    .from(announcements)
+    .where(
+      and(
+        eq(announcements.isActive, true),
+        or(isNull(announcements.startsAt), lte(announcements.startsAt, sql`now()`)),
+        or(isNull(announcements.endsAt), gt(announcements.endsAt, sql`now()`)),
+      ),
+    )
+    .orderBy(desc(announcements.createdAt))
+    .limit(1);
+  return row ?? null;
+});
+
 export type JournalCard = typeof journalPosts.$inferSelect & { categoryName: string | null; categorySlug: string | null };
 
 export const getJournalPosts = cache(async (): Promise<JournalCard[]> => {
   const d = await db();
   const [rows, cats] = await Promise.all([
-    d.select().from(journalPosts).where(eq(journalPosts.status, "published")).orderBy(desc(journalPosts.publishedAt)),
+    d.select().from(journalPosts).where(journalPostLive()).orderBy(desc(journalPosts.publishedAt)),
     getPublicCategories(),
   ]);
   return rows.filter(demoOk).map((p) => {

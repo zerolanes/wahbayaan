@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { postState, RESERVED_PAGE_SLUGS, windowState } from "@/lib/admin/content";
 import { couponState, describeCoupon, normalizeCouponCode, usageShare, validateCoupon, type CouponInput } from "@/lib/admin/coupons";
 import { detectContactDetails, hasContactDetails, redactContactDetails, REDACTION, segmentContactDetails } from "@/lib/admin/moderation";
 import { byDestination, fromPkr, gmvByMonth, landedCostAverages, lifetimeValue, monthKeys, refundDisputeRates, toPkr, type ReportOrder } from "@/lib/admin/reports";
@@ -170,5 +171,25 @@ describe("request and inbox SLAs", () => {
     expect(ticketSla({ status: "new", createdAt: hoursAgo(13) }, now).tone).toBe("warning");
     expect(ticketSla({ status: "new", createdAt: hoursAgo(30) }, now).breached).toBe(true);
     expect(ticketSla({ status: "resolved", createdAt: hoursAgo(300) }, now).tone).toBe("success");
+  });
+});
+
+describe("content scheduling", () => {
+  const now = new Date("2026-06-10T12:00:00Z");
+  it("derives banner state from the switch and window", () => {
+    expect(windowState({ isActive: false, startsAt: null, endsAt: null }, now)).toBe("off");
+    expect(windowState({ isActive: true, startsAt: null, endsAt: null }, now)).toBe("live");
+    expect(windowState({ isActive: true, startsAt: new Date("2026-06-11"), endsAt: null }, now)).toBe("scheduled");
+    expect(windowState({ isActive: true, startsAt: null, endsAt: new Date("2026-06-10T11:00:00Z") }, now)).toBe("ended");
+  });
+  it("treats a future publish date as scheduled", () => {
+    expect(postState({ status: "draft", publishedAt: null }, now)).toBe("draft");
+    expect(postState({ status: "published", publishedAt: null }, now)).toBe("published");
+    expect(postState({ status: "published", publishedAt: new Date("2026-06-01") }, now)).toBe("published");
+    expect(postState({ status: "published", publishedAt: new Date("2026-07-01") }, now)).toBe("scheduled");
+  });
+  it("keeps CMS pages off real app routes", () => {
+    for (const s of ["shop", "journal", "admin", "product", "seller"]) expect(RESERVED_PAGE_SLUGS).toContain(s);
+    expect(RESERVED_PAGE_SLUGS).not.toContain("terms");
   });
 });
