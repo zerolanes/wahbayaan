@@ -155,12 +155,6 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           <ProductGallery
             images={product.images.map((i) => ({ url: i.url, alt: i.alt, kind: i.kind }))}
             title={product.title}
-            model3d={product.model3d ?? null}
-            dims={{
-              widthCm: product.widthCm ? Number(product.widthCm) : null,
-              heightCm: product.heightCm ? Number(product.heightCm) : null,
-              depthCm: product.depthCm ? Number(product.depthCm) : null,
-            }}
             videoUrl={product.videoUrl}
           />
         </div>

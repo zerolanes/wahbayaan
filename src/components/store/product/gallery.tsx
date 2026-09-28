@@ -1,32 +1,27 @@
 "use client";
 
 import Image from "next/image";
+import { SHOW_QA_LABELS } from "@/lib/qa";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Box, ChevronLeft, ChevronRight, Expand, Film, Images, X, ZoomIn } from "lucide-react";
-import { ProductViewer3D } from "@/components/three/product-viewer";
-import type { Model3d } from "@/lib/db/schema";
+import { ChevronLeft, ChevronRight, Expand, Film, Images, X, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export type GalleryImage = { url: string; alt: string | null; kind: "photo" | "illustration" };
-type Mode = "photos" | "3d" | "video";
+type Mode = "photos" | "video";
 
 const isSvg = (url: string) => url.split("?")[0].endsWith(".svg");
 
 /**
- * Product media: photos with hover-zoom and a full-screen lightbox, an
- * interactive "View in 3D" stage and the artisan's process video.
+ * Product media: photos with hover-zoom and a full-screen lightbox, plus the
+ * artisan's process video when there is one.
  */
 export function ProductGallery({
   images,
   title,
-  model3d,
-  dims,
   videoUrl,
 }: {
   images: GalleryImage[];
   title: string;
-  model3d: Model3d | null;
-  dims: { widthCm: number | null; heightCm: number | null; depthCm: number | null };
   videoUrl: string | null;
 }) {
   const [mode, setMode] = useState<Mode>("photos");
@@ -38,7 +33,6 @@ export function ProductGallery({
 
   const tabs: { id: Mode; label: string; icon: typeof Images }[] = [
     { id: "photos", label: images.some((i) => i.kind === "photo") ? "Photos" : "Images", icon: Images },
-    ...(model3d ? [{ id: "3d" as const, label: "View in 3D", icon: Box }] : []),
     ...(videoUrl ? [{ id: "video" as const, label: "Process video", icon: Film }] : []),
   ];
 
@@ -101,7 +95,7 @@ export function ProductGallery({
             <span className="pointer-events-none absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-sand-50/85 px-2.5 py-1 text-xs font-medium text-umber-800 shadow-soft backdrop-blur">
               <ZoomIn className="size-3.5" aria-hidden /> Hover to zoom · click to enlarge
             </span>
-            {current.kind === "illustration" ? (
+            {SHOW_QA_LABELS && current.kind === "illustration" ? (
               <span className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] text-white/90 backdrop-blur">
                 Illustration<span className="max-sm:hidden"> — not a photograph of this piece</span>
               </span>
@@ -116,22 +110,7 @@ export function ProductGallery({
                 </button>
               </>
             ) : null}
-            {model3d ? (
-              <button
-                type="button"
-                onClick={() => setMode("3d")}
-                className="absolute right-4 bottom-4 inline-flex items-center gap-2 rounded-full bg-indigo-950/85 px-4 py-2 text-sm font-medium text-sand-50 shadow-lift backdrop-blur transition hover:bg-indigo-900"
-              >
-                <Box className="size-4 text-gold-300" aria-hidden /> View in 3D
-              </button>
-            ) : null}
           </>
-        ) : null}
-
-        {mode === "3d" && model3d ? (
-          <div className="absolute inset-0">
-            <ProductViewer3D model={model3d} dims={dims} title={title} className="h-full w-full" />
-          </div>
         ) : null}
 
         {mode === "video" && videoUrl ? (
@@ -141,22 +120,7 @@ export function ProductGallery({
         ) : null}
       </div>
 
-      {mode === "3d" && model3d ? (
-        <p className="mt-3 flex items-center gap-2 text-sm text-umber-600">
-          <Box className="size-4 text-gold-600" aria-hidden />
-          {model3d.source === "procedural" ? (
-            <span>
-              <strong className="font-medium text-umber-800">Illustrative 3D preview — not a scan of this piece.</strong> Shown at the listed size; drag to turn it.
-            </span>
-          ) : (
-            <span>
-              <strong className="font-medium text-umber-800">3D scan of this exact piece.</strong> Drag to turn it; shown at true size.
-            </span>
-          )}
-        </p>
-      ) : null}
-
-      {images.length > 1 || model3d || videoUrl ? (
+      {images.length > 1 || videoUrl ? (
         <div className="mt-4 flex gap-3 overflow-x-auto pb-1 scrollbar-none">
           {images.map((img, i) => (
             <button
@@ -176,22 +140,6 @@ export function ProductGallery({
               <Image src={img.url} alt="" fill sizes="96px" unoptimized={isSvg(img.url)} className="object-cover" />
             </button>
           ))}
-          {model3d ? (
-            <button
-              type="button"
-              onClick={() => setMode("3d")}
-              aria-current={mode === "3d" ? "true" : undefined}
-              className={cn(
-                "night grid size-20 shrink-0 place-items-center rounded-xl text-xs font-medium text-sand-50 transition md:size-24",
-                mode === "3d" ? "ring-2 ring-indigo-900 ring-offset-2 ring-offset-parchment" : "opacity-90 hover:opacity-100",
-              )}
-            >
-              <span className="flex flex-col items-center gap-1">
-                <Box className="size-5 text-gold-300" aria-hidden />
-                3D
-              </span>
-            </button>
-          ) : null}
           {videoUrl ? (
             <button
               type="button"
@@ -202,7 +150,7 @@ export function ProductGallery({
               )}
             >
               <span className="flex flex-col items-center gap-1">
-                <Film className="size-5 text-gold-300" aria-hidden />
+                <Film className="size-5" aria-hidden />
                 Video
               </span>
             </button>
@@ -245,7 +193,7 @@ function Lightbox({ images, index, setIndex, title, onClose }: { images: Gallery
             {index + 1} / {images.length}
           </span>{" "}
           · {title}
-          {img.kind === "illustration" ? <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[11px]">Illustration</span> : null}
+          {SHOW_QA_LABELS && img.kind === "illustration" ? <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[11px]">Illustration</span> : null}
         </p>
         <button ref={closeRef} type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm transition hover:bg-white/10">
           <X className="size-4" aria-hidden /> Close

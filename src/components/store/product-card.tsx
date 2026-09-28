@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Box } from "lucide-react";
 import { BuyerPrice } from "@/components/money/buyer-price";
 import type { ProductCardData } from "@/lib/queries/catalog";
+import { SHOW_QA_LABELS } from "@/lib/qa";
 import { cn } from "@/lib/utils/cn";
 import { CompareToggle } from "./compare-toggle";
 import { StarRating, VerifiedBadge } from "./trust";
@@ -48,10 +48,7 @@ export async function ProductCard({ product, saved, priority, className, compare
             {upcoming ? <span className="rounded-full bg-indigo-950/85 px-2 py-0.5 text-[11px] font-medium text-gold-200 backdrop-blur">Limited drop · soon</span> : null}
             {product.isOneOfAKind ? <span className="rounded-full bg-sand-50/90 px-2 py-0.5 text-[11px] font-medium text-umber-800 backdrop-blur">One of a kind</span> : null}
           </div>
-          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-indigo-950/70 px-2 py-0.5 text-[11px] font-medium text-sand-50 opacity-0 backdrop-blur transition group-hover:opacity-100">
-            <Box className="size-3" aria-hidden /> View in 3D
-          </span>
-          {product.imageKind === "illustration" ? (
+          {SHOW_QA_LABELS && product.imageKind === "illustration" ? (
             <span className="absolute right-3 bottom-3 rounded-full bg-black/35 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur">Illustration</span>
           ) : null}
         </div>
