@@ -125,7 +125,7 @@ export function FilterDate({ name, value, label }: { name: string; value: string
 
 export function ExportLink({ href, children = "Export CSV" }: { href: string; children?: ReactNode }) {
   return (
-    <a href={href} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-umber-200 bg-white px-3.5 text-sm font-medium text-umber-900 hover:border-umber-300 hover:bg-umber-50">
+    <a href={href} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-umber-200 bg-white px-3.5 whitespace-nowrap text-sm font-medium text-umber-900 hover:border-umber-300 hover:bg-umber-50">
       ↓ {children}
     </a>
   );

@@ -15,6 +15,7 @@ export const NOTE_ENTITIES: Record<string, { label: string; permission: Permissi
   wholesale: { label: "Wholesale lead", permission: "requests.manage" },
   conversation: { label: "Conversation", permission: "support.manage" },
   conversation_flag: { label: "Conversation flag", permission: "support.manage" },
+  ticket: { label: "Support message", permission: "support.manage" },
   payout: { label: "Payout", permission: "payouts.view" },
 };
 
@@ -48,7 +49,23 @@ export function entityHref(entity: string, id: string | null | undefined, extra?
     case "setting":
       return `/admin/settings`;
     case "coupon":
-      return `/admin/coupons`;
+      return id ? `/admin/coupons/${id}` : `/admin/coupons`;
+    case "ticket":
+      return `/admin/inbox/${id}`;
+    case "conversation":
+      return `/admin/conversations/${id}`;
+    case "request":
+      return `/admin/requests/${id}`;
+    case "wholesale":
+      return `/admin/wholesale#${id}`;
+    case "page":
+      return `/admin/content/pages/${id}`;
+    case "announcement":
+      return `/admin/content/announcements`;
+    case "newsletter":
+      return `/admin/newsletter`;
+    case "waitlist":
+      return `/admin/waitlists?product=${id}`;
     case "payout":
       return `/admin/payouts`;
     case "fx_rate":

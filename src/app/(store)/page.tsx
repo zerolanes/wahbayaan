@@ -11,6 +11,7 @@ import { getWishlistIds } from "@/lib/commerce/cart";
 import { db } from "@/lib/db/client";
 import { journalPosts } from "@/lib/db/schema";
 import { getPublicCategories, getPublicProducts, getPublicVendors } from "@/lib/queries/catalog";
+import { journalPostLive } from "@/lib/queries/storefront";
 import { getSetting, isDemoMode } from "@/lib/settings";
 import { CRAFT_ATLAS as ATLAS } from "@/lib/heritage";
 import { cn } from "@/lib/utils/cn";
@@ -48,7 +49,7 @@ export default async function HomePage() {
     d
       .select()
       .from(journalPosts)
-      .where(and(eq(journalPosts.status, "published"), ...(isDemoMode() ? [] : [eq(journalPosts.isDemo, false)])))
+      .where(and(journalPostLive(), ...(isDemoMode() ? [] : [eq(journalPosts.isDemo, false)])))
       .orderBy(desc(journalPosts.publishedAt))
       .limit(3),
   ]);
