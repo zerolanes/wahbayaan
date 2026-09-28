@@ -402,6 +402,7 @@ export type DemoProduct = {
   seeds: number[];
   featured?: boolean;
   limitedDrop?: { startsInDays: number; editionSize?: number };
+  // extraPricePkr is in minor units (paisa), like every stored price.
   customization?: { id: string; label: string; kind: "text" | "select"; choices?: string[]; required?: boolean; maxLength?: number; extraPricePkr?: number }[];
   wholesale?: { minQty: number; pricePkr: number };
 };
@@ -977,7 +978,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     featured: true,
     customization: [
       { id: "cloth", label: "Cloth colour", kind: "select", choices: ["Tournament green", "Royal blue", "Claret"], required: true },
-      { id: "engraving", label: "Name plate (optional)", kind: "text", maxLength: 30, extraPricePkr: 8000 },
+      { id: "engraving", label: "Name plate (optional)", kind: "text", maxLength: 30, extraPricePkr: 800_000 },
     ],
   },
   {

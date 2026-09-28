@@ -1301,7 +1301,7 @@ export function furniture(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
 
 // ── Snooker & games tables ─────────────────────────────────────────────────
 
-export function snooker(seed: number, c: Canvas = { w: 1600, h: 1000 }) {
+export function snooker(seed: number, c: Canvas = { w: 1200, h: 1500 }) {
   const r = rng(seed);
   const bg = wall(c, r, "dark");
   const cloth = pick(r, [

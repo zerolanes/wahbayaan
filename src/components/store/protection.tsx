@@ -23,13 +23,13 @@ export function BuyerProtectionBox({ className, compact }: { className?: string;
       {!compact ? (
         <ul className="mt-4 grid gap-2 text-sm text-sand-100/85">
           <li className="flex gap-2">
-            <span className="text-gold-300" aria-hidden>✦</span> Damaged in transit, not as described or never arrived — open a case and held funds are frozen while we resolve it.
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Damaged in transit, not as described or never arrived — open a case and held funds are frozen while we resolve it.
           </li>
           <li className="flex gap-2">
-            <span className="text-gold-300" aria-hidden>✦</span> Every artisan is identity- and workshop-verified before they can list.
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Every artisan is identity- and workshop-verified before they can list.
           </li>
           <li className="flex gap-2">
-            <span className="text-gold-300" aria-hidden>✦</span> Shipping and import costs are itemised before you pay.
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Shipping and import costs are itemised before you pay.
           </li>
         </ul>
       ) : null}
