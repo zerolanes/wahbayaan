@@ -5,7 +5,6 @@ import type { ArtKind3d } from "@/components/three/heritage/textures";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/misc";
 import { getPublicCategories } from "@/lib/queries/catalog";
-import { getSetting } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Walk through the haveli",
@@ -33,7 +32,7 @@ function pieceFor(slug: string, coverUrl: string | null, index: number): [ArtKin
 }
 
 export default async function HaveliPage() {
-  const [categories, home] = await Promise.all([getPublicCategories(), getSetting("home")]);
+  const categories = await getPublicCategories();
   const chapters: HomeChapter[] = categories.map((c, i) => {
     const [kind, seed] = pieceFor(c.slug, c.coverImageUrl, i);
     return { slug: c.slug, name: c.name, tagline: c.tagline, count: c.productCount, kind, seed, coverImageUrl: c.coverImageUrl! };
@@ -41,7 +40,7 @@ export default async function HaveliPage() {
 
   return (
     <>
-      <HomeExperience chapters={chapters} hero={{ eyebrow: home.heroEyebrow, title: home.heroTitle, subtitle: home.heroSubtitle }} />
+      <HomeExperience chapters={chapters} hero={{ eyebrow: "An interactive walk-through", title: "Walk through the haveli.", subtitle: "A courtyard house with one craft in every room — calligraphy, rugs, pottery, stone and salt. Scroll to walk in; choose any room to shop that craft." }} />
 
       <div id="after-tour" className="paper">
         <section className="py-20">

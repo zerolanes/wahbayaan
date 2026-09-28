@@ -507,11 +507,13 @@ function StoneRelief({ seed, dims }: { seed: number; dims: Dims }) {
 
 // ── Chiniot jharokha: an arched panel with a pierced jali ───────────────────
 
+/** Petal rosette outline (used for jali piercings instead of stars). */
 function starPath(cx: number, cy: number, outer: number, inner: number, points = 8, rot = 0) {
   const p = new THREE.Path();
-  for (let i = 0; i <= points * 2; i++) {
-    const r = i % 2 === 0 ? outer : inner;
-    const a = rot + (Math.PI * i) / points;
+  const steps = points * 10;
+  for (let i = 0; i <= steps; i++) {
+    const a = rot + (2 * Math.PI * i) / steps;
+    const r = inner + (outer - inner) * Math.pow(Math.abs(Math.cos((points * (a - rot)) / 2)), 0.9);
     const x = cx + r * Math.sin(a);
     const y = cy + r * Math.cos(a);
     if (i === 0) p.moveTo(x, y);
@@ -532,7 +534,7 @@ function Jharokha({ seed, dims, lowDetail }: { seed: number; dims: Dims; lowDeta
     s.lineTo(r, h / 2 - r);
     s.absarc(0, h / 2 - r, r, 0, Math.PI, false);
     s.lineTo(-r, -h / 2);
-    // Jali: a grid of eight-point stars in the lower panel
+    // Jali: a grid of pierced rosettes in the lower panel
     const inset = w * 0.12;
     const cols = 4;
     const cell = (w - inset * 2) / cols;

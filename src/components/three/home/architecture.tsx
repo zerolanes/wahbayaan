@@ -6,6 +6,21 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useSurface } from "../heritage/textures";
 
+/** A petal rosette (phool) outline — the haveli's ornament, in place of stars. */
+function rosetteShape(outer: number, inner: number, petals: number) {
+  const shape = new THREE.Shape();
+  const steps = petals * 12;
+  for (let i = 0; i <= steps; i++) {
+    const a = (2 * Math.PI * i) / steps;
+    const r = inner + (outer - inner) * Math.pow(Math.abs(Math.cos((petals * a) / 2)), 0.9);
+    const x = r * Math.sin(a);
+    const y = r * Math.cos(a);
+    if (i === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  }
+  return shape;
+}
+
 /** Courtyard dimensions (metres). The camera travels down −z. */
 export const COURT = { halfWidth: 8.5, start: 6, end: -46, wallHeight: 7.2, bay: 4.2 };
 
@@ -54,16 +69,8 @@ function useArcadeGeometries() {
     pointedArchPath(trim, archW + 0.36, spring, apex + 0.28, 0);
     trim.holes.push(pointedArchPath(new THREE.Path(), archW, spring, apex, 0, true));
     const trimGeo = new THREE.ExtrudeGeometry(trim, { depth: 0.06, bevelEnabled: false, curveSegments: 16 });
-    // Spandrel medallion (eight-point star)
-    const star = new THREE.Shape();
-    for (let i = 0; i <= 16; i++) {
-      const r = i % 2 === 0 ? 0.36 : 0.17;
-      const a = (Math.PI * i) / 8;
-      const x = r * Math.sin(a);
-      const y = r * Math.cos(a);
-      if (i === 0) star.moveTo(x, y);
-      else star.lineTo(x, y);
-    }
+    // Spandrel medallion (eight-petal rosette)
+    const star = rosetteShape(0.36, 0.17, 8);
     const starGeo = new THREE.ExtrudeGeometry(star, { depth: 0.05, bevelEnabled: false });
     return { wallGeo, trimGeo, starGeo, archW, spring, apex };
   }, []);
@@ -204,7 +211,7 @@ function Chhatri({ position }: { position: [number, number, number] }) {
   );
 }
 
-/** The grand iwan at the end of the courtyard, holding the glowing Wahbayaan star. */
+/** The grand iwan at the end of the courtyard, holding a glowing carved rosette. */
 function Iwan() {
   const geo = useMemo(() => {
     const w = COURT.halfWidth * 2 + 1.2;
@@ -226,15 +233,7 @@ function Iwan() {
     return new THREE.ExtrudeGeometry(s, { depth: 0.12, bevelEnabled: false, curveSegments: 24 });
   }, []);
   const star = useMemo(() => {
-    const s = new THREE.Shape();
-    for (let i = 0; i <= 16; i++) {
-      const r = i % 2 === 0 ? 1.7 : 0.78;
-      const a = (Math.PI * i) / 8;
-      const x = r * Math.sin(a);
-      const y = r * Math.cos(a);
-      if (i === 0) s.moveTo(x, y);
-      else s.lineTo(x, y);
-    }
+    const s = rosetteShape(1.7, 0.78, 8);
     const hole = new THREE.Path();
     hole.absarc(0, 0, 0.5, 0, Math.PI * 2, true);
     s.holes.push(hole);
