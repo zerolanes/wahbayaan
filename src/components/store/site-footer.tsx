@@ -35,6 +35,7 @@ export async function SiteFooter() {
           <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Buying</p>
           <ul className={`mt-4 ${col}`}>
             <li><Link className={link} href="/how-importing-works">How importing works</Link></li>
+            <li><Link className={link} href="/track">Track an order</Link></li>
             <li><Link className={link} href="/buyer-protection">Buyer protection</Link></li>
             <li><Link className={link} href="/faq">FAQ</Link></li>
             <li><Link className={link} href="/custom">Commission a piece</Link></li>
