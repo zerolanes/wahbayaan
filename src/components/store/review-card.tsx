@@ -18,7 +18,7 @@ export type ReviewView = {
 
 const FLAG: Record<string, string> = { US: "🇺🇸", GB: "🇬🇧", CA: "🇨🇦" };
 
-/** A buyer review with photos — the strongest trust signal for a $500+ piece. */
+/** A buyer review with photos — the strongest trust signal for a piece bought from afar. */
 export function ReviewCard({ review, vendorName }: { review: ReviewView; vendorName?: string }) {
   return (
     <article className="rounded-2xl bg-sand-50 p-5 ring-1 ring-umber-200/60">

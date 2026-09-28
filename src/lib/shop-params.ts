@@ -30,18 +30,20 @@ export const AVAILABILITY_LABELS: Record<Availability, string> = {
  */
 const MAJOR_BANDS: Record<"default" | "PKR", { id: string; min?: number; max?: number }[]> = {
   default: [
-    { id: "under-250", max: 250 },
+    { id: "under-100", max: 100 },
+    { id: "100-250", min: 100, max: 250 },
     { id: "250-500", min: 250, max: 500 },
     { id: "500-1000", min: 500, max: 1000 },
-    { id: "1000-2000", min: 1000, max: 2000 },
-    { id: "2000-plus", min: 2000 },
+    { id: "1000-2500", min: 1000, max: 2500 },
+    { id: "2500-plus", min: 2500 },
   ],
   PKR: [
-    { id: "under-75k", max: 75_000 },
+    { id: "under-25k", max: 25_000 },
+    { id: "25k-75k", min: 25_000, max: 75_000 },
     { id: "75k-150k", min: 75_000, max: 150_000 },
     { id: "150k-300k", min: 150_000, max: 300_000 },
-    { id: "300k-600k", min: 300_000, max: 600_000 },
-    { id: "600k-plus", min: 600_000 },
+    { id: "300k-750k", min: 300_000, max: 750_000 },
+    { id: "750k-plus", min: 750_000 },
   ],
 };
 

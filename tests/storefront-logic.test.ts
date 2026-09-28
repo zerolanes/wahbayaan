@@ -26,16 +26,16 @@ describe("shop search params", () => {
   });
 
   it("lists removable chips for active filters only", () => {
-    const q = parseShopQuery({ category: "rugs", price: "under-250", sort: "rating" });
+    const q = parseShopQuery({ category: "rugs", price: "under-100", sort: "rating" });
     const chips = activeChips("/shop", q, { currency: "USD", categories: [{ slug: "rugs", name: "Handmade Carpets & Rugs" }] });
-    expect(chips.map((c) => c.label)).toEqual(["Handmade Carpets & Rugs", "Under $250"]);
-    expect(chips[0].href).toBe("/shop?price=under-250&sort=rating");
+    expect(chips.map((c) => c.label)).toEqual(["Handmade Carpets & Rugs", "Under $100"]);
+    expect(chips[0].href).toBe("/shop?price=under-100&sort=rating");
   });
 
   it("converts price bands in the buyer's currency into minor-unit filters", () => {
     const f = toProductFilters(parseShopQuery({ price: "500-1000", page: "2" }), { currency: "USD", fx: USD });
     expect(f).toMatchObject({ minPrice: 500_00, maxPrice: 1000_00, offset: 24, limit: 24, fx: USD });
-    expect(priceBands("PKR")[0].label).toBe("Under Rs 75,000");
+    expect(priceBands("PKR")[0].label).toBe("Under Rs 25,000");
     expect(pageCount(0)).toBe(1);
     expect(pageCount(49)).toBe(3);
   });

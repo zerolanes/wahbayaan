@@ -156,7 +156,7 @@ export default async function ArtisansPage(props: PageProps<"/artisans">) {
               <Eyebrow>How verification works</Eyebrow>
               <h2 className="mt-3 font-display text-4xl leading-[1.08] text-umber-900 md:text-5xl">What the Verified badge means</h2>
               <p className="mt-5 text-lg text-umber-600">
-                Buying a $500 piece from someone you&apos;ve never met takes trust. So before any artisan can list, our team checks the person, the place and the work.
+                Buying from someone you&apos;ve never met, thousands of miles away, takes trust. So before any artisan can list, our team checks the person, the place and the work.
               </p>
               <div className="mt-8 flex items-start gap-3 rounded-2xl bg-sand-50 p-5 ring-1 ring-umber-200/60">
                 <BadgeCheck className="mt-0.5 size-6 shrink-0 fill-turquoise-500 text-white" aria-hidden />
