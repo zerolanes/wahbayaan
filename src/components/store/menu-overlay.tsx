@@ -20,11 +20,14 @@ export function MenuOverlay({
   signedIn,
   isSeller,
   isStaff,
+  hidden = [],
 }: {
   categories: MenuCategory[];
   signedIn: boolean;
   isSeller: boolean;
   isStaff: boolean;
+  /** Links to features switched off in Admin → Feature flags. */
+  hidden?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -49,7 +52,7 @@ export function MenuOverlay({
     { href: "/custom", label: "Commission a piece" },
     { href: "/journal", label: "Heritage journal" },
     { href: "/compare", label: "Compare" },
-  ];
+  ].filter((l) => !hidden.includes(l.href));
   const help = [
     { href: "/how-importing-works", label: "How importing works" },
     { href: "/buyer-protection", label: "Buyer protection" },
@@ -58,7 +61,7 @@ export function MenuOverlay({
     { href: "/about", label: "About Wahbayaan" },
     { href: "/wholesale", label: "Trade & wholesale" },
     { href: "/become-a-seller", label: "Sell on Wahbayaan" },
-  ];
+  ].filter((l) => !hidden.includes(l.href));
 
   return (
     <>

@@ -40,7 +40,7 @@ export default async function FlagsPage() {
         <MiniStat label="Last change" value={history[0] ? timeAgo(history[0].createdAt) : "Never"} hint={history[0] ? `${history[0].actor ?? "System"} · ${history[0].summary}` : "All flags at their defaults"} href={history[0] ? "/admin/audit?entity=setting&entityId=feature_flags" : undefined} />
       </div>
       <Notice tone="indigo" title="Where flags take effect">
-        Flags are stored in settings (<code>feature_flags</code>) and read with <code>getSetting(&quot;feature_flags&quot;)</code>. In this build the storefront does not read them yet, so a switch records the decision but does not hide the feature until each surface checks its flag.
+        Switching a feature off takes its storefront pages offline (they return “not found”) and removes its links from the menu and footer. Gifting is recorded here but checkout doesn&apos;t check it yet.
       </Notice>
       <TableCard>
         <ul className="divide-y divide-umber-200/70">

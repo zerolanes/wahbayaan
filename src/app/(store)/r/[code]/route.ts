@@ -3,6 +3,7 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { referralCodes } from "@/lib/db/schema";
 import { getCurrentUser } from "@/lib/auth/session";
+import { featureFlags } from "@/lib/features";
 import { REFERRAL_COOKIE } from "@/lib/order-access";
 
 /** GET /r/CODE — remember who referred this visitor for 30 days, then go home. */
@@ -10,7 +11,7 @@ export async function GET(request: Request, ctx: RouteContext<"/r/[code]">) {
   const { code: raw } = await ctx.params;
   const code = raw.trim().toUpperCase();
   const response = NextResponse.redirect(new URL("/", request.url));
-  if (!/^[A-Z0-9-]{3,40}$/.test(code)) return response;
+  if (!/^[A-Z0-9-]{3,40}$/.test(code) || !(await featureFlags()).referrals) return response;
   const d = await db();
   const row = await d.query.referralCodes.findFirst({ where: eq(referralCodes.code, code) });
   if (!row) return response;

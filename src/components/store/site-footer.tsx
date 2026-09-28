@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Logo, ScallopDivider } from "@/components/brand/logo";
+import { featureFlags } from "@/lib/features";
 import { getPublicCategories } from "@/lib/queries/catalog";
 import { NewsletterForm } from "./newsletter-form";
 
 export async function SiteFooter() {
-  const categories = await getPublicCategories();
+  const [categories, flags] = await Promise.all([getPublicCategories(), featureFlags()]);
   const col = "space-y-2.5 text-sm text-sand-200/70";
   const link = "transition hover:text-gold-200";
   return (
@@ -38,9 +39,9 @@ export async function SiteFooter() {
             <li><Link className={link} href="/track">Track an order</Link></li>
             <li><Link className={link} href="/buyer-protection">Buyer protection</Link></li>
             <li><Link className={link} href="/faq">FAQ</Link></li>
-            <li><Link className={link} href="/custom">Commission a piece</Link></li>
-            <li><Link className={link} href="/wholesale">Trade & wholesale</Link></li>
-            <li><Link className={link} href="/account/referrals">Refer a friend</Link></li>
+            {flags.customRequests ? <li><Link className={link} href="/custom">Commission a piece</Link></li> : null}
+            {flags.wholesale ? <li><Link className={link} href="/wholesale">Trade & wholesale</Link></li> : null}
+            {flags.referrals ? <li><Link className={link} href="/account/referrals">Refer a friend</Link></li> : null}
           </ul>
         </div>
         <div>
@@ -48,7 +49,7 @@ export async function SiteFooter() {
           <ul className={`mt-4 ${col}`}>
             <li><Link className={link} href="/about">About us</Link></li>
             <li><Link className={link} href="/artisans">Our artisans</Link></li>
-            <li><Link className={link} href="/journal">Heritage journal</Link></li>
+            {flags.journal ? <li><Link className={link} href="/journal">Heritage journal</Link></li> : null}
             <li><Link className={link} href="/become-a-seller">Sell on Wahbayaan</Link></li>
             <li><Link className={link} href="/contact">Contact</Link></li>
             <li><Link className={link} href="/terms">Terms</Link> · <Link className={link} href="/privacy">Privacy</Link></li>

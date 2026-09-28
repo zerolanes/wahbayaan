@@ -4,6 +4,7 @@ import { Logo } from "@/components/brand/logo";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getBuyerContext } from "@/lib/buyer-context";
 import { getCartCount, getWishlistIds } from "@/lib/commerce/cart";
+import { featureFlags } from "@/lib/features";
 import { getPublicCategories } from "@/lib/queries/catalog";
 import { CurrencySwitcher } from "./currency-switcher";
 import { HeaderFrame } from "./header-frame";
@@ -11,13 +12,20 @@ import { MenuOverlay } from "./menu-overlay";
 import { SearchDialog } from "./search-dialog";
 
 export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
-  const [ctx, user, categories] = await Promise.all([getBuyerContext(), getCurrentUser(), getPublicCategories()]);
+  const [ctx, user, categories, flags] = await Promise.all([getBuyerContext(), getCurrentUser(), getPublicCategories(), featureFlags()]);
+  const hidden = [
+    !flags.limitedDrops && "/drops",
+    !flags.customRequests && "/custom",
+    !flags.journal && "/journal",
+    !flags.compare && "/compare",
+    !flags.wholesale && "/wholesale",
+  ].filter((h): h is string => !!h);
   const [cartCount, wishlist] = await Promise.all([getCartCount(ctx.ownerKey), getWishlistIds(ctx.ownerKey)]);
 
   const iconLink = "relative grid size-9 place-items-center rounded-full transition hover:bg-current/10";
   const count = (n: number) =>
     n > 0 ? (
-      <span className="absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full bg-terracotta-600 px-1 text-[10px] leading-4 font-semibold text-white">
+      <span className="bg-terracotta-600 absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full px-1 text-[10px] leading-4 font-semibold text-white">
         {n}
       </span>
     ) : null;
@@ -30,6 +38,7 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           signedIn={!!user}
           isSeller={!!user?.vendorId}
           isStaff={user?.role === "staff"}
+          hidden={hidden}
         />
         <nav className="hidden items-center gap-5 text-sm font-medium lg:flex" aria-label="Primary">
           <Link href="/shop" className="opacity-80 transition hover:opacity-100">
@@ -57,7 +66,11 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           <Heart className="size-[18px]" />
           {count(wishlist.size)}
         </Link>
-        <Link href={user ? (user.role === "staff" ? "/admin" : user.vendorId ? "/seller" : "/account") : "/login"} className={`${iconLink} hidden sm:grid`} aria-label="Account">
+        <Link
+          href={user ? (user.role === "staff" ? "/admin" : user.vendorId ? "/seller" : "/account") : "/login"}
+          className={`${iconLink} hidden sm:grid`}
+          aria-label="Account"
+        >
           <User className="size-[18px]" />
         </Link>
         <Link href="/cart" className={iconLink} aria-label={`Cart (${cartCount})`}>

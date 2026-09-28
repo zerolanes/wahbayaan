@@ -283,8 +283,8 @@ export default async function SettingsPage() {
               description="Pause the storefront with a short message while you make changes. The admin stays available."
               action={lastSaved(sec("maintenance").keys)}
             >
-              <Notice tone="pending" className="mb-4">
-                The switch is stored and audited, but storefront layouts don&apos;t read <code>maintenance</code> yet — wire it in the store layout before relying on it.
+              <Notice tone="indigo" className="mb-4">
+                While it&apos;s on, visitors see a holding page with this message. Signed-in staff still see the full site, and the sign-in page stays open.
               </Notice>
               <ActionForm action={saveMaintenanceAction} className="space-y-3" confirm={s.maintenance.enabled ? undefined : "Save maintenance settings? If switched on, buyers will see the maintenance message."}>
                 <Toggle name="enabled" label="Maintenance mode on" defaultChecked={s.maintenance.enabled} />
