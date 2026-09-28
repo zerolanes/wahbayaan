@@ -28,7 +28,8 @@ Read this before adding pages. It is short on purpose.
 
 - Rates without real data (shipping, duty, tax, handling, commission, gift wrap) are `pending`. Show "Pending" / "Pending real rate data", never `0` and never an invented number.
 - Demo rows have `isDemo = true`. Anything shown to buyers goes through the guards in `src/lib/queries/catalog.ts` (which use `src/lib/trust/visibility.ts`). Do not query `products`/`vendors`/`categories` directly for public listings.
-- Artwork from `/art/...` is an illustration. Label it as such where a buyer could mistake it for a photo (`imageKind === "illustration"`).
+- Artwork from `/art/...` is an illustration standing in for photography. Customers never see QA labels ("Illustration", "Demo content", "Sample review", demo logins): they render only when the build sets `NEXT_PUBLIC_WB_QA_LABELS=1` (`SHOW_QA_LABELS` in `src/lib/qa.ts`). The admin launch-readiness check lists every illustration that still needs a real photo before launch.
+- Shipments over `FREIGHT_THRESHOLD_G` (70 kg — furniture, snooker tables) are freight: shipping stays `pending` with a freight explanation until logistics quotes it.
 
 ## Auth
 
@@ -44,7 +45,10 @@ Read this before adding pages. It is short on purpose.
 - `@/components/ui/table` — `Table`, `THead`, `Th`, `TBody`, `Tr`, `Td`.
 - Store: `ProductCard`, `ArtisanStoryCard`, `VerifiedBadge`, `StarRating`, `TrustBadges`, `ReviewCard`, `RatingHistogram`, `LandedCostBreakdown`, `DeliveryEstimateLine`, `DestinationPicker`, `WishlistButton`, `CurrencySwitcher`.
 - Icons: `lucide-react` named imports.
-- Palette tokens: `indigo-*`, `terracotta-*`, `gold-*`, `sand-*`, `umber-*`, `turquoise-*`, `parchment`, `ink`. Surfaces: `.paper` (parchment grain) and `.night` (indigo star lattice). Display font: `font-display` (Fraunces); Urdu: `font-urdu`.
+- Palette tokens: `indigo-*`, `terracotta-*`, `gold-*`, `sand-*`, `umber-*`, `turquoise-*`, `parchment`, `ink`. Surfaces: `.paper` (parchment grain) and `.night` (plain deep indigo). Display font: `font-display` (Fraunces); Urdu: `font-urdu`. The brand palette is for the storefront only.
+- Ornament: plain. No stars, hexagons, tile or scallop bands; the brand mark is a mehrab (arch). Artwork motifs are petal rosettes.
+- Dashboards (`/admin`, `/seller`) use the shared neutral theme: the `.admin-theme` class on their layouts remaps the palette to grays/black and headings to sans. Use the normal UI kit inside them; don't add colour.
+- Homepage (`src/app/(store)/page.tsx`) is flat and photography-led. The 3D haveli walk-through lives at `/haveli` (`src/app/(home)/haveli`); there is no 3D on product cards or product pages.
 - Forms: server actions + `useActionState`, validate with `zod` (v4: `z.email()`), return `{ error }` or `{ ok, message }`.
 
 ## Verification
