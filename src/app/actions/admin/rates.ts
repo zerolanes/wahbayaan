@@ -9,7 +9,7 @@ import { getSetting, setSetting } from "@/lib/settings";
 import { formatMoney, type Currency } from "@/lib/money/currency";
 import { adminAction, AdminError } from "@/lib/admin/action";
 import { bpsToPercentString } from "@/lib/admin/money";
-import { zBool, zIds, zInt, zMoney, zOptBps, zOptInt, zOptMoney, zOptNum, zOptStr, zStr, zUuid } from "@/lib/admin/zod";
+import { zBool, zIds, zInt, zOptBps, zOptInt, zOptMoney, zOptNum, zOptStr, zStr, zUuid } from "@/lib/admin/zod";
 
 const DEST = z.enum(["US", "GB", "CA"]);
 const CUR = z.enum(["PKR", "USD", "GBP", "CAD"]);
@@ -216,8 +216,10 @@ export const saveImportRuleAction = adminAction("rates.manage", z.object({ id: z
   const d = await db();
   const values = { destinationCountry: data.destinationCountry, categoryId: data.categoryId || null, level: data.level, message: data.message, status: data.status, source: data.source };
   if (data.id) {
+    const before = await d.query.importRules.findFirst({ where: eq(importRules.id, data.id) });
+    if (!before) throw new AdminError("Rule not found");
     await d.update(importRules).set(values).where(eq(importRules.id, data.id));
-    await audit({ action: "import_rule.update", entity: "import_rule", entityId: data.id, summary: `Edited ${data.level} import rule for ${data.destinationCountry} (${data.status})` });
+    await audit({ action: "import_rule.update", entity: "import_rule", entityId: data.id, summary: `Edited ${data.level} import rule for ${data.destinationCountry} (${data.status})`, data: { before: { level: before.level, message: before.message, status: before.status, source: before.source, categoryId: before.categoryId }, after: values } });
     return { message: "Rule saved" };
   }
   const [r] = await d.insert(importRules).values(values).returning();
@@ -227,8 +229,10 @@ export const saveImportRuleAction = adminAction("rates.manage", z.object({ id: z
 
 export const deleteImportRuleAction = adminAction("rates.manage", z.object({ id: zUuid }), async ({ data, audit }) => {
   const d = await db();
+  const r = await d.query.importRules.findFirst({ where: eq(importRules.id, data.id) });
+  if (!r) throw new AdminError("Rule not found");
   await d.delete(importRules).where(eq(importRules.id, data.id));
-  await audit({ action: "import_rule.delete", entity: "import_rule", entityId: data.id, summary: "Deleted an import rule" });
+  await audit({ action: "import_rule.delete", entity: "import_rule", entityId: data.id, summary: `Deleted a ${r.level} import rule for ${r.destinationCountry}`, data: { before: r } });
   return { message: "Rule deleted" };
 });
 
@@ -299,4 +303,26 @@ export const saveBuyerProtectionAction = adminAction("rates.manage", z.object({ 
   return { message: "Buyer protection saved" };
 });
 
-export const _unusedMoney = zMoney;
+
+// ── Bulk status changes (duty rows, import rules) ───────────────────────────
+
+export const bulkDutyAction = adminAction("rates.manage", z.object({ op: CONFIG, ids: zIds }), async ({ data, audit }) => {
+  if (!data.ids.length) throw new AdminError("Select at least one duty row.");
+  const d = await db();
+  const rows = await d.select().from(dutyRates).where(inArray(dutyRates.id, data.ids));
+  // Activating needs a real duty % and a recorded source — the same rule as the single-row form.
+  const ok = data.op === "active" ? rows.filter((r) => r.dutyPercent != null && !!r.source) : rows;
+  if (ok.length) await d.update(dutyRates).set({ status: data.op }).where(inArray(dutyRates.id, ok.map((r) => r.id)));
+  await audit({ action: `duty_rate.bulk_${data.op}`, entity: "duty_rate", summary: `Set ${ok.length} duty row(s) to ${data.op}`, data: { ids: ok.map((r) => r.id), before: rows.map((r) => ({ id: r.id, status: r.status })) } });
+  const skipped = rows.length - ok.length;
+  return { message: `${ok.length} row${ok.length === 1 ? "" : "s"} set to ${data.op}${skipped ? ` · ${skipped} skipped (duty % or source missing)` : ""}` };
+});
+
+export const bulkImportRulesAction = adminAction("rates.manage", z.object({ op: CONFIG, ids: zIds }), async ({ data, audit }) => {
+  if (!data.ids.length) throw new AdminError("Select at least one rule.");
+  const d = await db();
+  const rows = await d.select().from(importRules).where(inArray(importRules.id, data.ids));
+  if (rows.length) await d.update(importRules).set({ status: data.op }).where(inArray(importRules.id, rows.map((r) => r.id)));
+  await audit({ action: `import_rule.bulk_${data.op}`, entity: "import_rule", summary: `Set ${rows.length} import rule(s) to ${data.op}`, data: { ids: rows.map((r) => r.id), before: rows.map((r) => ({ id: r.id, status: r.status })) } });
+  return { message: `${rows.length} rule${rows.length === 1 ? "" : "s"} set to ${data.op}` };
+});
