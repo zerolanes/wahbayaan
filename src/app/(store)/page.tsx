@@ -12,22 +12,11 @@ import { db } from "@/lib/db/client";
 import { journalPosts } from "@/lib/db/schema";
 import { getPublicCategories, getPublicProducts, getPublicVendors } from "@/lib/queries/catalog";
 import { getSetting, isDemoMode } from "@/lib/settings";
+import { CRAFT_ATLAS as ATLAS } from "@/lib/heritage";
 import { cn } from "@/lib/utils/cn";
 import { formatDate } from "@/lib/utils/format";
 
 const isSvg = (url: string) => url.split("?")[0].endsWith(".svg");
-
-/** Where the crafts come from — the cities whose workshops the marketplace is built around. */
-const ATLAS = [
-  { city: "Lahore", urdu: "لاہور", craft: "Calligraphy & miniature painting", note: "Nastaliq on hand-burnished wasli paper, in the line of the Mughal ateliers.", href: "/category/calligraphy-art" },
-  { city: "Multan", urdu: "ملتان", craft: "Blue pottery & kashi tiles", note: "Cobalt and turquoise glazes from the city of shrines.", href: "/category/wall-decor" },
-  { city: "Hala", urdu: "ہالہ", craft: "Ajrak & lacquered woodwork", note: "Sindhi block-printing in madder and indigo, and jandi lathe lacquer.", href: "/category/wall-decor" },
-  { city: "Peshawar", urdu: "پشاور", craft: "Hand-knotted rugs", note: "Wool knotted on upright looms, dyed with walnut, madder and pomegranate.", href: "/category/rugs" },
-  { city: "Chiniot", urdu: "چنیوٹ", craft: "Carved wood & furniture", note: "The carvers behind palace doors, jharokas and heirloom furniture.", href: "/category/bespoke" },
-  { city: "Khewra", urdu: "کھیوڑہ", craft: "Himalayan salt", note: "Lamps and carvings from one of the oldest salt mines in the world.", href: "/category/salt-art" },
-  { city: "Taxila", urdu: "ٹیکسلا", craft: "Gandhara stone carving", note: "Grey schist and marble, carved beside a UNESCO World Heritage city.", href: "/category/sculpture-stone" },
-  { city: "Karachi", urdu: "کراچی", craft: "Truck art & painting", note: "The bright phool-patti of Pakistan's roads, painted on panels and canvas.", href: "/category/paintings" },
-];
 
 const PROMISES = [
   { icon: Calculator, title: "Landed cost up front", text: "Shipping, import duty and tax for your country, itemised before you pay." },
