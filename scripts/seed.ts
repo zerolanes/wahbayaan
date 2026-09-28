@@ -725,6 +725,12 @@ export async function seedDemo(db: Db) {
   ]);
   await db.insert(t.auditLog).values({ actorUserId: ownerUser.id, action: "seed", entity: "system", summary: "Demo data loaded" });
 
+  await db.insert(t.announcements).values({
+    message: "New: carved Chiniot furniture and full-size snooker tables — made to order, delivered by freight",
+    link: "/category/furniture",
+    isActive: true,
+  });
+
   console.log(`Demo data: ${DEMO_VENDORS.length} artisans, ${DEMO_PRODUCTS.length} listings, ${reviewCount} sample reviews, ${specs.length} orders.`);
   console.log(`Demo logins (password "${DEMO_PASSWORD}"): admin@wahbayaan.test · buyer@wahbayaan.test · noor-calligraphy-atelier@artisans.wahbayaan.test`);
 }
