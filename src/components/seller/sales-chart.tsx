@@ -1,6 +1,6 @@
 import { formatMoney } from "@/lib/money/currency";
 
-/** 30-day PKR sales as a soft area chart (pure SVG, no chart library). */
+/** 30-day PKR sales as a monochrome line chart (pure SVG, no chart library). */
 export function SalesChart({ series }: { series: { day: string; pkr: number }[] }) {
   const W = 640;
   const H = 180;
@@ -15,31 +15,23 @@ export function SalesChart({ series }: { series: { day: string; pkr: number }[] 
   return (
     <figure>
       <svg viewBox={`0 0 ${W} ${H}`} className="h-44 w-full" role="img" aria-label={`Sales over the last 30 days: ${formatMoney(total, "PKR")}`}>
-        <defs>
-          <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#b8893b" stopOpacity="0.35" />
-            <stop offset="1" stopColor="#b8893b" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {[0.25, 0.5, 0.75].map((f) => (
+        {[0.25, 0.5, 0.75, 1].map((f) => (
           <line
             key={f}
             x1={pad.l}
             x2={W - pad.r}
             y1={pad.t + f * (H - pad.t - pad.b)}
             y2={pad.t + f * (H - pad.t - pad.b)}
-            stroke="#d2c3b3"
-            strokeOpacity="0.5"
-            strokeDasharray="3 5"
+            stroke={f === 1 ? "#e5e5e5" : "#f0f0f0"}
           />
         ))}
-        <path d={area} fill="url(#salesFill)" />
-        <path d={line} fill="none" stroke="#9a6f2d" strokeWidth="2" strokeLinejoin="round" />
-        {series.map((s, i) => (s.pkr > 0 ? <circle key={s.day} cx={x(i)} cy={y(s.pkr)} r="3" fill="#9a6f2d" /> : null))}
-        <text x={pad.l} y={H - 6} fontSize="11" fill="#928069">
+        <path d={area} fill="#0a0a0a" fillOpacity="0.04" />
+        <path d={line} fill="none" stroke="#0a0a0a" strokeWidth="1.75" strokeLinejoin="round" />
+        {series.map((s, i) => (s.pkr > 0 ? <circle key={s.day} cx={x(i)} cy={y(s.pkr)} r="2.5" fill="#0a0a0a" /> : null))}
+        <text x={pad.l} y={H - 6} fontSize="15" fill="#a3a3a3">
           {series[0]?.day.slice(5)}
         </text>
-        <text x={W - pad.r} y={H - 6} fontSize="11" fill="#928069" textAnchor="end">
+        <text x={W - pad.r} y={H - 6} fontSize="15" fill="#a3a3a3" textAnchor="end">
           today
         </text>
       </svg>

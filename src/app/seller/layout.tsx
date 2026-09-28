@@ -22,13 +22,13 @@ export default async function SellerLayout({ children }: { children: React.React
   const row = (Array.isArray(r) ? r : ((r as { rows?: unknown[] }).rows ?? []))[0] as { orders: number; requests: number; messages: number } | undefined;
   const groups = sellerNav({ newOrders: row?.orders ?? 0, newRequests: row?.requests ?? 0, unreadMessages: row?.messages ?? 0 });
   return (
-    <div className="bg-sand-100 min-h-dvh">
-      <DashboardSidebar groups={groups} label="Artisan dashboard" />
-      <div className="lg:pl-64">
+    <div className="admin-theme min-h-dvh bg-[#fafafa]">
+      <DashboardSidebar groups={groups} label="Artisan studio" />
+      <div className="lg:pl-60">
         <DashboardTopbar
           userName={user.name}
           context={<span className="truncate">Your workshop on Wahbayaan</span>}
-          badge={<Badge tone="gold">All amounts in PKR (Rs)</Badge>}
+          badge={<Badge tone="neutral">All amounts in PKR (Rs)</Badge>}
         />
         <main className="mx-auto max-w-[1300px] px-4 py-8 sm:px-6 lg:px-8">{children}</main>
       </div>

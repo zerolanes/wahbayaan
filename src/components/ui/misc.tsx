@@ -20,6 +20,7 @@ const tones: Record<Tone, string> = {
 export function Badge({ tone = "neutral", className, children, ...props }: { tone?: Tone } & ComponentProps<"span">) {
   return (
     <span
+      data-tone={tone}
       className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap", tones[tone], className)}
       {...props}
     >
@@ -29,7 +30,7 @@ export function Badge({ tone = "neutral", className, children, ...props }: { ton
 }
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("rounded-[var(--radius-card)] border border-umber-200/60 bg-sand-50 shadow-soft", className)} {...props} />;
+  return <div data-slot="card" className={cn("rounded-[var(--radius-card)] border border-umber-200/60 bg-sand-50 shadow-soft", className)} {...props} />;
 }
 
 export function CardHeader({ title, description, action, className }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string }) {
@@ -78,7 +79,7 @@ export function Stat({ label, value, hint, trend, className }: { label: ReactNod
   return (
     <Card className={cn("p-5", className)}>
       <p className="text-xs font-medium tracking-wider text-umber-500 uppercase">{label}</p>
-      <p className="mt-2 font-display text-3xl text-umber-900 tabular-nums">{value}</p>
+      <p data-slot="stat-value" className="mt-2 font-display text-3xl text-umber-900 tabular-nums">{value}</p>
       {hint || trend ? (
         <p className="mt-1 flex items-center gap-2 text-sm text-umber-500">
           {trend}

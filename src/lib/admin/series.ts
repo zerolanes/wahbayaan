@@ -69,6 +69,6 @@ export function daysBetween(a: Date | string, b: Date | string) {
   return (new Date(b).getTime() - new Date(a).getTime()) / DAY;
 }
 
-/** Fixed categorical colours by entity (validated for colour-vision deficiency). */
-export const SERIES_COLORS = ["#4b62a6", "#c4623a", "#1a9fb0", "#b8893b"] as const;
+/** Fixed series shades by entity: monochrome to match the neutral admin theme (legends always label each part). */
+export const SERIES_COLORS = ["#0a0a0a", "#525252", "#a3a3a3", "#d4d4d4"] as const;
 export const CURRENCY_COLORS: Record<string, string> = { USD: SERIES_COLORS[0], GBP: SERIES_COLORS[1], CAD: SERIES_COLORS[2], PKR: SERIES_COLORS[3] };

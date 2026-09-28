@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
-import { Logo } from "@/components/brand/logo";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { NavGroup } from "./nav-types";
 
+/** Neutral dashboard sidebar shared by the company admin and the artisan dashboard. */
 export function DashboardSidebar({ groups, label, footer }: { groups: NavGroup[]; label: string; footer?: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -16,15 +16,17 @@ export function DashboardSidebar({ groups, label, footer }: { groups: NavGroup[]
 
   const nav = (
     <nav className="flex h-full flex-col">
-      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-white/10 px-5">
-        <Logo tone="light" compact href="/" />
+      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-[#e5e5e5] px-5">
+        <Link href="/" className="text-[15px] font-semibold tracking-[-0.01em] text-[#0a0a0a]">
+          Wahbayaan
+        </Link>
+        <span className="rounded-md border border-[#e5e5e5] bg-[#fafafa] px-1.5 py-px text-[11px] font-medium text-[#737373]">{label}</span>
       </div>
-      <p className="px-5 pt-4 text-[10px] font-semibold tracking-[0.25em] text-gold-300/80 uppercase">{label}</p>
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 py-4 scrollbar-none">
         {groups.map((g) => (
           <div key={g.label}>
-            <p className="px-2 pb-1.5 text-[11px] font-medium tracking-wider text-sand-200/40 uppercase">{g.label}</p>
-            <ul className="space-y-0.5">
+            <p className="px-2.5 pb-1 text-[11px] font-medium tracking-wide text-[#a3a3a3] uppercase">{g.label}</p>
+            <ul className="space-y-px">
               {g.items.map((item) => {
                 const active = isActive(item.href, item.exact);
                 return (
@@ -33,13 +35,15 @@ export function DashboardSidebar({ groups, label, footer }: { groups: NavGroup[]
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13.5px] transition",
-                        active ? "bg-gold-400/15 text-gold-100 ring-1 ring-gold-400/30" : "text-sand-200/70 hover:bg-white/5 hover:text-sand-50",
+                        "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13.5px] transition-colors",
+                        active ? "bg-[#f0f0f0] font-medium text-[#0a0a0a]" : "text-[#525252] hover:bg-[#f5f5f5] hover:text-[#0a0a0a]",
                       )}
                     >
-                      <span className={cn("grid size-4 shrink-0 place-items-center [&>svg]:size-4", active ? "text-gold-300" : "opacity-70")}>{item.icon}</span>
+                      <span className={cn("grid size-4 shrink-0 place-items-center [&>svg]:size-4 [&>svg]:stroke-[1.75]", active ? "text-[#0a0a0a]" : "text-[#737373]")}>{item.icon}</span>
                       <span className="flex-1 truncate">{item.label}</span>
-                      {item.badge ? <span className="rounded-full bg-terracotta-500 px-1.5 text-[10px] leading-4 font-semibold text-white">{item.badge}</span> : null}
+                      {item.badge ? (
+                        <span className="min-w-5 rounded-full border border-[#e5e5e5] bg-white px-1.5 text-center text-[11px] leading-4 font-medium text-[#404040] tabular-nums">{item.badge}</span>
+                      ) : null}
                     </Link>
                   </li>
                 );
@@ -48,20 +52,30 @@ export function DashboardSidebar({ groups, label, footer }: { groups: NavGroup[]
           </div>
         ))}
       </div>
-      {footer ? <div className="border-t border-white/10 p-4">{footer}</div> : null}
+      {footer ? <div className="border-t border-[#e5e5e5] p-4">{footer}</div> : null}
     </nav>
   );
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="fixed top-3 left-3 z-40 grid size-10 place-items-center rounded-full bg-indigo-950 text-sand-50 shadow-lift lg:hidden" aria-label="Open navigation">
-        <Menu className="size-5" />
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed top-2.5 left-3 z-40 grid size-9 place-items-center rounded-md border border-[#e5e5e5] bg-white text-[#404040] lg:hidden"
+        aria-label="Open navigation"
+      >
+        <Menu className="size-4" />
       </button>
-      <aside className="night fixed inset-y-0 left-0 z-30 hidden w-64 lg:block">{nav}</aside>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-[#e5e5e5] bg-white lg:block">{nav}</aside>
       {open ? (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <aside className="night absolute inset-y-0 left-0 w-72">{nav}</aside>
+          <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 w-72 border-r border-[#e5e5e5] bg-white">
+            <button type="button" onClick={() => setOpen(false)} className="absolute top-3 right-3 grid size-8 place-items-center rounded-md text-[#737373] hover:bg-[#f5f5f5]" aria-label="Close navigation">
+              <X className="size-4" />
+            </button>
+            {nav}
+          </aside>
         </div>
       ) : null}
     </>

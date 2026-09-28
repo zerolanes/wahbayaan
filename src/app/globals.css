@@ -246,6 +246,269 @@
   }
 }
 
+/*
+ * Admin theme — the company admin (/admin) and the artisan dashboard (/seller)
+ * use a calm, neutral system (white surfaces, gray type, black primary actions)
+ * instead of the storefront's heritage palette. The scope re-maps the brand
+ * tokens to grays so every existing utility (bg-indigo-900, text-gold-600,
+ * border-umber-200…) resolves to the neutral system, and swaps the serif display
+ * face for Inter. Only true success / warning / error states keep a muted hue.
+ * Rules below are unlayered on purpose so they win over the utilities layer.
+ */
+.admin-theme {
+  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0a0a0a;
+  --color-parchment: #fafafa;
+
+  --color-sand-50: #ffffff;
+  --color-sand-100: #fafafa;
+  --color-sand-200: #f0f0f0;
+  --color-sand-300: #e5e5e5;
+  --color-sand-400: #d4d4d4;
+  --color-sand-500: #a3a3a3;
+
+  --color-umber-50: #fafafa;
+  --color-umber-100: #f5f5f5;
+  --color-umber-200: #e5e5e5;
+  --color-umber-300: #d4d4d4;
+  --color-umber-400: #a3a3a3;
+  --color-umber-500: #737373;
+  --color-umber-600: #525252;
+  --color-umber-700: #404040;
+  --color-umber-800: #262626;
+  --color-umber-900: #0a0a0a;
+
+  --color-indigo-50: #fafafa;
+  --color-indigo-100: #f5f5f5;
+  --color-indigo-200: #e5e5e5;
+  --color-indigo-300: #d4d4d4;
+  --color-indigo-400: #a3a3a3;
+  --color-indigo-500: #737373;
+  --color-indigo-600: #525252;
+  --color-indigo-700: #404040;
+  --color-indigo-800: #262626;
+  --color-indigo-900: #0a0a0a;
+  --color-indigo-950: #0a0a0a;
+
+  --color-gold-50: #fafafa;
+  --color-gold-100: #f5f5f5;
+  --color-gold-200: #e5e5e5;
+  --color-gold-300: #d4d4d4;
+  --color-gold-400: #a3a3a3;
+  --color-gold-500: #737373;
+  --color-gold-600: #525252;
+  --color-gold-700: #404040;
+  --color-gold-800: #262626;
+  --color-gold-900: #171717;
+
+  --color-terracotta-50: #fafafa;
+  --color-terracotta-100: #f5f5f5;
+  --color-terracotta-200: #e5e5e5;
+  --color-terracotta-300: #d4d4d4;
+  --color-terracotta-400: #a3a3a3;
+  --color-terracotta-500: #525252;
+  --color-terracotta-600: #262626;
+  --color-terracotta-700: #0a0a0a;
+  --color-terracotta-800: #0a0a0a;
+  --color-terracotta-900: #0a0a0a;
+
+  --color-turquoise-50: #f5f5f5;
+  --color-turquoise-100: #f0f0f0;
+  --color-turquoise-500: #737373;
+  --color-turquoise-600: #525252;
+  --color-turquoise-700: #404040;
+
+  --color-madder-500: #dc2626;
+  --color-madder-600: #b91c1c;
+
+  --color-success-50: #f0fdf4;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-warning-50: #fffbeb;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-danger-50: #fef2f2;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-pending-50: #f5f5f5;
+  --color-pending-600: #525252;
+
+  --radius-card: 10px;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.03);
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.12);
+  --shadow-glow: none;
+
+  color: #0a0a0a;
+  font-family: var(--font-sans);
+}
+.admin-theme ::selection {
+  background: #e5e5e5;
+  color: #0a0a0a;
+}
+.admin-theme :focus-visible {
+  outline-color: #0a0a0a;
+}
+
+/* Typography: sans everywhere, compact semibold titles, no display serif. */
+.admin-theme :is(h1, h2, h3, h4, .font-display) {
+  font-family: var(--font-sans);
+  font-variation-settings: normal;
+  font-weight: 600;
+  letter-spacing: -0.011em;
+}
+.admin-theme h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+}
+@media (max-width: 639px) {
+  .admin-theme h1 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+.admin-theme .font-display:is(.text-3xl, .text-4xl, .text-5xl) {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.admin-theme [data-slot="stat-value"] {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: #0a0a0a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Surfaces: white cards, 1px hairline, no heavy shadows, no ornaments. */
+.admin-theme [data-slot="card"] {
+  border-color: #e5e5e5;
+  box-shadow: none;
+}
+.admin-theme :is(.rounded-2xl, .rounded-3xl) {
+  border-radius: 12px;
+}
+/* Active tab underline (ui/misc Tabs) reads as black, not mid-gray. */
+.admin-theme .border-gold-500 {
+  border-color: #0a0a0a;
+}
+.admin-theme :is(.night, .paper, .bg-gradient-to-b, .bg-gradient-to-r, .bg-gradient-to-br, .bg-linear-to-b, .bg-linear-to-r, .bg-linear-to-br) {
+  background-image: none;
+}
+
+/* Status pills: neutral by default; muted green / amber / red only for real states. */
+.admin-theme [data-tone] {
+  background-color: #f5f5f5;
+  color: #404040;
+  box-shadow: inset 0 0 0 1px #e5e5e5;
+}
+.admin-theme [data-tone="pending"] {
+  background-color: #fafafa;
+  color: #525252;
+  box-shadow: inset 0 0 0 1px #d4d4d4;
+}
+.admin-theme [data-tone="success"] {
+  background-color: #f0fdf4;
+  color: #15803d;
+  box-shadow: inset 0 0 0 1px #bbf7d0;
+}
+.admin-theme [data-tone="warning"] {
+  background-color: #fffbeb;
+  color: #b45309;
+  box-shadow: inset 0 0 0 1px #fde68a;
+}
+.admin-theme [data-tone="danger"] {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  box-shadow: inset 0 0 0 1px #fecaca;
+}
+.admin-theme [data-tone="dark"] {
+  background-color: rgb(10 10 10 / 0.75);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+/* Buttons: black primary, white secondary, red destructive; 8px radius. */
+.admin-theme .btn {
+  border-radius: 8px;
+  box-shadow: none;
+}
+.admin-theme .btn-link {
+  border-radius: 0;
+}
+.admin-theme .btn-md {
+  height: 2.25rem;
+  padding-inline: 0.875rem;
+  font-size: 0.875rem;
+}
+.admin-theme .btn-lg {
+  height: 2.5rem;
+  padding-inline: 1.125rem;
+  font-size: 0.9375rem;
+}
+.admin-theme :is(.btn-primary, .btn-accent, .btn-gold) {
+  background: #0a0a0a;
+  color: #ffffff;
+  border: 1px solid #0a0a0a;
+}
+.admin-theme :is(.btn-primary, .btn-accent, .btn-gold):hover {
+  background: #262626;
+  border-color: #262626;
+}
+.admin-theme :is(.btn-outline, .btn-light) {
+  background: #ffffff;
+  color: #0a0a0a;
+  border: 1px solid #e5e5e5;
+  backdrop-filter: none;
+}
+.admin-theme :is(.btn-outline, .btn-light):hover {
+  background: #fafafa;
+  border-color: #d4d4d4;
+}
+.admin-theme .btn-ghost {
+  color: #404040;
+}
+.admin-theme .btn-ghost:hover {
+  background: #f5f5f5;
+  color: #0a0a0a;
+}
+.admin-theme .btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #dc2626;
+}
+.admin-theme .btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+/* Hand-rolled pill buttons and filter controls inside admin pages. */
+.admin-theme :is(button, input, select, a, label).rounded-full {
+  border-radius: 8px;
+}
+
+/* Inputs: white, hairline border, neutral focus ring. */
+.admin-theme .ui-control {
+  background-color: #ffffff;
+  border-color: #e5e5e5;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  box-shadow: none;
+}
+.admin-theme :is(input:not([type="file"]), select).ui-control {
+  height: 2.25rem;
+  padding-block: 0;
+}
+.admin-theme .ui-control:focus {
+  border-color: #0a0a0a;
+  box-shadow: 0 0 0 3px rgb(10 10 10 / 0.08);
+}
+.admin-theme :is(input, select, textarea):not(.ui-control):focus {
+  border-color: #0a0a0a;
+}
+.admin-theme :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: #0a0a0a;
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar {

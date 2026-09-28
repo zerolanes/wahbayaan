@@ -12,7 +12,7 @@ export type BarDatum = { key: string; label: string; value: number; display: str
  */
 export function BarChart({
   data,
-  color = "#4b62a6",
+  color = "#171717",
   height = 180,
   title,
   axisDivisor = 1,
@@ -43,7 +43,7 @@ export function BarChart({
         <div className="relative flex-1" style={{ height }} onMouseLeave={() => setHover(null)}>
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-between">
             {[0, 1, 2].map((i) => (
-              <div key={i} className={cn("border-t", i === 2 ? "border-umber-300" : "border-dashed border-umber-200/70")} />
+              <div key={i} className={cn("border-t", i === 2 ? "border-[#e5e5e5]" : "border-[#f0f0f0]")} />
             ))}
           </div>
           <svg className="absolute inset-0 h-full w-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={title}>
@@ -60,7 +60,7 @@ export function BarChart({
                       height={h}
                       rx={Math.min(1.2, w * 0.2)}
                       fill={color}
-                      opacity={hover == null || hover === i ? 1 : 0.45}
+                      opacity={hover == null || hover === i ? 1 : 0.35}
                       style={{ pointerEvents: "none" }}
                     />
                   ) : null}
@@ -70,10 +70,10 @@ export function BarChart({
           </svg>
           {active ? (
             <div
-              className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full rounded-lg bg-indigo-950 px-2.5 py-1.5 text-xs whitespace-nowrap text-sand-50 shadow-lift"
+              className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full rounded-md bg-[#0a0a0a] px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-lift"
               style={{ left: `${(hover! + 0.5) * w}%` }}
             >
-              <span className="text-sand-200/70">{active.label}</span> · <strong className="tabular-nums">{active.display}</strong>
+              <span className="text-white/60">{active.label}</span> · <strong className="tabular-nums">{active.display}</strong>
             </div>
           ) : null}
         </div>
@@ -95,7 +95,7 @@ export function BarChart({
 }
 
 /** Tiny trend line for stat tiles (no axes). */
-export function Sparkline({ values, color = "#4b62a6", width = 120, height = 32, label }: { values: number[]; color?: string; width?: number; height?: number; label: string }) {
+export function Sparkline({ values, color = "#0a0a0a", width = 120, height = 32, label }: { values: number[]; color?: string; width?: number; height?: number; label: string }) {
   if (values.length < 2) return null;
   const max = Math.max(1, ...values);
   const step = width / (values.length - 1);
@@ -109,7 +109,7 @@ export function Sparkline({ values, color = "#4b62a6", width = 120, height = 32,
 }
 
 /** Ranked horizontal bars with direct labels. */
-export function HBarList({ items, color = "#4b62a6", empty = "No data yet" }: { items: { key: string; label: React.ReactNode; value: number; display: string; href?: string }[]; color?: string; empty?: string }) {
+export function HBarList({ items, color = "#404040", empty = "No data yet" }: { items: { key: string; label: React.ReactNode; value: number; display: string; href?: string }[]; color?: string; empty?: string }) {
   if (!items.length) return <p className="py-6 text-center text-sm text-umber-500">{empty}</p>;
   const max = Math.max(1, ...items.map((i) => i.value));
   return (
@@ -117,10 +117,10 @@ export function HBarList({ items, color = "#4b62a6", empty = "No data yet" }: { 
       {items.map((i) => (
         <li key={i.key} className="group">
           <div className="mb-1 flex items-baseline justify-between gap-3 text-sm">
-            <span className="min-w-0 truncate text-umber-800">{i.href ? <a href={i.href} className="hover:text-terracotta-600 hover:underline">{i.label}</a> : i.label}</span>
+            <span className="min-w-0 truncate text-umber-800">{i.href ? <a href={i.href} className="hover:text-[#0a0a0a] hover:underline">{i.label}</a> : i.label}</span>
             <span className="shrink-0 font-medium text-umber-900 tabular-nums">{i.display}</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-umber-100">
+          <div className="h-1.5 overflow-hidden rounded-full bg-[#f0f0f0]">
             <div className="h-full rounded-full transition-all group-hover:opacity-80" style={{ width: `${Math.max(2, (i.value / max) * 100)}%`, background: color }} />
           </div>
         </li>
@@ -156,10 +156,10 @@ export function ShareBar({ parts }: { parts: { key: string; label: string; value
 export function ScoreRing({ score, size = 132 }: { score: number; size?: number }) {
   const r = size / 2 - 10;
   const c = 2 * Math.PI * r;
-  const color = score >= 80 ? "#2f7a4f" : score >= 50 ? "#b8893b" : "#b3261e";
+  const color = score >= 80 ? "#16a34a" : score >= 50 ? "#d97706" : "#dc2626";
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`Readiness score ${score} out of 100`}>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e9e1d8" strokeWidth={10} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f0f0f0" strokeWidth={10} />
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -171,7 +171,7 @@ export function ScoreRing({ score, size = 132 }: { score: number; size?: number 
         strokeDasharray={`${(score / 100) * c} ${c}`}
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
       />
-      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="fill-umber-900 font-display" fontSize={size / 4}>
+      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="fill-[#0a0a0a] font-sans font-semibold tabular-nums" fontSize={size / 4}>
         {score}
       </text>
     </svg>
