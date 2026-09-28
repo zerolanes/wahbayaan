@@ -176,6 +176,17 @@ export async function getDrops() {
   return { upcoming, live };
 }
 
+/** Physical details for the comparison table. Pass ids already checked by `getPublicProductsByIds`. */
+export async function getCompareDetails(ids: string[]) {
+  if (!ids.length) return new Map<string, { widthCm: string | null; heightCm: string | null; depthCm: string | null; weightG: number | null; dispatchDays: number | null; techniques: string[] }>();
+  const d = await db();
+  const rows = await d
+    .select({ id: products.id, widthCm: products.widthCm, heightCm: products.heightCm, depthCm: products.depthCm, weightG: products.weightG, dispatchDays: products.dispatchDays, techniques: products.techniques })
+    .from(products)
+    .where(inArray(products.id, ids));
+  return new Map(rows.map(({ id, ...r }) => [id, r]));
+}
+
 /** Edition sizes aren't on the card type; fetch them for a handful of drops. */
 export async function getEditionSizes(ids: string[]) {
   if (!ids.length) return new Map<string, number | null>();

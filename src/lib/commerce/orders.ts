@@ -359,6 +359,9 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
       break;
   }
 
+  // Read settings before opening the transaction: the embedded database has a
+  // single connection, so a query outside `tx` inside it would deadlock.
+  const { escrow } = await getSettings(["escrow"]);
   await d.transaction(async (tx) => {
     await tx.update(vendorOrders).set(patch).where(eq(vendorOrders.id, vendorOrderId));
     await event(tx, order.id, `vendor_${action.type}`, message, { actorUserId: actor.userId, vendorOrderId });
@@ -369,12 +372,11 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
     else if (statuses.every((s) => s === "shipped" || s === "delivered")) next = "shipped";
     else if (order.status === "paid") next = "in_fulfilment";
     if (next !== order.status && order.status !== "disputed") {
-      const s = await getSettings(["escrow"]);
       await tx
         .update(orders)
         .set({
           status: next,
-          ...(next === "delivered" ? { deliveredAt: new Date(), autoReleaseAt: new Date(Date.now() + s.escrow.autoReleaseDaysAfterDelivery * 86_400_000) } : {}),
+          ...(next === "delivered" ? { deliveredAt: new Date(), autoReleaseAt: new Date(Date.now() + escrow.autoReleaseDaysAfterDelivery * 86_400_000) } : {}),
         })
         .where(eq(orders.id, order.id));
       if (next === "delivered")
