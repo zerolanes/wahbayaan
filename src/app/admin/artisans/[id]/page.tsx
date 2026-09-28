@@ -67,20 +67,20 @@ export default async function ArtisanDetail(props: PageProps<"/admin/artisans/[i
         </Notice>
       )}
 
-      <div className="overflow-hidden rounded-[var(--radius-card)] border border-umber-200/60 bg-indigo-950 shadow-soft">
-        <div className="relative h-40 bg-indigo-900">
+      <div className="overflow-hidden rounded-[var(--radius-card)] border border-umber-200 bg-white">
+        <div className="relative h-40 border-b border-umber-200 bg-umber-100">
           {v.bannerUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={v.bannerUrl} alt={`${v.displayName} banner`} className="h-full w-full object-cover opacity-90" />
+            <img src={v.bannerUrl} alt={`${v.displayName} banner`} className="h-full w-full object-cover" />
           ) : (
-            <div className="grid h-full place-items-center text-sm text-sand-200/60">No banner</div>
+            <div className="grid h-full place-items-center text-sm text-umber-400">No banner</div>
           )}
         </div>
         <div className="flex items-end gap-4 px-5 pb-4">
-          <Thumb src={v.profilePhotoUrl} alt={v.displayName} kind={v.profilePhotoKind} size={80} className="-mt-10 rounded-full ring-4 ring-indigo-950" />
-          <div className="pb-1 text-sand-50">
-            <p className="font-display text-xl">{v.displayName}</p>
-            <p className="text-sm text-sand-200/70">
+          <Thumb src={v.profilePhotoUrl} alt={v.displayName} kind={v.profilePhotoKind} size={80} className="-mt-10 rounded-full ring-4 ring-white" />
+          <div className="pb-1 text-umber-900">
+            <p className="text-lg font-semibold">{v.displayName}</p>
+            <p className="text-sm text-umber-500">
               {v.tagline ?? v.craft} · {[v.workshopCity, v.workshopRegion ? REGION_LABELS[v.workshopRegion] : null].filter(Boolean).join(", ") || "location missing"}
             </p>
           </div>

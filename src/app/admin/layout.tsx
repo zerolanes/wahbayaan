@@ -39,11 +39,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .filter((g) => g.items.length);
   const links = groups.flatMap((g) => g.items.map((i) => ({ href: i.href, label: i.label, group: g.label })));
   return (
-    <div className="min-h-dvh bg-sand-100 print:bg-white">
+    <div className="admin-theme min-h-dvh bg-[#fafafa] print:bg-white">
       <div className="print:hidden">
-        <DashboardSidebar groups={groups} label="Company admin" />
+        <DashboardSidebar groups={groups} label="Admin" />
       </div>
-      <div className="lg:pl-64 print:pl-0">
+      <div className="lg:pl-60 print:pl-0">
         <div className="print:hidden">
           <DashboardTopbar
             userName={user.name}
@@ -51,7 +51,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <>
                 <CommandPalette links={links} />
                 <span className="hidden truncate 2xl:inline">
-                  Signed in as <strong className="text-umber-800">{user.staffRoleName}</strong>
+                  Signed in as <strong className="font-medium text-umber-800">{user.staffRoleName}</strong>
                 </span>
               </>
             }

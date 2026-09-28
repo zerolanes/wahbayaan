@@ -26,7 +26,8 @@ const sizes: Record<ButtonSize, string> = {
 };
 
 export function buttonClass(variant: ButtonVariant = "primary", size: ButtonSize = "md", className?: string) {
-  return cn(base, variants[variant], sizes[size], className);
+  // `btn btn-<variant> btn-<size>` are style hooks for the admin theme (globals.css); they add no storefront styles.
+  return cn("btn", `btn-${variant}`, `btn-${size}`, base, variants[variant], sizes[size], className);
 }
 
 type Common = { variant?: ButtonVariant; size?: ButtonSize; className?: string; children: ReactNode };

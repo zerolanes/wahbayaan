@@ -1,8 +1,9 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
+/** `ui-control` is a style hook for the admin theme (globals.css). */
 const control =
-  "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 shadow-[inset_0_1px_2px_rgb(34_26_19/0.04)] transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none disabled:bg-sand-100";
+  "ui-control w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 shadow-[inset_0_1px_2px_rgb(34_26_19/0.04)] transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none disabled:bg-sand-100";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input className={cn(control, "h-11", className)} {...props} />;

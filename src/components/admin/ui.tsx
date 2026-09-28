@@ -79,13 +79,13 @@ export function FilterBar({ action, q, placeholder = "Search…", children, extr
             placeholder={placeholder}
             data-admin-search
             aria-label="Search"
-            className="h-9 w-full rounded-full border border-umber-200 bg-white/90 pr-3 pl-9 text-sm text-umber-900 placeholder:text-umber-400 focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none"
+            className="h-9 w-full rounded-lg border border-umber-200 bg-white pr-3 pl-9 text-sm text-umber-900 placeholder:text-umber-400 focus:border-umber-900 focus:ring-3 focus:ring-umber-900/10 focus:outline-none"
           />
         </div>
       ) : null}
       {children}
-      <button className="h-9 rounded-full bg-indigo-900 px-4 text-sm font-medium text-sand-50 hover:bg-indigo-800">Apply</button>
-      <Link href={action} className="h-9 rounded-full px-3 text-sm leading-9 text-umber-500 hover:text-umber-900">
+      <button className="h-9 rounded-lg bg-umber-900 px-3.5 text-sm font-medium text-white hover:bg-umber-800">Apply</button>
+      <Link href={action} className="h-9 rounded-lg px-3 text-sm leading-9 text-umber-500 hover:bg-umber-100 hover:text-umber-900">
         Reset
       </Link>
       {extra ? <div className="ml-auto flex items-center gap-2">{extra}</div> : null}
@@ -100,8 +100,8 @@ export function FilterSelect({ name, value, options, label }: { name: string; va
       defaultValue={value}
       aria-label={label}
       className={cn(
-        "h-9 max-w-52 rounded-full border bg-white/90 pr-7 pl-3 text-sm focus:border-gold-500 focus:outline-none",
-        value ? "border-indigo-300 text-indigo-900" : "border-umber-200 text-umber-600",
+        "h-9 max-w-52 rounded-lg border bg-white pr-7 pl-3 text-sm focus:border-umber-900 focus:outline-none",
+        value ? "border-umber-400 font-medium text-umber-900" : "border-umber-200 text-umber-600",
       )}
     >
       <option value="">{label}: all</option>
@@ -116,7 +116,7 @@ export function FilterSelect({ name, value, options, label }: { name: string; va
 
 export function FilterDate({ name, value, label }: { name: string; value: string; label: string }) {
   return (
-    <label className="flex h-9 items-center gap-1.5 rounded-full border border-umber-200 bg-white/90 pr-2 pl-3 text-sm focus-within:border-gold-500">
+    <label className="flex h-9 items-center gap-1.5 rounded-lg border border-umber-200 bg-white pr-2 pl-3 text-sm focus-within:border-umber-900">
       <span className="text-umber-500">{label}</span>
       <input type="date" name={name} defaultValue={value} className="bg-transparent text-umber-900 focus:outline-none" />
     </label>
@@ -125,7 +125,7 @@ export function FilterDate({ name, value, label }: { name: string; value: string
 
 export function ExportLink({ href, children = "Export CSV" }: { href: string; children?: ReactNode }) {
   return (
-    <a href={href} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-umber-300/70 px-3.5 text-sm text-umber-800 hover:border-umber-900 hover:bg-white/60">
+    <a href={href} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-umber-200 bg-white px-3.5 text-sm font-medium text-umber-900 hover:border-umber-300 hover:bg-umber-50">
       ↓ {children}
     </a>
   );
@@ -135,7 +135,7 @@ export function ExportLink({ href, children = "Export CSV" }: { href: string; ch
 export function TableCard({ toolbar, children, footer, className }: { toolbar?: ReactNode; children: ReactNode; footer?: ReactNode; className?: string }) {
   return (
     <Card className={cn("overflow-hidden", className)}>
-      {toolbar ? <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/60 bg-sand-100/40 px-4 py-2.5">{toolbar}</div> : null}
+      {toolbar ? <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200 bg-umber-50 px-4 py-2.5">{toolbar}</div> : null}
       {children}
       {footer ? <div className="border-t border-umber-200/60 px-4 py-3">{footer}</div> : null}
     </Card>
@@ -149,24 +149,24 @@ export function Empty({ children }: { children: ReactNode }) {
 export function MiniStat({ label, value, hint, tone, href }: { label: ReactNode; value: ReactNode; hint?: ReactNode; tone?: Tone; href?: string }) {
   const inner = (
     <>
-      <p className="text-[11px] font-medium tracking-wider text-umber-500 uppercase">{label}</p>
-      <p className={cn("mt-1.5 font-display tabular-nums", typeof value === "string" && value.length > 14 ? "text-lg leading-snug" : "text-2xl", tone === "danger" ? "text-danger-700" : tone === "pending" ? "text-pending-600" : "text-umber-900")}>{value}</p>
+      <p className="text-xs font-medium text-umber-500">{label}</p>
+      <p className={cn("mt-1.5 font-sans font-semibold tracking-tight tabular-nums", typeof value === "string" && value.length > 14 ? "text-lg leading-snug" : "text-2xl", tone === "danger" ? "text-danger-700" : tone === "pending" ? "text-pending-600" : "text-umber-900")}>{value}</p>
       {hint ? <p className="mt-0.5 text-xs text-umber-500">{hint}</p> : null}
     </>
   );
   return href ? (
-    <Link href={href} className="block rounded-[var(--radius-card)] border border-umber-200/60 bg-sand-50 p-4 shadow-soft transition hover:border-gold-400">
+    <Link href={href} data-slot="card" className="block rounded-[var(--radius-card)] border border-umber-200 bg-white p-4 transition hover:border-umber-300 hover:bg-umber-50/60">
       {inner}
     </Link>
   ) : (
-    <div className="rounded-[var(--radius-card)] border border-umber-200/60 bg-sand-50 p-4 shadow-soft">{inner}</div>
+    <div data-slot="card" className="rounded-[var(--radius-card)] border border-umber-200 bg-white p-4">{inner}</div>
   );
 }
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="font-sans text-sm font-semibold tracking-wider text-umber-500 uppercase">{children}</h2>
+      <h2 className="font-sans text-xs font-semibold tracking-wide text-umber-500 uppercase">{children}</h2>
       {action}
     </div>
   );
@@ -178,7 +178,7 @@ export function Thumb({ src, alt, kind, size = 40, className }: { src: string | 
     <span className={cn("relative inline-block shrink-0 overflow-hidden rounded-lg bg-umber-100", className)} style={{ width: size, height: size }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
-      {kind === "illustration" ? <span className="absolute right-0 bottom-0 left-0 bg-indigo-950/70 text-center text-[8px] leading-3 text-sand-50">illus.</span> : null}
+      {kind === "illustration" ? <span className="absolute right-0 bottom-0 left-0 bg-black/60 text-center text-[8px] leading-3 text-white">illus.</span> : null}
     </span>
   );
 }

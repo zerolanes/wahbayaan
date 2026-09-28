@@ -73,8 +73,8 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
         title="Operations dashboard"
         description="Everything that needs a decision today. Buyer amounts are shown in the order currency; artisan-side totals in PKR."
         actions={
-          <Link href="/admin/readiness" className="flex items-center gap-3 rounded-full border border-umber-200 bg-sand-50 py-1.5 pr-4 pl-1.5 text-sm shadow-soft hover:border-gold-400">
-            <span className={`grid size-8 place-items-center rounded-full text-xs font-semibold text-white ${score.score >= 80 ? "bg-success-600" : score.score >= 50 ? "bg-gold-500" : "bg-danger-600"}`}>{score.score}</span>
+          <Link href="/admin/readiness" className="flex items-center gap-3 rounded-lg border border-umber-200 bg-white py-1.5 pr-3.5 pl-1.5 text-sm hover:border-umber-300 hover:bg-umber-50">
+            <span className={`grid h-7 min-w-9 place-items-center rounded-md px-1.5 text-xs font-semibold tabular-nums ring-1 ring-inset ${score.score >= 80 ? "bg-success-50 text-success-700 ring-success-600/20" : score.score >= 50 ? "bg-warning-50 text-warning-700 ring-warning-600/20" : "bg-danger-50 text-danger-700 ring-danger-600/20"}`}>{score.score}</span>
             Launch readiness · {score.fail} blocking
           </Link>
         }
@@ -100,7 +100,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
             {data.placeholderFxOrders ? <PendingBadge>{data.placeholderFxOrders} used placeholder FX</PendingBadge> : null}
           </p>
           <div className="mt-4">
-            <ShareBar parts={data.gmv.map((g) => ({ key: g.currency, label: `${g.currency} · ${g.n} orders`, value: g.pkr, display: formatMoney(g.pkr, "PKR", { compact: true }), color: CURRENCY_COLORS[g.currency] ?? "#76644f" }))} />
+            <ShareBar parts={data.gmv.map((g) => ({ key: g.currency, label: `${g.currency} · ${g.n} orders`, value: g.pkr, display: formatMoney(g.pkr, "PKR", { compact: true }), color: CURRENCY_COLORS[g.currency] ?? "#a3a3a3" }))} />
           </div>
         </Card>
         <MiniStat label="Orders today" value={c.today} hint={`${c.d7} in 7 days · ${c.d30} in 30 days`} href="/admin/orders" />
@@ -139,8 +139,8 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
             <ul className="divide-y divide-umber-200/60">
               {attention.map((x) => (
                 <li key={x.href + x.label}>
-                  <Link href={x.href} className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gold-50/60">
-                    <span className="grid h-6 min-w-6 place-items-center rounded-full bg-terracotta-100 px-1.5 text-xs font-semibold text-terracotta-700 tabular-nums">{x.n}</span>
+                  <Link href={x.href} className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-umber-50">
+                    <span className="grid h-6 min-w-6 place-items-center rounded-md border border-umber-200 bg-umber-50 px-1.5 text-xs font-semibold text-umber-900 tabular-nums">{x.n}</span>
                     <span className="flex-1 text-umber-800">{x.label}</span>
                     <ArrowRight className="size-4 text-umber-400" />
                   </Link>
@@ -156,19 +156,16 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
       <div className="grid gap-6 lg:grid-cols-3">
         <Panel title="Sales by destination" description="Paid orders · PKR equivalent">
           <HBarList
-            color="#4b62a6"
             items={data.byDest.map((r) => ({ key: r.country, label: `${destinationName(r.country)} · ${r.n} order${r.n === 1 ? "" : "s"}`, value: r.pkr, display: formatMoney(r.pkr, "PKR", { compact: true }), href: `/admin/orders?destination=${r.country}` }))}
           />
         </Panel>
         <Panel title="Top artisans" description="Paid sub-orders · PKR">
           <HBarList
-            color="#c4623a"
             items={data.topArtisans.map((r) => ({ key: r.id, label: r.name, value: r.pkr, display: formatMoney(r.pkr, "PKR", { compact: true }), href: `/admin/artisans/${r.id}` }))}
           />
         </Panel>
         <Panel title="Top categories" description="Items sold · PKR">
           <HBarList
-            color="#1a9fb0"
             items={data.topCategories.map((r) => ({ key: r.id, label: `${r.name} · ${r.n}`, value: r.pkr, display: formatMoney(r.pkr, "PKR", { compact: true }) }))}
           />
         </Panel>
@@ -179,7 +176,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
           <ul className="divide-y divide-umber-200/60">
             {feed.map((f) => (
               <li key={f.id} className="flex items-start gap-3 px-5 py-2.5 text-sm">
-                <Badge tone={f.kind === "audit" ? "indigo" : f.kind === "dispute" ? "danger" : f.kind === "order" ? "gold" : "neutral"} className="mt-0.5 w-20 justify-center">
+                <Badge tone={f.kind === "dispute" ? "danger" : "neutral"} className="mt-0.5 w-20 justify-center">
                   {f.kind}
                 </Badge>
                 <div className="min-w-0 flex-1">
@@ -198,7 +195,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
           </ul>
         </Panel>
         <Panel
-          title={<span className="flex items-center gap-2"><ClipboardCheck className="size-4 text-gold-600" />Business inputs pending</span>}
+          title={<span className="flex items-center gap-2"><ClipboardCheck className="size-4 text-umber-500" />Business inputs pending</span>}
           description="Numbers that need a real decision before launch"
           action={<Link href="/admin/readiness" className="text-sm text-terracotta-600 hover:underline">Checklist</Link>}
           bodyClassName="p-0"
@@ -206,7 +203,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
           <ul className="divide-y divide-umber-200/60">
             {businessInputs.map((r) => (
               <li key={r.id}>
-                <Link href={r.href} className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-gold-50/60">
+                <Link href={r.href} className="flex items-center gap-3 px-5 py-2.5 text-sm hover:bg-umber-50">
                   {r.status === "pass" ? <Badge tone="success">Set</Badge> : r.status === "warn" ? <Badge tone="pending">Pending</Badge> : <Badge tone="danger">Blocking</Badge>}
                   <span className="flex-1 text-umber-800">{r.title}</span>
                   {r.status !== "pass" && r.count > 1 ? <span className="text-xs text-umber-500 tabular-nums">{r.count}</span> : null}
