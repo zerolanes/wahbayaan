@@ -9,6 +9,7 @@
  * `pending` with `amount: null`. It is never priced at zero and never guessed.
  */
 import { applyBps, convert, convertFromPkr, type Currency, type FxQuote } from "@/lib/money/currency";
+import { FREIGHT_THRESHOLD_G } from "./freight";
 
 export type LineKey = "items" | "shipping" | "duty" | "import_tax" | "handling" | "gift_wrap" | "discount";
 export type LineStatus = "known" | "pending" | "not_applicable";
@@ -133,8 +134,7 @@ export function buyerUnitPrice(unitPricePkr: number, fx: FxQuote) {
   return convertFromPkr(unitPricePkr, fx);
 }
 
-/** Above this, a shipment (furniture, snooker tables) travels as freight rather than by courier. */
-export const FREIGHT_THRESHOLD_G = 70_000;
+export { FREIGHT_THRESHOLD_G };
 
 function quoteShipments(input: LcInput): ShipmentQuote[] {
   const byVendor = new Map<string, LcItem[]>();

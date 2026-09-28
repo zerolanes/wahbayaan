@@ -6,6 +6,7 @@ import { saveListing } from "@/app/actions/seller";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Card, CardHeader, Notice } from "@/components/ui/misc";
+import { FREIGHT_THRESHOLD_G } from "@/lib/commerce/freight";
 import type { CustomizationOption } from "@/lib/db/schema";
 
 export type ListingDefaults = {
@@ -44,6 +45,7 @@ const rs = (minor?: number | null) => (minor ? String(minor / 100) : "");
 /** Listing editor: every field a buyer (and the shipping quote) needs. */
 export function ListingForm({ categories, defaults = {} }: { categories: { id: string; name: string }[]; defaults?: ListingDefaults }) {
   const [state, action, pending] = useActionState(saveListing, null);
+  const [weightKg, setWeightKg] = useState(defaults.weightG ? defaults.weightG / 1000 : 0);
   const [availability, setAvailability] = useState(defaults.availability ?? "ready_to_ship");
   const [opts, setOpts] = useState<Opt[]>(
     (defaults.customizationOptions ?? []).map((o) => ({
@@ -165,8 +167,13 @@ export function ListingForm({ categories, defaults = {} }: { categories: { id: s
           <Field label="Depth (cm)" htmlFor="depthCm">
             <Input id="depthCm" name="depthCm" inputMode="decimal" defaultValue={defaults.depthCm ?? ""} />
           </Field>
-          <Field label="Packed weight (kg)" htmlFor="weightKg" required>
-            <Input id="weightKg" name="weightKg" inputMode="decimal" defaultValue={defaults.weightG ? String(defaults.weightG / 1000) : ""} />
+          <Field
+            label="Packed weight (kg)"
+            htmlFor="weightKg"
+            required
+            hint={weightKg * 1000 > FREIGHT_THRESHOLD_G ? `Over ${FREIGHT_THRESHOLD_G / 1000} kg ships by freight — Wahbayaan quotes the delivery for each buyer.` : undefined}
+          >
+            <Input id="weightKg" name="weightKg" inputMode="decimal" defaultValue={defaults.weightG ? String(defaults.weightG / 1000) : ""} onChange={(e) => setWeightKg(Number(e.target.value) || 0)} />
           </Field>
           <Field label="Materials" htmlFor="materials" className="md:col-span-2" hint="Separate with commas: hand-spun wool, cotton foundation">
             <Input id="materials" name="materials" defaultValue={(defaults.materials ?? []).join(", ")} />
