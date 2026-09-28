@@ -59,6 +59,12 @@ export function entityHref(entity: string, id: string | null | undefined, extra?
       return `/admin/rates/duty`;
     case "import_rule":
       return `/admin/rates/rules`;
+    case "redirect":
+      return `/admin/redirects`;
+    case "media":
+      return `/admin/media?id=${id}`;
+    case "email":
+      return `/admin/emails?id=${id}`;
     default:
       return null;
   }
