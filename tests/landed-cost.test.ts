@@ -158,3 +158,18 @@ describe("computeLandedCost", () => {
     expect(r.delivery.status).toBe("pending");
   });
 });
+
+describe("freight shipments", () => {
+  it("keeps shipping pending with a freight explanation for heavy pieces", () => {
+    const table: LcItem = { ...rug, productId: "p9", title: "Snooker table", weightG: 1_250_000 };
+    const r = computeLandedCost(base({ items: [table], shippingRates: [activeRate] }));
+    expect(line(r, "shipping").status).toBe("pending");
+    expect(line(r, "shipping").amount).toBeNull();
+    expect(line(r, "shipping").note).toMatch(/Freight shipment/);
+  });
+
+  it("still uses the courier explanation for light parcels without a rate", () => {
+    const r = computeLandedCost(base());
+    expect(line(r, "shipping").note).toMatch(/No confirmed courier rate/);
+  });
+});
