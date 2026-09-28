@@ -1,3 +1,4 @@
+import { SHOW_QA_LABELS } from "@/lib/qa";
 import { isDemoMode } from "@/lib/settings";
 
 /**
@@ -5,9 +6,10 @@ import { isDemoMode } from "@/lib/settings";
  * artisans, listings and reviews can never be mistaken for real ones.
  */
 export function DemoRibbon({ variant = "bar" }: { variant?: "bar" | "pill" }) {
-  if (!isDemoMode()) return null;
+  // Internal QA aid only — customers never see it (see src/lib/qa.ts).
+  if (!SHOW_QA_LABELS || !isDemoMode()) return null;
   if (variant === "pill") {
-    // Full-bleed pages (the 3D homepage) keep the label visible as a fixed pill.
+    // Full-bleed pages (the haveli walk-through) keep the label visible as a fixed pill.
     return (
       <div className="fixed bottom-4 left-4 z-[60] max-w-[calc(100vw-2rem)] rounded-full bg-[repeating-linear-gradient(135deg,#b8893b_0_10px,#a9502e_10px_20px)] p-[3px] shadow-lift">
         <p className="rounded-full bg-indigo-950/90 px-3 py-1.5 text-[11px] font-medium text-sand-50" title="The artisans, listings, reviews and orders on this site are fictional samples. Illustrations stand in for real photography.">

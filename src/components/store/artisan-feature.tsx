@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
 import type { PublicVendor } from "@/lib/queries/catalog";
+import { SHOW_QA_LABELS } from "@/lib/qa";
 import { cn } from "@/lib/utils/cn";
 import { regionLabel, yearsSince } from "@/lib/utils/format";
 import { isSvg } from "./illustration-tag";
@@ -61,7 +62,7 @@ export function ArtisanFeatureCard({ vendor, tone = "light", className, cta = "V
               <Image src={vendor.profilePhotoUrl} alt={vendor.displayName} fill sizes="64px" unoptimized={isSvg(vendor.profilePhotoUrl)} className="object-cover" />
             ) : null}
           </span>
-          {vendor.profilePhotoKind === "illustration" ? <span className="rounded-full bg-black/40 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur">Illustrated portrait</span> : null}
+          {SHOW_QA_LABELS && vendor.profilePhotoKind === "illustration" ? <span className="rounded-full bg-black/40 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur">Illustrated portrait</span> : null}
         </div>
       </div>
       <div className="flex flex-col p-6 md:p-8">
