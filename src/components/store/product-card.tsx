@@ -4,6 +4,7 @@ import { Box } from "lucide-react";
 import { BuyerPrice } from "@/components/money/buyer-price";
 import type { ProductCardData } from "@/lib/queries/catalog";
 import { cn } from "@/lib/utils/cn";
+import { CompareToggle } from "./compare-toggle";
 import { StarRating, VerifiedBadge } from "./trust";
 import { WishlistButton } from "./wishlist-button";
 
@@ -17,7 +18,8 @@ export function AvailabilityBadge({ availability, timeToMakeDays, className }: {
   );
 }
 
-export async function ProductCard({ product, saved, priority, className }: { product: ProductCardData; saved: boolean; priority?: boolean; className?: string }) {
+/** `compared` is optional: when given, the card shows an "Add to compare" toggle. */
+export async function ProductCard({ product, saved, priority, className, compared }: { product: ProductCardData; saved: boolean; priority?: boolean; className?: string; compared?: boolean }) {
   const upcoming = product.isLimitedDrop && product.dropStartsAt && product.dropStartsAt > new Date();
   return (
     <article className={cn("group relative", className)}>
@@ -71,7 +73,14 @@ export async function ProductCard({ product, saved, priority, className }: { pro
           <BuyerPrice pkr={product.pricePkr} className="font-semibold text-umber-900" />
           <AvailabilityBadge availability={product.availability} timeToMakeDays={product.timeToMakeDays} />
         </div>
-        <StarRating average={product.rating.average} count={product.rating.count} emptyLabel="New — no reviews yet" />
+        {compared === undefined ? (
+          <StarRating average={product.rating.average} count={product.rating.count} emptyLabel="New — no reviews yet" />
+        ) : (
+          <div className="flex items-center justify-between gap-2">
+            <StarRating average={product.rating.average} count={product.rating.count} emptyLabel="New — no reviews yet" />
+            <CompareToggle productId={product.id} compared={compared} />
+          </div>
+        )}
       </div>
     </article>
   );

@@ -46,7 +46,7 @@ export function LandedCostBreakdown({ landed, className, title = "Landed cost", 
             </p>
           ) : null}
         </div>
-        <p className="font-display text-2xl text-umber-900 tabular-nums">
+        <p className="font-display text-2xl whitespace-nowrap text-umber-900 tabular-nums">
           {formatMoney(landed.knownTotal, currency, { cents: true })}
           {!landed.complete ? <span className="text-base text-umber-400"> +</span> : null}
         </p>

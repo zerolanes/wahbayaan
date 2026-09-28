@@ -17,7 +17,7 @@ export function Select({ className, children, ...props }: ComponentProps<"select
     <select
       className={cn(
         control,
-        "h-11 appearance-none bg-[url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%2376644f' stroke-width='1.6'/></svg>\")] bg-[length:12px_8px] bg-[right_0.9rem_center] bg-no-repeat pr-9",
+        "h-11 appearance-none bg-[url(data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2712%27%20height=%278%27%3E%3Cpath%20d=%27M1%201l5%205%205-5%27%20fill=%27none%27%20stroke=%27%2376644f%27%20stroke-width=%271.6%27/%3E%3C/svg%3E)] bg-[length:12px_8px] bg-[right_0.9rem_center] bg-no-repeat pr-9",
         className,
       )}
       {...props}
