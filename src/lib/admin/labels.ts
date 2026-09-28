@@ -28,7 +28,7 @@ const TONES: Record<string, Record<string, Tone>> = {
   lead: { new: "gold", contacted: "indigo", approved: "success", rejected: "neutral" },
   account: { active: "success", suspended: "danger" },
   check: { pending: "pending", passed: "success", failed: "danger" },
-  email: { queued: "pending", sent: "success", failed: "danger", logged: "neutral" },
+  email: { queued: "pending", sent: "success", failed: "danger", logged: "neutral", cancelled: "neutral" },
   certificate: { issued: "success", void: "neutral" },
 };
 

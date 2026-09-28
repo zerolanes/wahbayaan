@@ -19,6 +19,8 @@ export type SettingsShape = {
   referral: { status: "pending" | "active" | "disabled"; referrerPoints: number; refereePoints: number };
   loyalty: { status: "pending" | "active" | "disabled"; pointsPerUnit: number; pointValueMinor: number };
   fx: { markupBps: number };
+  /** How often artisan payouts are batched, and the smallest amount worth a bank transfer. */
+  payouts: { status: "pending" | "active"; schedule: "weekly" | "fortnightly" | "monthly"; minimumPkr: number | null; note: string | null };
   home: {
     heroEyebrow: string;
     heroTitle: string;
@@ -49,6 +51,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   referral: { status: "pending", referrerPoints: 0, refereePoints: 0 },
   loyalty: { status: "pending", pointsPerUnit: 0, pointValueMinor: 0 },
   fx: { markupBps: 0 },
+  payouts: { status: "pending", schedule: "weekly", minimumPkr: null, note: null },
   home: {
     heroEyebrow: "Handmade in Pakistan · Delivered to your door",
     heroTitle: "Heritage craft, carried home.",
