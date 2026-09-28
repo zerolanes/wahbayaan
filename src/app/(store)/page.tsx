@@ -193,18 +193,18 @@ export default async function HomePage() {
           <Heading eyebrow="Where it's made" title="A map of Pakistani craft">
             Every region keeps its own tradition. These are the cities our artisans work from.
           </Heading>
-          <ul className="mt-10 grid gap-px overflow-hidden rounded-[var(--radius-card)] bg-umber-200/70 ring-1 ring-umber-200/70 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] bg-umber-200/70 ring-1 ring-umber-200/70 lg:grid-cols-4">
             {ATLAS.map((a) => (
               <li key={a.city} className="bg-sand-50">
-                <Link href={a.href} className="group flex h-full flex-col p-6 transition hover:bg-white">
+                <Link href={a.href} className="group flex h-full flex-col p-4 transition hover:bg-white sm:p-6">
                   <div className="flex items-baseline justify-between gap-3">
-                    <p className="font-display text-2xl text-umber-900">{a.city}</p>
+                    <p className="font-display text-xl text-umber-900 sm:text-2xl">{a.city}</p>
                     <p lang="ur" className="font-urdu text-lg leading-none text-umber-400">
                       {a.urdu}
                     </p>
                   </div>
-                  <p className="mt-2 text-sm font-medium text-terracotta-700">{a.craft}</p>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-umber-600">{a.note}</p>
+                  <p className="mt-1 flex-1 text-sm font-medium text-terracotta-700 sm:mt-2 sm:flex-none">{a.craft}</p>
+                  <p className="mt-2 hidden flex-1 text-sm leading-relaxed text-umber-600 sm:block">{a.note}</p>
                   <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-umber-500 group-hover:text-umber-900">
                     Browse <ArrowUpRight className="size-3.5" aria-hidden />
                   </span>
