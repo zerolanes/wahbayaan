@@ -63,7 +63,7 @@ export const COUPON_STATE_TONE: Record<CouponState, "success" | "indigo" | "neut
 };
 
 /** "15% off" / "$25 USD off · orders over $200 USD". */
-export function describeCoupon(c: Pick<CouponRow, "kind" | "percentBps" | "amount" | "currency" | "minSubtotal">): string {
+export function describeCoupon(c: Pick<CouponRow, "percentBps" | "amount" | "currency" | "minSubtotal"> & { kind: string }): string {
   const off = c.kind === "percent" ? `${+((c.percentBps ?? 0) / 100).toFixed(2)}% off` : c.amount != null && c.currency ? `${orderMoney(c.amount, c.currency as Currency)} off` : "Amount missing";
   const min = c.minSubtotal && c.currency ? ` · orders over ${orderMoney(c.minSubtotal, c.currency)}` : "";
   return off + min;
