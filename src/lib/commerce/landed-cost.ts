@@ -5,13 +5,19 @@
  * Pure and synchronous so it can run on the product page, in the cart, at
  * checkout and in tests with identical results.
  *
+ * Destination `PK` is domestic delivery (Pakistani Brands, or gifts sent to
+ * Pakistan): the shipping line reads "Delivery within Pakistan" and import duty
+ * is not applicable — but shipping still stays pending until a real rate exists.
+ *
  * Honesty rule: a line whose real rate has not been supplied is returned as
  * `pending` with `amount: null`. It is never priced at zero and never guessed.
  */
-import { applyBps, convert, convertFromPkr, type Currency, type FxQuote } from "@/lib/money/currency";
+import { applyBps, convert, convertFromPkr, isDomestic, type Currency, type FxQuote } from "@/lib/money/currency";
 import { FREIGHT_THRESHOLD_G } from "./freight";
 
-export type LineKey = "items" | "shipping" | "duty" | "import_tax" | "handling" | "gift_wrap" | "discount";
+export type LineKey = "items" | "shipping" | "duty" | "import_tax" | "handling" | "service_fee" | "gift_wrap" | "discount";
+
+export const DOMESTIC_NO_DUTY_NOTE = "Delivered within Pakistan — no import duty or customs";
 export type LineStatus = "known" | "pending" | "not_applicable";
 
 export type LcItem = {
@@ -119,6 +125,12 @@ export type LcInput = {
   handling: HandlingFeeSetting;
   giftWrap?: { selected: boolean; setting: GiftWrapSetting };
   discount?: { amount: number; label: string };
+  /** Leave the Wahbayaan handling line out (Pakistani Brands charge a service fee line instead). */
+  omitHandling?: boolean;
+  /** Further lines in the buyer's currency (e.g. the brand service fee), inserted after handling. */
+  extraLines?: LcLine[];
+  /** Overrides the shipping note when every parcel ships from one place (e.g. Wahbayaan consolidates brand orders). */
+  shippingNote?: string;
 };
 
 export const PENDING_NOTE = "Pending real rate data";
@@ -243,22 +255,25 @@ export function computeLandedCost(input: LcInput): LandedCost {
   const shipments = quoteShipments(input);
   const shippingPending = shipments.filter((s) => s.status === "pending");
   const shippingAmount = shippingPending.length ? null : shipments.reduce((a, s) => a + (s.amount ?? 0), 0);
+  // Delivery inside Pakistan is domestic: no international leg, no duty, no import tax.
+  const domestic = isDomestic(input.destination);
+  const shippingWord = domestic ? "Delivery within Pakistan" : "International shipping";
   lines.push({
     key: "shipping",
-    label: shipments.length > 1 ? `International shipping (${shipments.length} parcels)` : "International shipping",
+    label: shipments.length > 1 ? `${shippingWord} (${shipments.length} parcels)` : shippingWord,
     status: shippingAmount == null ? "pending" : "known",
     amount: shippingAmount,
     note:
       shippingAmount == null
         ? `${PENDING_NOTE} — ${shippingPending[0]?.reason ?? "courier rates not confirmed"}`
-        : shipments.length > 1
-          ? "Each artisan ships separately from their workshop"
-          : undefined,
+        : (input.shippingNote ?? (shipments.length > 1 ? "Each artisan ships separately from their workshop" : undefined)),
   });
 
   // 3. Import duty and 4. import tax
   const matched = input.items.map((item, idx) => ({ item, value: itemValues[idx], rate: findDutyRate(item, input) }));
-  const dutyPendingReason = matched.some((m) => !m.rate || m.rate.status !== "active" || m.rate.dutyPercent == null)
+  const dutyPendingReason = domestic
+    ? null
+    : matched.some((m) => !m.rate || m.rate.status !== "active" || m.rate.dutyPercent == null)
     ? "duty rates for this destination and craft have not been confirmed"
     : matched.some((m) => m.rate!.basis === "item_plus_shipping") && shippingAmount == null
       ? "duty is charged on the shipping cost too, which is still pending"
@@ -270,7 +285,7 @@ export function computeLandedCost(input: LcInput): LandedCost {
   let dutyNote: string | undefined;
   let taxLabel = "Import tax";
 
-  if (!dutyPendingReason) {
+  if (!dutyPendingReason && !domestic) {
     const rates = matched.map((m) => m.rate!);
     // De minimis: below the destination's threshold no duty is charged.
     const threshold = rates
@@ -311,28 +326,34 @@ export function computeLandedCost(input: LcInput): LandedCost {
     }
   }
 
-  lines.push({
-    key: "duty",
-    label: "Import duty",
-    status: dutyPendingReason ? "pending" : "known",
-    amount: dutyAmount,
-    note: dutyPendingReason ? `${PENDING_NOTE} — ${dutyPendingReason}` : dutyNote,
-  });
-  lines.push({
-    key: "import_tax",
-    label: taxLabel,
-    status: dutyPendingReason ? "pending" : taxApplicable ? "known" : "not_applicable",
-    amount: taxApplicable ? taxAmount : null,
-    note: dutyPendingReason
-      ? `${PENDING_NOTE} — import tax is confirmed together with duty`
-      : taxApplicable
-        ? undefined
-        : "No import tax applies for this destination",
-  });
+  if (domestic) {
+    lines.push({ key: "duty", label: "Import duty", status: "not_applicable", amount: null, note: DOMESTIC_NO_DUTY_NOTE });
+  } else {
+    lines.push({
+      key: "duty",
+      label: "Import duty",
+      status: dutyPendingReason ? "pending" : "known",
+      amount: dutyAmount,
+      note: dutyPendingReason ? `${PENDING_NOTE} — ${dutyPendingReason}` : dutyNote,
+    });
+    lines.push({
+      key: "import_tax",
+      label: taxLabel,
+      status: dutyPendingReason ? "pending" : taxApplicable ? "known" : "not_applicable",
+      amount: taxApplicable ? taxAmount : null,
+      note: dutyPendingReason
+        ? `${PENDING_NOTE} — import tax is confirmed together with duty`
+        : taxApplicable
+          ? undefined
+          : "No import tax applies for this destination",
+    });
+  }
 
   // 5. Handling fee
   const handling = input.handling;
-  if (handling.status === "pending") {
+  if (input.omitHandling) {
+    // Pakistani Brands: Wahbayaan's fee is the service-fee line passed in `extraLines`.
+  } else if (handling.status === "pending") {
     lines.push({
       key: "handling",
       label: "Wahbayaan handling",
@@ -356,6 +377,8 @@ export function computeLandedCost(input: LcInput): LandedCost {
       note: amount == null ? `${PENDING_NOTE} — exchange rate for the handling fee is missing` : amount === 0 ? "No handling fee" : undefined,
     });
   }
+
+  if (input.extraLines?.length) lines.push(...input.extraLines);
 
   // 6. Gift wrap
   if (input.giftWrap?.selected) {

@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/**": ["./drizzle/**"] },
   images: {
     // Uploaded media is served by our own /media route; artwork by /art.
-    localPatterns: [{ pathname: "/media/**" }, { pathname: "/art/**" }, { pathname: "/demo/**" }, { pathname: "/brand/**" }],
+    localPatterns: [{ pathname: "/media/**" }, { pathname: "/art/**" }, { pathname: "/brand-art/**" }, { pathname: "/demo/**" }, { pathname: "/brand/**" }],
   },
   experimental: {
     serverActions: { bodySizeLimit: "60mb" },

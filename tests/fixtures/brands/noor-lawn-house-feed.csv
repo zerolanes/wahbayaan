@@ -1,0 +1,6 @@
+handle,title,description,audience,category,collection,fabric,tags,image_urls,size,colour,sku,price_pkr,compare_at_price_pkr,stock,available,weight_g,source_url,published_at
+printed-lawn-2-piece-saffron,"Printed Lawn 2-Piece — Saffron Bloom","Unstitched shirt and dupatta. FICTIONAL fixture row.",women,Unstitched,Summer Lawn 2026,Lawn,"2-piece,printed",/brand-art/suit/6101.svg|/brand-art/suit/6102.svg,,Saffron,NLH-2P-SB-SA,"2,990",,8,yes,700,https://noor-lawn-house.example/products/printed-lawn-2-piece-saffron,2026-09-29
+straight-trouser-cambric,"Cambric Straight Trouser","Dyed cambric trouser, ready to wear.",women,Bottoms,Everyday,Cambric,,/brand-art/suit/6201.svg,S,Black,NLH-TR-BL-S,1490,1990,5,yes,300,,
+straight-trouser-cambric,"Cambric Straight Trouser",,,,,,,,M,Black,NLH-TR-BL-M,1490,1990,0,,300,,
+straight-trouser-cambric,"Cambric Straight Trouser",,,,,,,,L,Black,NLH-TR-BL-L,1490,1990,,no,300,,
+broken-row,"Broken price row",,women,Kurta,,,,,M,,NLH-BAD,free,,,,,,

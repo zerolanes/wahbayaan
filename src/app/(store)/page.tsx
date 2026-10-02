@@ -3,6 +3,7 @@ import Link from "next/link";
 import { and, desc, eq } from "drizzle-orm";
 import { ArrowRight, ArrowUpRight, BadgeCheck, Calculator, MapPin, PackageCheck, ShieldCheck, Truck } from "lucide-react";
 import { HeroWordmark } from "@/components/store/hero/hero-wordmark";
+import { HomeBrandsSection } from "@/components/store/brands/home-brands";
 import { ProductCard } from "@/components/store/product-card";
 import { VerifiedBadge } from "@/components/store/trust";
 import { ButtonLink } from "@/components/ui/button";
@@ -136,6 +137,8 @@ export default async function HomePage() {
           </Container>
         </section>
       ) : null}
+
+      <HomeBrandsSection />
 
       {/* Craft atlas */}
       <section className="py-16 md:py-24">

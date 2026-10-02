@@ -30,6 +30,9 @@ const TONES: Record<string, Record<string, Tone>> = {
   check: { pending: "pending", passed: "success", failed: "danger" },
   email: { queued: "pending", sent: "success", failed: "danger", logged: "neutral", cancelled: "neutral" },
   certificate: { issued: "success", void: "neutral" },
+  sync: { running: "indigo", succeeded: "success", partial: "warning", failed: "danger", refused: "danger" },
+  brandProduct: { draft: "neutral", published: "success", hidden: "neutral" },
+  brandFulfilment: { pending: "gold", ordered_from_brand: "indigo", received_at_wahbayaan: "indigo", quality_checked: "turquoise", dispatched: "turquoise", delivered: "success", cancelled: "neutral" },
 };
 
 export function toneFor(kind: keyof typeof TONES | string, status: string | null | undefined): Tone {

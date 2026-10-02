@@ -9,7 +9,7 @@ import { addresses, conversations, customRequests, disputes, messages, notificat
 import { requireUser } from "@/lib/auth/session";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { addDisputeMessage, cancelOrder, confirmDelivery, openDispute, OrderError } from "@/lib/commerce/orders";
-import { isDestination } from "@/lib/money/currency";
+import { isBuyerDestination } from "@/lib/money/currency";
 import { saveUploads } from "@/lib/storage";
 
 export type AccountState = { ok?: boolean; error?: string; message?: string } | null;
@@ -177,7 +177,7 @@ const addressSchema = z.object({
   city: z.string().trim().min(2, "Enter the town or city").max(120),
   region: z.string().trim().max(120).optional(),
   postalCode: z.string().trim().min(2, "Enter the postal code").max(20),
-  country: z.string().refine(isDestination, "We ship to the US, UK and Canada"),
+  country: z.string().refine(isBuyerDestination, "We deliver to the US, UK, Canada and within Pakistan"),
   phone: z.string().trim().max(40).optional(),
   isDefault: z.string().optional(),
 });
@@ -239,7 +239,7 @@ export async function updateProfileAction(_prev: AccountState, formData: FormDat
   const d = await db();
   await d
     .update(users)
-    .set({ name: parsed.data.name, country: isDestination(parsed.data.country) ? parsed.data.country : null, marketingOptIn: parsed.data.marketing === "on" })
+    .set({ name: parsed.data.name, country: isBuyerDestination(parsed.data.country) ? parsed.data.country : null, marketingOptIn: parsed.data.marketing === "on" })
     .where(eq(users.id, user.id));
   refresh();
   return { ok: true, message: "Saved." };

@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { setBuyerPreferences } from "@/app/actions/storefront";
-import { BUYER_CURRENCIES, CURRENCY_META, DESTINATIONS, type BuyerCurrency, type DestinationCode } from "@/lib/money/currency";
+import { BUYER_CURRENCIES, BUYER_DESTINATIONS, CURRENCY_META, type BuyerCurrency, type BuyerDestinationCode } from "@/lib/money/currency";
 import { cn } from "@/lib/utils/cn";
 
 /**
  * Persistent "Ship to / Currency" control. Buyers land on their destination's
- * currency; PKR is available only as an explicit choice here.
+ * currency (USD/GBP/CAD overseas, PKR in Pakistan); overseas buyers can choose
+ * PKR explicitly here.
  */
 export function CurrencySwitcher({
   destination,
@@ -16,7 +17,7 @@ export function CurrencySwitcher({
   tone = "dark",
   align = "right",
 }: {
-  destination: DestinationCode;
+  destination: BuyerDestinationCode;
   currency: BuyerCurrency;
   currencyChosen: boolean;
   tone?: "dark" | "light";
@@ -46,7 +47,7 @@ export function CurrencySwitcher({
     });
   };
 
-  const dest = DESTINATIONS.find((d) => d.code === destination)!;
+  const dest = BUYER_DESTINATIONS.find((d) => d.code === destination)!;
   return (
     <div className="relative" ref={ref}>
       <button
@@ -74,8 +75,8 @@ export function CurrencySwitcher({
           )}
         >
           <p className="text-xs font-semibold tracking-wider text-umber-500 uppercase">Ship to</p>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {DESTINATIONS.map((d) => (
+          <div className="mt-2 grid grid-cols-4 gap-2">
+            {BUYER_DESTINATIONS.map((d) => (
               <button
                 key={d.code}
                 type="button"
@@ -88,7 +89,7 @@ export function CurrencySwitcher({
                 <span className="block text-lg" aria-hidden>
                   {CURRENCY_META[d.currency].flag}
                 </span>
-                {d.code === "GB" ? "UK" : d.code === "US" ? "USA" : "Canada"}
+                {d.code === "GB" ? "UK" : d.code === "US" ? "USA" : d.code === "PK" ? "Pakistan" : "Canada"}
               </button>
             ))}
           </div>
@@ -109,8 +110,8 @@ export function CurrencySwitcher({
             ))}
           </div>
           <p className="mt-3 text-xs leading-relaxed text-umber-500">
-            You&apos;ll be charged in {currency === "PKR" ? "Pakistani rupees" : CURRENCY_META[currency].name + "s"}. Duty and shipping are estimated for{" "}
-            {dest.name}.
+            You&apos;ll be charged in {currency === "PKR" ? "Pakistani rupees" : CURRENCY_META[currency].name + "s"}.{" "}
+            {dest.code === "PK" ? "Delivery within Pakistan — no import duty." : `Duty and shipping are estimated for ${dest.name}.`}
             {currencyChosen ? (
               <>
                 {" "}

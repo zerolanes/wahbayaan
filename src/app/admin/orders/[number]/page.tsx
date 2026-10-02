@@ -19,6 +19,8 @@ import { ActionButton, ActionForm, SubmitButton } from "@/components/admin/actio
 import { SelectInput, TextArea, TextInput, Toggle } from "@/components/admin/controls";
 import { AuditTrail, NotesPanel } from "@/components/admin/notes-panel";
 import { QuoteForm } from "@/components/admin/quote-form";
+import { BrandOrderAdmin } from "@/components/admin/brands/brand-order-admin";
+import { getShippingCouriers } from "@/lib/couriers";
 import { DemoBadge, DetailGrid, KV, OrderAmount, Panel, PendingBadge, StatusBadge, Thumb } from "@/components/admin/ui";
 import { SellerPrice } from "@/components/money/seller-price";
 import { Badge, Breadcrumbs, Notice, PageHeader } from "@/components/ui/misc";
@@ -68,6 +70,7 @@ export default async function OrderDetailPage(props: PageProps<"/admin/orders/[n
     },
   });
   if (!order) notFound();
+  if (order.kind === "brand") return <BrandOrderAdmin number={order.number} user={user} />;
   const actorIds = [...new Set(order.events.map((e) => e.actorUserId).filter((x): x is string => !!x))];
   const actors = actorIds.length ? await d.select({ id: users.id, name: users.name }).from(users).where(inArray(users.id, actorIds)) : [];
   const certIds = order.items.map((i) => i.certificateId).filter((x): x is string => !!x);
@@ -78,6 +81,8 @@ export default async function OrderDetailPage(props: PageProps<"/admin/orders/[n
   const refundable = order.paymentStatus === "paid" || order.paymentStatus === "partially_refunded" ? order.total - refunded : 0;
   const shippedAny = order.vendorOrders.some((v) => v.status === "shipped" || v.status === "delivered");
   const quoteable = ["awaiting_quote", "quote_sent", "awaiting_payment"].includes(order.status);
+  const listed = await getShippingCouriers(order.destinationCountry);
+  const courierNames = listed.length ? [...listed, "Other"] : ["DHL Express", "FedEx International Priority", "Aramex", "TCS", "Leopards", "Pakistan Post (EMS)", "Other"];
   const openDispute = order.disputes.find((x) => !["resolved", "closed"].includes(x.status));
   const addr = order.shippingAddress;
 
@@ -283,13 +288,13 @@ export default async function OrderDetailPage(props: PageProps<"/admin/orders/[n
                     <summary className="cursor-pointer font-medium text-umber-800">Ship this parcel (add tracking)</summary>
                     <ActionForm action={shipVendorOrderAction} inline className="mt-3 grid gap-2 sm:grid-cols-4">
                       <input type="hidden" name="vendorOrderId" value={vo.id} />
-                      <SelectInput name="courier" aria-label="Courier" defaultValue="DHL Express">
-                        {["DHL Express", "FedEx International Priority", "Aramex", "TCS", "Leopards", "Pakistan Post (EMS)", "Other"].map((c) => (
+                      <SelectInput name="courier" aria-label="Courier" defaultValue={courierNames[0]}>
+                        {courierNames.map((c) => (
                           <option key={c}>{c}</option>
                         ))}
                       </SelectInput>
                       <TextInput name="trackingNumber" placeholder="Tracking number" aria-label="Tracking number" required />
-                      <TextInput name="trackingUrl" placeholder="Tracking URL (optional)" aria-label="Tracking URL" />
+                      <TextInput name="trackingUrl" placeholder="Tracking URL (auto from courier template)" aria-label="Tracking URL" />
                       <TextInput name="packageWeightG" placeholder="Weight (g)" inputMode="numeric" aria-label="Package weight in grams" />
                       <div className="sm:col-span-4">
                         <SubmitButton variant="primary">Mark shipped &amp; notify buyer</SubmitButton>

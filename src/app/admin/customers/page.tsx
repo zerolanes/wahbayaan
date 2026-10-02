@@ -10,7 +10,7 @@ import { requireStaff } from "@/lib/auth/session";
 import { CUSTOMER_SORTS, customerStats, listCustomers } from "@/lib/admin/customers";
 import { hrefWith, pageCount, pageOf, str, PAGE_SIZE } from "@/lib/admin/params";
 import { percent, ratio } from "@/lib/admin/series";
-import { DESTINATIONS, destinationName } from "@/lib/money/currency";
+import { BUYER_DESTINATIONS, destinationName } from "@/lib/money/currency";
 import { formatDate, timeAgo } from "@/lib/utils/format";
 
 export const metadata = { title: "Customers" };
@@ -39,7 +39,7 @@ export default async function CustomersPage(props: PageProps<"/admin/customers">
         <MiniStat label="Flagged · disabled" value={`${stats.flagged} · ${stats.suspended}`} tone={stats.flagged ? "danger" : undefined} hint="Need a look" href="/admin/customers?flagged=1" />
       </div>
       <FilterBar action="/admin/customers" q={str(params, "q")} placeholder="Name, email or phone">
-        <FilterSelect name="country" label="Country" value={str(params, "country")} options={[...DESTINATIONS.map((d) => ({ value: d.code, label: d.name })), { value: "none", label: "Not set" }]} />
+        <FilterSelect name="country" label="Country" value={str(params, "country")} options={[...BUYER_DESTINATIONS.map((d) => ({ value: d.code, label: d.name })), { value: "none", label: "Not set" }]} />
         <FilterSelect name="orders" label="Orders" value={str(params, "orders")} options={[{ value: "none", label: "No orders" }, { value: "any", label: "Any order" }, { value: "paid", label: "Paid order" }, { value: "repeat", label: "Repeat (2+ paid)" }]} />
         <FilterSelect name="wholesale" label="Wholesale" value={str(params, "wholesale")} options={[{ value: "1", label: "Trade only" }, { value: "0", label: "Retail only" }]} />
         <FilterSelect name="status" label="Login" value={str(params, "status")} options={[{ value: "active", label: "Active" }, { value: "suspended", label: "Disabled" }]} />

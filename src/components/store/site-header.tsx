@@ -23,6 +23,8 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
     !flags.journal && "/journal",
     !flags.compare && "/compare",
     !flags.wholesale && "/wholesale",
+    !flags.pakistaniBrands && "/brands",
+    !flags.brandRequests && "/brands/request",
   ].filter((h): h is string => !!h);
   const [cartCount, wishlist] = await Promise.all([getCartCount(ctx.ownerKey), getWishlistIds(ctx.ownerKey)]);
   // The mini-cart body is only worth loading when there is something in the bag.
@@ -46,8 +48,8 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
           <nav className="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Primary">
             {[
               { href: "/shop", label: "Shop" },
-              // Pakistani Brands section (/brands) sits next to Shop.
-              { href: "/brands", label: "Brands" },
+              // Pakistani Brands section (/brands) sits next to Shop when its feature flag is on.
+              ...(flags.pakistaniBrands ? [{ href: "/brands", label: "Brands" }] : []),
               { href: "/artisans", label: "Artisans" },
               { href: "/how-importing-works", label: "How importing works", wide: true },
             ].map((l) => (

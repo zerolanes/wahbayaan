@@ -2,9 +2,9 @@ import "server-only";
 import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { dutyRates, fxRates, importRules, shippingRates } from "@/lib/db/schema";
+import { couriers, dutyRates, fxRates, importRules, shippingRates } from "@/lib/db/schema";
 import { getSettings } from "@/lib/settings";
-import type { Currency, FxQuote } from "@/lib/money/currency";
+import { isDomestic, type Currency, type FxQuote } from "@/lib/money/currency";
 import type { GiftWrapSetting, HandlingFeeSetting, LcDutyRate, LcShippingRate } from "./landed-cost";
 
 export type FxTable = Partial<Record<string, FxQuote>>;
@@ -45,13 +45,19 @@ export const getRateContext = cache(async (destination: string): Promise<RateCon
   const d = await db();
   const [fxTable, ship, duty, s] = await Promise.all([
     getFxTable(),
-    d.select().from(shippingRates).where(eq(shippingRates.destinationCountry, destination)),
+    d
+      .select({ r: shippingRates, courierActive: couriers.isActive })
+      .from(shippingRates)
+      .leftJoin(couriers, eq(couriers.id, shippingRates.courierId))
+      .where(eq(shippingRates.destinationCountry, destination)),
     d.select().from(dutyRates).where(eq(dutyRates.destinationCountry, destination)),
     getSettings(["handling_fee", "gift_wrap"]),
   ]);
   return {
     fxTable,
-    shippingRates: ship.map((r) => ({ ...r, amount: r.amount ?? null })),
+    // Rates of a courier switched off in Admin → Couriers are never offered.
+    // Zoned domestic rates need a delivery city, so cart estimates leave them out (staff quote instead).
+    shippingRates: ship.filter((x) => x.courierActive !== false && !x.r.zone).map(({ r }) => ({ ...r, amount: r.amount ?? null })),
     dutyRates: duty.map((r) => ({
       ...r,
       dutyPercent: r.dutyPercent == null ? null : Number(r.dutyPercent),
@@ -69,6 +75,7 @@ export type ImportNotice = {
 
 /** Active import rules for a destination + category; "not reviewed" when none exist yet. */
 export async function getImportNotices(destination: string, categoryId: string): Promise<ImportNotice[]> {
+  if (isDomestic(destination)) return [{ level: "info", message: "Delivered within Pakistan — no import duty or customs." }];
   const d = await db();
   const rules = await d.select().from(importRules).where(eq(importRules.destinationCountry, destination));
   const active = rules.filter((r) => r.status === "active" && (r.categoryId === categoryId || r.categoryId == null));

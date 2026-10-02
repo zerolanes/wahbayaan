@@ -7,6 +7,7 @@ import { OrderActions } from "@/components/seller/order-actions";
 import { FUNDS_LABEL, VendorOrderBadge } from "@/components/seller/status";
 import { Badge, Breadcrumbs, Card, CardHeader, Notice, PageHeader } from "@/components/ui/misc";
 import { requireSeller } from "@/lib/auth/session";
+import { getShippingCouriers } from "@/lib/couriers";
 import { getSellerOrder } from "@/lib/seller/queries";
 import { destinationName } from "@/lib/money/currency";
 import { formatDateTime, formatWeight } from "@/lib/utils/format";
@@ -121,7 +122,7 @@ export default async function SellerOrder(props: PageProps<"/seller/orders/[id]"
           <Card>
             <CardHeader title="Next step" />
             <div className="p-5">
-              <OrderActions vendorOrderId={vo.id} status={vo.status} orderPaid={paid && !["cancelled", "refunded"].includes(order.status)} disputed={order.status === "disputed"} />
+              <OrderActions vendorOrderId={vo.id} status={vo.status} orderPaid={paid && !["cancelled", "refunded"].includes(order.status)} disputed={order.status === "disputed"} couriers={await getShippingCouriers(order.destinationCountry)} />
             </div>
           </Card>
 

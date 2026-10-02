@@ -1,5 +1,6 @@
 import "server-only";
 import Stripe from "stripe";
+import { methodAvailability, type Market, type PaymentMethodId, type PaymentMethodsSetting } from "./methods";
 
 /**
  * Payment providers.
@@ -11,7 +12,7 @@ import Stripe from "stripe";
  *
  * PayPal is listed but not implemented until an account exists.
  */
-export type ProviderId = "stripe" | "test";
+export type ProviderId = "stripe" | "test" | "jazzcash-sandbox" | "easypaisa-sandbox";
 
 export type CheckoutRequest = {
   orderId: string;
@@ -71,6 +72,23 @@ export async function startCheckout(req: CheckoutRequest): Promise<CheckoutStart
     mode: "test",
     redirectUrl: `/checkout/test-payment?order=${encodeURIComponent(req.orderNumber)}`,
     providerRef: `test_${req.orderNumber}_${Date.now()}`,
+  };
+}
+
+/**
+ * Start checkout for a chosen payment method (see ./methods.ts). Card uses the
+ * Stripe / test path above; JazzCash and Easypaisa run only in their labelled
+ * sandbox simulator until a merchant account's integration is confirmed.
+ */
+export async function startMethodCheckout(method: PaymentMethodId, setting: PaymentMethodsSetting, market: Market, req: CheckoutRequest): Promise<CheckoutStart> {
+  if (method === "card") return startCheckout(req);
+  const a = methodAvailability(method, setting[method], market, process.env, testPaymentsAllowed());
+  if (!a.available) throw new Error(`${a.label}: ${a.note}`);
+  return {
+    provider: a.provider as ProviderId,
+    mode: "test",
+    redirectUrl: `/checkout/test-payment?order=${encodeURIComponent(req.orderNumber)}`,
+    providerRef: `${a.provider}_${req.orderNumber}_${Date.now()}`,
   };
 }
 

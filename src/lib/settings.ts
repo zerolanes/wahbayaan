@@ -4,6 +4,9 @@ import { inArray } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { settings } from "@/lib/db/schema";
 import type { GiftWrapSetting, HandlingFeeSetting } from "@/lib/commerce/landed-cost";
+import { DEFAULT_BRAND_MARGIN, type BrandMarginSetting } from "@/lib/brands/margin";
+import { DEFAULT_DOMESTIC_DELIVERY, type DomesticDeliverySetting } from "@/lib/brands/domestic";
+import { DEFAULT_PAYMENT_METHODS, type PaymentMethodsSetting } from "@/lib/payments/methods";
 
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
@@ -36,9 +39,17 @@ export type SettingsShape = {
     journal: boolean;
     compare: boolean;
     messaging: boolean;
+    pakistaniBrands: boolean;
+    brandRequests: boolean;
   };
   maintenance: { enabled: boolean; message: string };
   seo: { titleSuffix: string; defaultDescription: string };
+  /** Pakistani Brands: Wahbayaan service fee (domestic / international). */
+  brand_margin: BrandMarginSetting;
+  /** Delivery inside Pakistan: city zones and handling time (rates live in shipping_rates). */
+  domestic_delivery: DomesticDeliverySetting;
+  /** Card, JazzCash, Easypaisa — non-secret config only; secrets are env vars. */
+  payment_methods: PaymentMethodsSetting;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -68,6 +79,8 @@ export const SETTING_DEFAULTS: SettingsShape = {
     journal: true,
     compare: true,
     messaging: true,
+    pakistaniBrands: true,
+    brandRequests: true,
   },
   maintenance: { enabled: false, message: "We're making improvements and will be back shortly." },
   seo: {
@@ -75,6 +88,9 @@ export const SETTING_DEFAULTS: SettingsShape = {
     defaultDescription:
       "A cross-border marketplace for Pakistani heritage craft — calligraphy, hand-knotted rugs, Taxila stone, Himalayan salt and more, with landed cost shown up front.",
   },
+  brand_margin: DEFAULT_BRAND_MARGIN,
+  domestic_delivery: DEFAULT_DOMESTIC_DELIVERY,
+  payment_methods: DEFAULT_PAYMENT_METHODS,
 };
 
 export type SettingKey = keyof SettingsShape;

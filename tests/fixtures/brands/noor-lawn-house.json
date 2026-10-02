@@ -1,0 +1,70 @@
+{
+  "_fixture_note": "FICTIONAL demo data written by hand in the generic Shopify products.json shape. 'Noor Lawn House' is not a real brand; nothing here was copied from any brand's website.",
+  "products": [
+    {
+      "id": 8800000001,
+      "title": "Printed Lawn 3-Piece — Jasmine Garden",
+      "handle": "printed-lawn-3-piece-jasmine-garden",
+      "body_html": "<p>Unstitched three-piece: printed lawn shirt (3 m), dyed cambric trouser (2.5 m) and a printed chiffon dupatta (2.5 m).</p>",
+      "published_at": "2026-09-28T10:00:00+05:00",
+      "vendor": "Noor Lawn House",
+      "product_type": "Unstitched",
+      "tags": ["Women", "collection:Summer Lawn 2026", "fabric:Lawn", "3-piece"],
+      "options": [{ "name": "Color", "position": 1, "values": ["Jasmine White", "Rose Pink"] }],
+      "variants": [
+        { "id": 5100000101, "title": "Jasmine White", "option1": "Jasmine White", "option2": null, "option3": null, "sku": "NLH-UN-JG-WH", "available": true, "price": "3750.00", "compare_at_price": null, "grams": 900, "inventory_quantity": 14, "position": 1 },
+        { "id": 5100000102, "title": "Rose Pink", "option1": "Rose Pink", "option2": null, "option3": null, "sku": "NLH-UN-JG-PK", "available": true, "price": "3750.00", "compare_at_price": null, "grams": 900, "inventory_quantity": 3, "position": 2 }
+      ],
+      "images": [
+        { "id": 11, "src": "/brand-art/suit/5101.svg", "position": 1, "alt": "Jasmine Garden lawn three-piece" },
+        { "id": 12, "src": "/brand-art/suit/5102.svg", "position": 2, "alt": "Jasmine Garden print detail" }
+      ]
+    },
+    {
+      "id": 8800000002,
+      "title": "Embroidered Kurta — Teal Mehndi",
+      "handle": "embroidered-kurta-teal-mehndi",
+      "body_html": "<p>Ready-to-wear embroidered kurta with a straight hem. Shirt only.</p>",
+      "published_at": "2026-08-15T10:00:00+05:00",
+      "vendor": "Noor Lawn House",
+      "product_type": "Kurta",
+      "tags": ["ladies", "collection:Festive Pret", "fabric:Cambric", "sale"],
+      "options": [
+        { "name": "Size", "position": 1, "values": ["XS", "S", "M", "L"] }
+      ],
+      "variants": [
+        { "id": 5100000201, "title": "XS", "option1": "XS", "option2": null, "option3": null, "sku": "NLH-KT-TM-XS", "available": true, "price": "3190.00", "compare_at_price": "4590.00", "grams": 400, "inventory_quantity": 2, "position": 1 },
+        { "id": 5100000202, "title": "S", "option1": "S", "option2": null, "option3": null, "sku": "NLH-KT-TM-S", "available": true, "price": "3190.00", "compare_at_price": "4590.00", "grams": 420, "inventory_quantity": 6, "position": 2 },
+        { "id": 5100000203, "title": "M", "option1": "M", "option2": null, "option3": null, "sku": "NLH-KT-TM-M", "available": true, "price": "3190.00", "compare_at_price": "4590.00", "grams": 440, "inventory_quantity": 0, "position": 3 },
+        { "id": 5100000204, "title": "L", "option1": "L", "option2": null, "option3": null, "sku": "NLH-KT-TM-L", "available": false, "price": "3190.00", "compare_at_price": "4590.00", "grams": 460, "inventory_quantity": 0, "position": 4 }
+      ],
+      "images": [{ "id": 13, "src": "/brand-art/kurta/5201.svg", "position": 1, "alt": "Teal embroidered kurta" }]
+    },
+    {
+      "id": 8800000003,
+      "title": "Chiffon Formal Suit — Midnight Zari",
+      "handle": "chiffon-formal-suit-midnight-zari",
+      "body_html": "<p>Formal stitched suit in chiffon with zari work &amp; organza dupatta.</p>",
+      "published_at": "2026-09-30T18:00:00+05:00",
+      "vendor": "Noor Lawn House",
+      "product_type": "Formal",
+      "tags": ["Women", "collection:Wedding Formals", "fabric:Chiffon"],
+      "options": [
+        { "name": "Size", "position": 1, "values": ["S", "M", "L"] },
+        { "name": "Color", "position": 2, "values": ["Midnight"] }
+      ],
+      "variants": [
+        { "id": 5100000301, "title": "S / Midnight", "option1": "S", "option2": "Midnight", "option3": null, "sku": "NLH-FM-MZ-S", "available": true, "price": "12990.00", "compare_at_price": null, "grams": 1100, "position": 1 },
+        { "id": 5100000302, "title": "M / Midnight", "option1": "M", "option2": "Midnight", "option3": null, "sku": "NLH-FM-MZ-M", "available": true, "price": "12990.00", "compare_at_price": null, "grams": 1150, "position": 2 },
+        { "id": 5100000303, "title": "L / Midnight", "option1": "L", "option2": "Midnight", "option3": null, "sku": "NLH-FM-MZ-L", "available": true, "price": "12990.00", "compare_at_price": null, "grams": 1200, "position": 3 }
+      ],
+      "images": [{ "id": 14, "src": "/brand-art/suit/5301.svg", "position": 1, "alt": "Midnight chiffon formal suit" }]
+    },
+    {
+      "id": 8800000004,
+      "handle": "untitled-draft",
+      "title": "",
+      "variants": [{ "id": 5100000401, "price": "1000.00" }]
+    }
+  ]
+}

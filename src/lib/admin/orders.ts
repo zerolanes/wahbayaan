@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq, gte, ilike, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { orders, products, vendorOrders, vendors } from "@/lib/db/schema";
+import { brandOrderItems, orders, products, vendorOrders, vendors } from "@/lib/db/schema";
 import { computeLandedCost, type LcItem } from "@/lib/commerce/landed-cost";
 import { getRateContext } from "@/lib/commerce/rates";
 import type { Currency, FxQuote } from "@/lib/money/currency";
@@ -82,7 +82,23 @@ export async function listOrders(params: SearchParams, page: number, pageSize: n
         .innerJoin(vendors, eq(vendors.id, vendorOrders.vendorId))
         .where(inArray(vendorOrders.orderId, rows.map((r) => r.id)))
     : [];
-  return { rows: rows.map((o) => ({ ...o, vendors: vos.filter((v) => v.orderId === o.id) })), total: Number(n) };
+  // Pakistani Brands orders: show the brands Wahbayaan buys from in the same column.
+  const brandRows = rows.some((r) => r.kind === "brand")
+    ? await d
+        .selectDistinct({ orderId: brandOrderItems.orderId, name: brandOrderItems.brandName })
+        .from(brandOrderItems)
+        .where(inArray(brandOrderItems.orderId, rows.filter((r) => r.kind === "brand").map((r) => r.id)))
+    : [];
+  return {
+    rows: rows.map((o) => ({
+      ...o,
+      vendors:
+        o.kind === "brand"
+          ? brandRows.filter((b) => b.orderId === o.id).map((b) => ({ orderId: o.id, vendorId: "", name: `${b.name} (bought by Wahbayaan)`, status: "pending" as const }))
+          : vos.filter((v) => v.orderId === o.id),
+    })),
+    total: Number(n),
+  };
 }
 
 export async function orderStatusCounts(params: SearchParams) {

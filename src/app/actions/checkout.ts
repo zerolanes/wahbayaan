@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db/client";
 import { addresses, carts, orders, payments, referralCodes } from "@/lib/db/schema";
@@ -11,6 +11,7 @@ import { getBuyerContext } from "@/lib/buyer-context";
 import { loadCart } from "@/lib/commerce/cart";
 import { beginPayment, markPaid, OrderError, placeOrder } from "@/lib/commerce/orders";
 import { activeProvider, testPaymentsAllowed } from "@/lib/payments";
+import { SIMULATED_PROVIDERS } from "@/lib/payments/methods";
 import { canViewOrder, REFERRAL_COOKIE, rememberOrder, requestOrigin } from "@/lib/order-access";
 
 export type CheckoutState = { error?: string; fieldErrors?: Record<string, string> } | null;
@@ -135,12 +136,14 @@ export async function payOrder(formData: FormData) {
 }
 
 async function testOrder(formData: FormData) {
-  if (activeProvider().id !== "test" || !testPaymentsAllowed()) redirect("/");
+  if (!testPaymentsAllowed()) redirect("/");
   const number = String(formData.get("order") ?? "");
   const d = await db();
   const order = await d.query.orders.findFirst({ where: eq(orders.number, number) });
   if (!order || !(await canViewOrder(order))) redirect("/");
-  const payment = await d.query.payments.findFirst({ where: and(eq(payments.orderId, order.id), eq(payments.provider, "test")), orderBy: desc(payments.createdAt) });
+  // The simulator serves the card test mode and the JazzCash / Easypaisa sandboxes — never a real provider's payment.
+  const payment = await d.query.payments.findFirst({ where: and(eq(payments.orderId, order.id), inArray(payments.provider, SIMULATED_PROVIDERS)), orderBy: desc(payments.createdAt) });
+  if (!payment && activeProvider().id !== "test") redirect("/");
   return { d, order, payment };
 }
 

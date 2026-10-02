@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { CheckCircle2, Clock3, CreditCard, Gift, Mail } from "lucide-react";
 import { ScallopDivider } from "@/components/brand/logo";
 import { isSvg } from "@/components/store/illustration-tag";
@@ -21,6 +21,8 @@ export default async function CheckoutSuccessPage(props: PageProps<"/checkout/su
   const number = typeof sp.order === "string" ? sp.order : "";
   const order = number ? await getOrderByNumber(number) : null;
   if (!order || !(await canViewOrder(order))) notFound();
+  // Pakistani Brands orders have their own confirmation page.
+  if (order.kind === "brand") redirect(`/brands/order-placed?order=${encodeURIComponent(order.number)}${typeof sp.payment === "string" ? `&payment=${encodeURIComponent(sp.payment)}` : ""}`);
   const user = await getCurrentUser();
   const currency = order.currency as Currency;
   const paid = order.paymentStatus === "paid";

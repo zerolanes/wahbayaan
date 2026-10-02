@@ -47,6 +47,16 @@ export const FLAG_META: Record<FlagKey, { label: string; description: string; su
     description: "Buyers can message an artisan about a piece. Conversations are moderated in Admin → Conversations.",
     surfaces: ["“Ask the artisan” on product pages", "Account → Messages", "Seller inbox"],
   },
+  pakistaniBrands: {
+    label: "Pakistani Brands",
+    description: "Fashion and lifestyle brands bought by Wahbayaan on the buyer's behalf, delivered inside Pakistan (PKR) or abroad, with a separate service-fee line.",
+    surfaces: ["/brands directory, brand and product pages", "Brand bag and checkout", "Header, menu and homepage entry points"],
+  },
+  brandRequests: {
+    label: "Shop any brand by link",
+    description: "Buyers paste product links from any Pakistani brand; staff price each item and send a quote to approve and pay.",
+    surfaces: ["/brands/request", "Account → Orders", "Admin → Brand requests"],
+  },
 };
 
 export const FLAG_KEYS = Object.keys(FLAG_META) as FlagKey[];

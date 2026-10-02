@@ -12,6 +12,7 @@ import { hashPassword } from "../src/lib/auth/password";
 import { ROLE_PRESETS } from "../src/lib/auth/permissions";
 import { DESTINATIONS } from "../src/lib/money/currency";
 import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES } from "./seed-data";
+import { seedBrandsBase, seedBrandsDemo } from "./seed-brands";
 
 const DEMO_PASSWORD = "wahbayaan-demo";
 const art = (kind: string, seed: number, size?: string) => `/art/${kind}/${seed}${size ? `-${size}` : ""}.svg`;
@@ -96,6 +97,8 @@ export async function seedBase(db: Db) {
   if (!faqCount) for (const [i, q] of FAQS.entries()) await db.insert(t.faqs).values({ ...q, sort: i });
 
   for (const p of POLICY_PAGES) await db.insert(t.pages).values(p).onConflictDoNothing({ target: t.pages.slug });
+
+  await seedBrandsBase(db);
 
   // Owner account from the environment (production bootstrap).
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
@@ -959,6 +962,7 @@ export async function seedDemo(db: Db) {
   await db.insert(t.auditLog).values({ actorUserId: ownerUser.id, action: "seed", entity: "system", summary: "Demo data loaded" });
 
   await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
+  await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
 
   console.log(`Demo data: ${DEMO_VENDORS.length} artisans, ${DEMO_PRODUCTS.length} listings, ${reviewCount} sample reviews, ${specs.length} orders.`);
   console.log(`Demo logins (password "${DEMO_PASSWORD}"): admin@wahbayaan.test · buyer@wahbayaan.test · noor-calligraphy-atelier@artisans.wahbayaan.test`);

@@ -37,6 +37,8 @@ export function MenuOverlay({
     { href: "/shop", label: "Shop everything" },
     { href: "/brands", label: "Pakistani brands" },
     { href: "/artisans", label: "Meet the artisans" },
+    { href: "/brands", label: "Pakistani Brands" },
+    { href: "/brands/request", label: "Shop any brand by link" },
     { href: "/collections", label: "Collections & bundles" },
     { href: "/drops", label: "Limited drops" },
     { href: "/custom", label: "Commission a piece" },

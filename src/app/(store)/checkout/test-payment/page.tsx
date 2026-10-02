@@ -8,6 +8,7 @@ import { getOrderByNumber } from "@/lib/commerce/orders";
 import { formatMoney, type Currency } from "@/lib/money/currency";
 import { canViewOrder } from "@/lib/order-access";
 import { activeProvider, testPaymentsAllowed } from "@/lib/payments";
+import { SIMULATED_PROVIDERS } from "@/lib/payments/methods";
 import { payOrder, simulatePaymentFailure, simulatePaymentSuccess } from "@/app/actions/checkout";
 
 export const metadata: Metadata = { title: "Test payment", robots: { index: false } };
@@ -17,14 +18,16 @@ export const metadata: Metadata = { title: "Test payment", robots: { index: fals
  * (and never in production unless explicitly allowed). No money moves.
  */
 export default async function TestPaymentPage(props: PageProps<"/checkout/test-payment">) {
-  if (activeProvider().id !== "test" || !testPaymentsAllowed()) notFound();
+  if (!testPaymentsAllowed()) notFound();
   const sp = await props.searchParams;
   const number = typeof sp.order === "string" ? sp.order : "";
   const order = number ? await getOrderByNumber(number) : null;
   if (!order || !(await canViewOrder(order))) notFound();
 
   const payable = order.totalComplete && ["awaiting_payment", "quote_sent"].includes(order.status) && order.paymentStatus !== "paid";
-  const pending = [...order.payments].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).find((p) => p.provider === "test" && p.status === "pending");
+  const pending = [...order.payments].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).find((p) => SIMULATED_PROVIDERS.includes(p.provider) && p.status === "pending");
+  if (activeProvider().id !== "test" && !pending) notFound();
+  const sandboxLabel = pending?.provider === "jazzcash-sandbox" ? "JazzCash sandbox" : pending?.provider === "easypaisa-sandbox" ? "Easypaisa sandbox" : null;
   const failed = sp.failed === "1";
   const currency = order.currency as Currency;
 
@@ -34,7 +37,7 @@ export default async function TestPaymentPage(props: PageProps<"/checkout/test-p
         <div className="overflow-hidden rounded-[var(--radius-card)] bg-sand-50 shadow-lift ring-1 ring-umber-200/60">
           <div className="bg-[repeating-linear-gradient(135deg,#b8893b_0_14px,#a9502e_14px_28px)] px-5 py-3 text-center">
             <p className="inline-flex items-center gap-2 rounded-full bg-black/30 px-4 py-1.5 text-sm font-semibold text-white">
-              <FlaskConical className="size-4" aria-hidden /> Test payment — no money moves
+              <FlaskConical className="size-4" aria-hidden /> {sandboxLabel ? `${sandboxLabel} — simulated, no money moves` : "Test payment — no money moves"}
             </p>
           </div>
           <div className="p-6 md:p-8">

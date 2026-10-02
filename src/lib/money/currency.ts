@@ -2,8 +2,11 @@
  * Currency rules.
  *
  * - Sellers price, get paid and see reports in PKR. Always.
- * - Buyers see USD / GBP / CAD by default (chosen from their destination country)
- *   and may switch to PKR explicitly through the currency switcher.
+ * - Overseas buyers (US / UK / Canada) see USD / GBP / CAD by default, chosen from
+ *   their destination country, and may switch to PKR explicitly.
+ * - Buyers in Pakistan (destination `PK`, the Pakistani Brands domestic service)
+ *   see PKR by default. An overseas buyer sending a gift *to* Pakistan keeps
+ *   their own currency: the currency follows the buyer, not the parcel.
  *
  * All amounts are integer minor units. Every currency here has 2 decimals.
  */
@@ -12,7 +15,7 @@ export const BUYER_CURRENCIES = ["USD", "GBP", "CAD", "PKR"] as const;
 export type BuyerCurrency = (typeof BUYER_CURRENCIES)[number];
 export type Currency = BuyerCurrency;
 
-/** Currencies a buyer lands on by default; PKR is only ever an explicit choice. */
+/** Overseas default currencies (each needs an exchange rate). PKR is the identity currency: the default only for buyers in Pakistan. */
 export const DEFAULT_BUYER_CURRENCIES = ["USD", "GBP", "CAD"] as const;
 
 export const CURRENCY_META: Record<Currency, { symbol: string; name: string; locale: string; flag: string }> = {
@@ -22,6 +25,11 @@ export const CURRENCY_META: Record<Currency, { symbol: string; name: string; loc
   PKR: { symbol: "Rs", name: "Pakistani rupee", locale: "en-PK", flag: "🇵🇰" },
 };
 
+/**
+ * Import destinations: the countries we export to, with courier, duty and
+ * import-rule tables. Rate admin, coverage checks and the cross-border flows
+ * iterate this list.
+ */
 export const DESTINATIONS = [
   { code: "US", name: "United States", currency: "USD" },
   { code: "GB", name: "United Kingdom", currency: "GBP" },
@@ -30,20 +38,39 @@ export const DESTINATIONS = [
 
 export type DestinationCode = (typeof DESTINATIONS)[number]["code"];
 
+/** Wahbayaan ships from Pakistan; delivery inside Pakistan is domestic (no import duty). */
+export const ORIGIN_COUNTRY = "PK";
+export const DOMESTIC_DESTINATION = { code: "PK", name: "Pakistan", currency: "PKR" } as const;
+
+/** Every "Ship to" a buyer can pick: the import destinations plus Pakistan itself. */
+export const BUYER_DESTINATIONS = [...DESTINATIONS, DOMESTIC_DESTINATION] as const;
+export type BuyerDestinationCode = (typeof BUYER_DESTINATIONS)[number]["code"];
+
+export function isDomestic(country: string | null | undefined) {
+  return country === ORIGIN_COUNTRY;
+}
+
 export function isBuyerCurrency(value: unknown): value is BuyerCurrency {
   return typeof value === "string" && (BUYER_CURRENCIES as readonly string[]).includes(value);
 }
 
+/** An import destination (US / GB / CA). */
 export function isDestination(value: unknown): value is DestinationCode {
   return typeof value === "string" && DESTINATIONS.some((d) => d.code === value);
 }
 
-export function destinationName(code: string) {
-  return DESTINATIONS.find((d) => d.code === code)?.name ?? code;
+/** Any destination a buyer may choose, including Pakistan. */
+export function isBuyerDestination(value: unknown): value is BuyerDestinationCode {
+  return typeof value === "string" && BUYER_DESTINATIONS.some((d) => d.code === value);
 }
 
+export function destinationName(code: string) {
+  return BUYER_DESTINATIONS.find((d) => d.code === code)?.name ?? code;
+}
+
+/** USD / GBP / CAD for overseas destinations, PKR for Pakistan, USD when unknown. */
 export function defaultCurrencyFor(country: string | null | undefined): BuyerCurrency {
-  return DESTINATIONS.find((d) => d.code === country)?.currency ?? "USD";
+  return BUYER_DESTINATIONS.find((d) => d.code === country)?.currency ?? "USD";
 }
 
 export function formatMoney(

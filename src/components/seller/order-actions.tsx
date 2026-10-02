@@ -7,7 +7,9 @@ import { ActionForm, SubmitButton } from "./action-form";
 const COURIERS = ["DHL Express", "FedEx International", "Aramex", "UPS", "TCS International", "Leopards International", "Other"];
 
 /** The next step an artisan can take on a parcel. */
-export function OrderActions({ vendorOrderId, status, orderPaid, disputed }: { vendorOrderId: string; status: string; orderPaid: boolean; disputed?: boolean }) {
+/** `couriers`: names from Admin → Couriers (tracking links are built from their templates); falls back to a common list. */
+export function OrderActions({ vendorOrderId, status, orderPaid, disputed, couriers }: { vendorOrderId: string; status: string; orderPaid: boolean; disputed?: boolean; couriers?: string[] }) {
+  const courierNames = couriers?.length ? [...couriers, "Other"] : COURIERS;
   if (!orderPaid) return <p className="text-umber-500 text-sm">Waiting for the buyer&apos;s payment — nothing to do yet.</p>;
   // Fulfilment actions are refused while a case is open (see vendorOrderAction).
   if (disputed)
@@ -48,7 +50,7 @@ export function OrderActions({ vendorOrderId, status, orderPaid, disputed }: { v
                 <option value="" disabled>
                   Choose…
                 </option>
-                {COURIERS.map((c) => (
+                {courierNames.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
               </Select>
@@ -57,7 +59,7 @@ export function OrderActions({ vendorOrderId, status, orderPaid, disputed }: { v
               <Input id={`trk-${vendorOrderId}`} name="trackingNumber" required />
             </Field>
             <Field label="Tracking link (optional)" htmlFor={`url-${vendorOrderId}`}>
-              <Input id={`url-${vendorOrderId}`} name="trackingUrl" type="url" placeholder="https://" />
+              <Input id={`url-${vendorOrderId}`} name="trackingUrl" type="url" placeholder="Filled in automatically for listed couriers" />
             </Field>
             <Field label="Packed weight (kg)" htmlFor={`kg-${vendorOrderId}`} hint="From the courier's receipt.">
               <Input id={`kg-${vendorOrderId}`} name="packageWeightKg" inputMode="decimal" />

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Award, CreditCard, ExternalLink, Gift, LifeBuoy, PackageCheck, Star, Truck, XCircle } from "lucide-react";
+import { BrandOrderDetail } from "@/components/store/brands/brand-order-detail";
 import { isSvg } from "@/components/store/illustration-tag";
 import { CancelOrderForm, ConfirmDeliveryForm, OpenCaseForm } from "@/components/store/order-actions";
 import { OrderCostSummary, OrderJourney, OrderStatusBadge } from "@/components/store/order-view";
@@ -37,6 +38,7 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
   const user = await requireUser(`/account/orders/${number}`);
   const order = await getBuyerOrder(user.id, number);
   if (!order) notFound();
+  if (order.kind === "brand") return <BrandOrderDetail order={order} />;
   const escrow = await getSetting("escrow");
   const currency = order.currency as Currency;
   const openDispute = order.disputes.find((d) => !["resolved", "closed"].includes(d.status));

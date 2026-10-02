@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const VISITOR_COOKIE = "wb_visitor";
 const DESTINATION_COOKIE = "wb_dest";
-const SUPPORTED_DESTINATIONS = new Set(["US", "GB", "CA"]);
+const SUPPORTED_DESTINATIONS = new Set(["US", "GB", "CA", "PK"]);
 
 /**
  * Gives every browser a stable anonymous visitor id (guest cart and wishlist)
@@ -31,5 +31,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/|art/|media/|brand/|demo/|favicon|robots.txt|sitemap.xml).*)"],
+  matcher: ["/((?!_next/|art/|brand-art/|media/|brand/|demo/|favicon|robots.txt|sitemap.xml).*)"],
 };
