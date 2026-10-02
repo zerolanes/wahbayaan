@@ -27,7 +27,7 @@ export function MiniCartBody({ cart, currency, priced }: { cart: CartView; curre
     <ul className="divide-y divide-umber-900/[0.07]">
       {cart.lines.map((l) => (
         <li key={l.id} className="flex gap-3.5 py-3.5 first:pt-1">
-          <Link href={`/product/${l.slug}`} className="relative size-20 shrink-0 overflow-hidden rounded-[var(--radius-control)] bg-sand-200">
+          <Link href={`/product/${l.slug}`} tabIndex={-1} aria-hidden className="relative size-20 shrink-0 overflow-hidden rounded-[var(--radius-control)] bg-sand-200">
             {l.imageUrl ? <Image src={l.imageUrl} alt="" fill sizes="80px" unoptimized={isSvg(l.imageUrl)} className="object-cover" /> : null}
           </Link>
           <div className="min-w-0 flex-1">
