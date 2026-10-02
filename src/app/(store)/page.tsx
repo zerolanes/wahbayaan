@@ -70,29 +70,29 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="border-b border-umber-200/60">
-        <Container className="grid items-center gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16 lg:py-20">
+      <section>
+        <Container className="grid items-center gap-8 pt-6 pb-10 md:gap-10 md:py-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16 lg:py-16">
           <div>
-            <p className="text-xs font-semibold tracking-[0.22em] text-terracotta-600 uppercase">{home.heroEyebrow}</p>
-            <h1 className="mt-5 font-display text-5xl leading-[1.02] tracking-[-0.02em] text-umber-900 sm:text-6xl xl:text-7xl">{home.heroTitle}</h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-umber-600">{home.heroSubtitle}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/shop" size="lg">
-                Shop the collection <ArrowRight className="size-4" />
+            <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-700 uppercase">{home.heroEyebrow}</p>
+            <h1 className="mt-4 text-[2.75rem] leading-[1.02] tracking-[-0.035em] text-umber-900 sm:text-6xl xl:text-7xl">{home.heroTitle}</h1>
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-umber-700">{home.heroSubtitle}</p>
+            <div className="mt-7 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
+              <ButtonLink href="/shop" size="lg" className="max-sm:h-12 max-sm:px-4 max-sm:text-[0.95rem]">
+                Shop the collection <ArrowRight className="size-4 max-sm:hidden" aria-hidden />
               </ButtonLink>
-              <ButtonLink href="/artisans" size="lg" variant="outline">
+              <ButtonLink href="/artisans" size="lg" variant="outline" className="max-sm:h-12 max-sm:px-4 max-sm:text-[0.95rem]">
                 Meet the artisans
               </ButtonLink>
             </div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-umber-200/70 pt-6">
+            <dl className="mt-9 grid max-w-md grid-cols-3 gap-6 border-t border-umber-900/10 pt-6">
               {[
                 { label: "Verified artisans", value: vendors.length },
                 { label: "Pieces listed", value: pieceCount },
                 { label: "Craft cities", value: cities.size },
               ].map((s) => (
                 <div key={s.label}>
-                  <dt className="text-xs text-umber-500">{s.label}</dt>
-                  <dd className="mt-1 font-display text-3xl text-umber-900 tabular-nums">{s.value}</dd>
+                  <dt className="text-xs text-umber-600">{s.label}</dt>
+                  <dd className="mt-1 font-display text-3xl tracking-[-0.03em] text-umber-900 tabular-nums">{s.value}</dd>
                 </div>
               ))}
             </dl>
@@ -104,7 +104,7 @@ export default async function HomePage() {
                 <Link
                   key={p.id}
                   href={`/product/${p.slug}`}
-                  className={cn("group relative overflow-hidden rounded-[var(--radius-card)] bg-sand-200", i === 0 ? "row-span-2 aspect-[3/4] sm:aspect-auto" : "aspect-[4/3]")}
+                  className={cn("group relative overflow-hidden rounded-[var(--radius-panel)] bg-sand-200 shadow-soft", i === 0 ? "row-span-2 aspect-[3/4] sm:aspect-auto" : "aspect-[4/3]")}
                 >
                   <Image
                     src={p.imageUrl}
@@ -113,11 +113,11 @@ export default async function HomePage() {
                     priority
                     sizes="(min-width: 1024px) 28vw, 50vw"
                     unoptimized={isSvg(p.imageUrl)}
-                    className="object-cover transition duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.03]"
+                    className="object-cover transition-transform duration-700 ease-[var(--ease-spring)] group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-10 sm:p-4 sm:pt-12">
-                    <p className="line-clamp-1 text-sm font-medium text-white">{p.title}</p>
-                    <p className="text-xs text-white/75">
+                  <div className="glass-dark absolute inset-x-2 bottom-2 rounded-[1.125rem] px-3 py-2 sm:inset-x-3 sm:bottom-3 sm:px-3.5 sm:py-2.5">
+                    <p className="line-clamp-1 text-sm font-semibold text-white">{p.title}</p>
+                    <p className="line-clamp-1 text-xs text-sand-100">
                       {p.categoryName} · {p.vendorName}
                     </p>
                   </div>
@@ -129,15 +129,17 @@ export default async function HomePage() {
       </section>
 
       {/* Promises strip */}
-      <section className="border-b border-umber-200/60 bg-sand-50/70">
+      <section aria-label="Our promises">
         <Container>
-          <ul className="grid divide-umber-200/70 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x">
+          <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {PROMISES.map(({ icon: Icon, title, text }) => (
-              <li key={title} className="flex gap-3 py-5 lg:px-6 lg:first:pl-0 lg:last:pr-0">
-                <Icon className="mt-0.5 size-5 shrink-0 text-terracotta-600" aria-hidden />
+              <li key={title} className="flex w-[78%] shrink-0 snap-start gap-3.5 rounded-[var(--radius-card)] bg-sand-50 p-5 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] sm:w-auto">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-terracotta-50 text-terracotta-700">
+                  <Icon className="size-5" aria-hidden />
+                </span>
                 <div>
-                  <p className="text-sm font-semibold text-umber-900">{title}</p>
-                  <p className="mt-0.5 text-sm text-umber-600">{text}</p>
+                  <p className="text-[0.95rem] font-semibold text-umber-900">{title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-umber-700">{text}</p>
                 </div>
               </li>
             ))}
@@ -152,17 +154,17 @@ export default async function HomePage() {
             <Heading eyebrow="Our collections" title="Shop by craft" action={{ href: "/shop", label: "Shop everything" }}>
               Each craft is made, photographed and shipped by the people who practise it.
             </Heading>
-            <ul className="mt-10 flex snap-x gap-5 overflow-x-auto pb-2 scrollbar-none md:grid md:grid-cols-5 md:gap-8 md:overflow-visible lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none lg:gap-6">
+            <ul className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:mt-10 md:grid md:grid-cols-5 md:gap-5 md:overflow-visible md:px-0 lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none lg:gap-4">
               {crafts.map((c) => (
-                <li key={c.slug} className="w-32 shrink-0 snap-start md:w-auto">
-                  <Link href={`/category/${c.slug}`} className="group block text-center">
-                    <span className="relative mx-auto block aspect-square overflow-hidden rounded-full bg-sand-200 ring-1 ring-umber-200/70 transition group-hover:ring-2 group-hover:ring-terracotta-500">
+                <li key={c.slug} className="w-[7.5rem] shrink-0 snap-start md:w-auto">
+                  <Link href={`/category/${c.slug}`} className="pressable group block text-center">
+                    <span className="relative mx-auto block aspect-square overflow-hidden rounded-[var(--radius-card)] bg-sand-200 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] transition-shadow group-hover:shadow-lift">
                       {c.coverImageUrl ? (
-                        <Image src={c.coverImageUrl} alt="" fill sizes="160px" unoptimized={isSvg(c.coverImageUrl)} className="object-cover transition duration-700 group-hover:scale-105" />
+                        <Image src={c.coverImageUrl} alt="" fill sizes="160px" unoptimized={isSvg(c.coverImageUrl)} className="object-cover transition-transform duration-700 ease-[var(--ease-spring)] group-hover:scale-105" />
                       ) : null}
                     </span>
-                    <span className="mt-3 block text-sm font-medium text-umber-900 group-hover:text-terracotta-700">{c.name}</span>
-                    <span className="block text-xs text-umber-500">
+                    <span className="mt-2.5 block text-sm leading-snug font-semibold text-umber-900 group-hover:text-terracotta-700">{c.name}</span>
+                    <span className="block text-xs text-umber-600">
                       {c.productCount} {c.productCount === 1 ? "piece" : "pieces"}
                     </span>
                   </Link>
@@ -190,24 +192,24 @@ export default async function HomePage() {
       ) : null}
 
       {/* Craft atlas */}
-      <section className="border-y border-umber-200/60 bg-sand-50/70 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <Container>
           <Heading eyebrow="Where it's made" title="A map of Pakistani craft">
             Every region keeps its own tradition. These are the cities our artisans work from.
           </Heading>
-          <ul className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] bg-umber-200/70 ring-1 ring-umber-200/70 lg:grid-cols-4">
+          <ul className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             {ATLAS.map((a) => (
-              <li key={a.city} className="bg-sand-50">
-                <Link href={a.href} className="group flex h-full flex-col p-4 transition hover:bg-white sm:p-6">
+              <li key={a.city}>
+                <Link href={a.href} className="pressable group flex h-full flex-col rounded-[var(--radius-card)] bg-sand-50 p-4 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] hover:bg-white hover:shadow-soft sm:p-6">
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="font-display text-xl text-umber-900 sm:text-2xl">{a.city}</p>
-                    <p lang="ur" className="font-urdu text-lg leading-none text-umber-400">
+                    <p lang="ur" className="font-urdu text-lg leading-none text-umber-600">
                       {a.urdu}
                     </p>
                   </div>
                   <p className="mt-1 flex-1 text-sm font-medium text-terracotta-700 sm:mt-2 sm:flex-none">{a.craft}</p>
-                  <p className="mt-2 hidden flex-1 text-sm leading-relaxed text-umber-600 sm:block">{a.note}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-umber-500 group-hover:text-umber-900">
+                  <p className="mt-2 hidden flex-1 text-sm leading-relaxed text-umber-700 sm:block">{a.note}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-umber-600 group-hover:text-umber-900">
                     Browse <ArrowUpRight className="size-3.5" aria-hidden />
                   </span>
                 </Link>
@@ -221,10 +223,10 @@ export default async function HomePage() {
       <section className="py-16 md:py-24">
         <Container className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-20">
           <div>
-            <p className="text-xs font-semibold tracking-[0.22em] text-terracotta-600 uppercase">How importing works</p>
-            <h2 className="mt-3 font-display text-4xl leading-[1.08] text-umber-900 md:text-5xl">Buying from a workshop in Pakistan, made simple.</h2>
+            <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-700 uppercase">How importing works</p>
+            <h2 className="mt-3 font-display text-4xl leading-[1.08] tracking-[-0.03em] text-umber-900 md:text-5xl">Buying from a workshop in Pakistan, made simple.</h2>
             <p className="mt-4 text-lg text-umber-600">You pay for the piece, the international shipping and your country&apos;s import charges — and you see every line before you pay.</p>
-            <div className="mt-8 rounded-[var(--radius-card)] bg-white p-6 ring-1 ring-umber-200/70">
+            <div className="mt-8 rounded-[var(--radius-panel)] bg-white p-6 shadow-soft">
               <p className="text-xs font-semibold tracking-wide text-umber-500 uppercase">What you see at checkout</p>
               <dl className="mt-4 divide-y divide-umber-100 text-sm">
                 {["Piece price", "International shipping", "Import duty", "Sales tax / VAT / GST", "Brokerage & handling"].map((l) => (
@@ -247,11 +249,11 @@ export default async function HomePage() {
           <ol className="relative space-y-8 border-l border-umber-200 pl-8">
             {STEPS.map((s, i) => (
               <li key={s.title} className="relative">
-                <span className="absolute top-0 -left-[2.95rem] grid size-7 place-items-center rounded-full bg-parchment text-xs font-semibold text-umber-900 ring-1 ring-umber-300 tabular-nums">
+                <span className="absolute top-0 -left-[2.95rem] grid size-7 place-items-center rounded-full bg-white text-xs font-semibold text-umber-900 shadow-[0_0_0_1px_rgb(34_26_19/0.14)] tabular-nums">
                   {i + 1}
                 </span>
-                <h3 className="font-display text-2xl text-umber-900">{s.title}</h3>
-                <p className="mt-1.5 max-w-lg leading-relaxed text-umber-600">{s.text}</p>
+                <h3 className="font-display text-xl text-umber-900 md:text-2xl">{s.title}</h3>
+                <p className="mt-1.5 max-w-lg leading-relaxed text-umber-700">{s.text}</p>
               </li>
             ))}
             <li className="relative">
@@ -274,7 +276,7 @@ export default async function HomePage() {
             <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {featuredVendors.slice(0, 8).map((v) => (
                 <li key={v.id}>
-                  <Link href={`/artisans/${v.slug}`} className="group flex h-full items-center gap-4 rounded-[var(--radius-card)] bg-white p-4 ring-1 ring-umber-200/70 transition hover:ring-umber-400">
+                  <Link href={`/artisans/${v.slug}`} className="pressable group flex h-full items-center gap-4 rounded-[var(--radius-card)] bg-sand-50 p-4 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] hover:bg-white hover:shadow-soft">
                     <span className="relative size-16 shrink-0 overflow-hidden rounded-full bg-sand-200">
                       {v.profilePhotoUrl ? <Image src={v.profilePhotoUrl} alt="" fill sizes="64px" unoptimized={isSvg(v.profilePhotoUrl)} className="object-cover" /> : null}
                     </span>
@@ -309,9 +311,9 @@ export default async function HomePage() {
                   <div className={cn("relative", i % 3 === 0 ? "aspect-[3/4]" : i % 3 === 1 ? "aspect-square" : "aspect-[4/5]")}>
                     <Image src={p.imageUrl} alt={p.imageAlt ?? p.title} fill sizes="(min-width: 1024px) 25vw, 50vw" unoptimized={isSvg(p.imageUrl)} className="object-cover transition duration-700 group-hover:scale-[1.03]" />
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/60 to-transparent p-3 pt-10 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
-                    <p className="line-clamp-1 text-sm font-medium text-white">{p.title}</p>
-                    <p className="text-xs text-white/75">{p.vendorName}</p>
+                  <div className="glass-dark absolute inset-x-2 bottom-2 translate-y-1 rounded-[1rem] px-3 py-2 opacity-0 transition-[opacity,translate] duration-[var(--dur-base)] ease-[var(--ease-spring)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+                    <p className="line-clamp-1 text-sm font-semibold text-white">{p.title}</p>
+                    <p className="text-xs text-sand-100">{p.vendorName}</p>
                   </div>
                 </Link>
               ))}
@@ -323,9 +325,9 @@ export default async function HomePage() {
       {/* Commission + haveli */}
       <section className="pb-16 md:pb-24">
         <Container className="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <div className="rounded-[var(--radius-card)] bg-terracotta-700 px-6 py-12 text-sand-50 sm:px-10">
-            <p className="text-xs font-semibold tracking-[0.22em] text-terracotta-100 uppercase">Made for you</p>
-            <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight">Your family name in Nastaliq. A rug in your room&apos;s exact size.</h2>
+          <div className="rounded-[var(--radius-panel)] bg-terracotta-700 px-6 py-12 text-sand-50 sm:px-10">
+            <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-100 uppercase">Made for you</p>
+            <h2 className="mt-3 max-w-xl font-display text-3xl leading-tight tracking-[-0.03em] md:text-4xl">Your family name in Nastaliq. A rug in your room&apos;s exact size.</h2>
             <p className="mt-4 max-w-xl text-terracotta-50/85">Describe what you have in mind. An artisan replies with a quote, sketches and a timeline before anything is made — and your deposit is held like any other order.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/custom" className="bg-sand-50 text-umber-900 hover:bg-white">
@@ -336,10 +338,10 @@ export default async function HomePage() {
               </ButtonLink>
             </div>
           </div>
-          <Link href="/haveli" className="group flex flex-col justify-between rounded-[var(--radius-card)] bg-indigo-950 px-6 py-12 text-sand-50 sm:px-10">
+          <Link href="/haveli" className="pressable group flex flex-col justify-between rounded-[var(--radius-panel)] bg-indigo-950 px-6 py-12 text-sand-50 sm:px-10">
             <div>
-              <p className="text-xs font-semibold tracking-[0.22em] text-indigo-200 uppercase">Take the long way round</p>
-              <h2 className="mt-3 font-display text-4xl leading-tight">Walk through the haveli</h2>
+              <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-indigo-200 uppercase">Take the long way round</p>
+              <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.03em] md:text-4xl">Walk through the haveli</h2>
               <p className="mt-4 text-indigo-100/80">An interactive walk through a courtyard house, with one craft in every room. Best on a laptop or tablet.</p>
             </div>
             <span className="mt-8 inline-flex items-center gap-2 text-sm font-medium">
@@ -357,12 +359,12 @@ export default async function HomePage() {
             <div className="mt-10 grid gap-8 md:grid-cols-3">
               {posts.map((p) => (
                 <Link key={p.id} href={`/journal/${p.slug}`} className="group">
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-card)] bg-sand-200">
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-panel)] bg-sand-200">
                     {p.coverImageUrl ? <Image src={p.coverImageUrl} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" unoptimized={isSvg(p.coverImageUrl)} className="object-cover transition duration-700 group-hover:scale-[1.03]" /> : null}
                   </div>
-                  <p className="mt-4 text-xs text-umber-500">{formatDate(p.publishedAt)}</p>
-                  <h3 className="mt-1 font-display text-2xl leading-snug text-umber-900 group-hover:text-terracotta-700">{p.title}</h3>
-                  {p.excerpt ? <p className="mt-2 line-clamp-2 text-sm text-umber-600">{p.excerpt}</p> : null}
+                  <p className="mt-4 text-xs text-umber-600">{formatDate(p.publishedAt)}</p>
+                  <h3 className="mt-1 font-display text-xl leading-snug text-umber-900 group-hover:text-terracotta-700 md:text-2xl">{p.title}</h3>
+                  {p.excerpt ? <p className="mt-2 line-clamp-2 text-sm text-umber-700">{p.excerpt}</p> : null}
                 </Link>
               ))}
             </div>
@@ -378,12 +380,12 @@ function Heading({ eyebrow, title, action, children }: { eyebrow?: string; title
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-2xl">
-        {eyebrow ? <p className="text-xs font-semibold tracking-[0.22em] text-terracotta-600 uppercase">{eyebrow}</p> : null}
-        <h2 className="mt-3 font-display text-4xl leading-[1.08] text-umber-900 md:text-5xl">{title}</h2>
-        {children ? <p className="mt-3 text-lg text-umber-600">{children}</p> : null}
+        {eyebrow ? <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-700 uppercase">{eyebrow}</p> : null}
+        <h2 className="mt-2 font-display text-[2rem] leading-[1.08] tracking-[-0.03em] text-umber-900 md:text-5xl">{title}</h2>
+        {children ? <p className="mt-3 text-lg text-umber-700">{children}</p> : null}
       </div>
       {action ? (
-        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-umber-900 underline-offset-4 hover:underline">
+        <Link href={action.href} className="pressable inline-flex h-10 items-center gap-1.5 rounded-full bg-umber-900/[0.06] px-4 text-sm font-medium text-umber-900 hover:bg-umber-900/[0.1]">
           {action.label} <ArrowRight className="size-4" aria-hidden />
         </Link>
       ) : null}

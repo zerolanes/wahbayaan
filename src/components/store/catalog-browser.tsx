@@ -34,21 +34,21 @@ function OptionList({ options }: { options: Option[] }) {
             scroll={false}
             aria-current={o.active ? "true" : undefined}
             className={cn(
-              "group flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm transition",
-              o.active ? "font-medium text-umber-900" : "text-umber-600 hover:bg-umber-900/[0.04] hover:text-umber-900",
+              "group flex min-h-10 items-center gap-3 rounded-[0.75rem] px-2.5 py-1.5 text-[0.95rem] transition-colors lg:min-h-0 lg:text-sm",
+              o.active ? "bg-umber-900/[0.06] font-semibold text-umber-900" : "text-umber-700 hover:bg-umber-900/[0.04] hover:text-umber-900",
             )}
           >
             <span
               aria-hidden
               className={cn(
-                "grid size-4 shrink-0 place-items-center rounded-full border transition",
+                "grid size-[18px] shrink-0 place-items-center rounded-full border transition lg:size-4",
                 o.active ? "border-indigo-900 bg-indigo-900" : "border-umber-300 group-hover:border-umber-500",
               )}
             >
               {o.active ? <span className="size-1.5 rounded-full bg-sand-50" /> : null}
             </span>
             <span className="min-w-0 flex-1 truncate">{o.label}</span>
-            {o.count != null ? <span className="text-xs text-umber-400 tabular-nums">{o.count}</span> : null}
+            {o.count != null ? <span className="text-xs text-umber-600 tabular-nums">{o.count}</span> : null}
           </Link>
         </li>
       ))}
@@ -59,17 +59,17 @@ function OptionList({ options }: { options: Option[] }) {
 function FilterGroup({ title, children, collapsible, defaultOpen = true }: { title: string; children: React.ReactNode; collapsible?: boolean; defaultOpen?: boolean }) {
   if (collapsible)
     return (
-      <details open={defaultOpen} className="group/fg border-t border-umber-200/70 py-5 first:border-t-0 first:pt-0">
-        <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold tracking-[0.18em] text-umber-500 uppercase [&::-webkit-details-marker]:hidden">
+      <details open={defaultOpen} className="group/fg border-t border-umber-900/[0.08] py-5 first:border-t-0 first:pt-0">
+        <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between rounded-md text-xs font-semibold tracking-[0.06em] text-umber-700 uppercase [&::-webkit-details-marker]:hidden">
           {title}
-          <span aria-hidden className="text-umber-400 transition group-open/fg:rotate-45">+</span>
+          <span aria-hidden className="text-base text-umber-600 transition-transform duration-[var(--dur-quick)] group-open/fg:rotate-45">+</span>
         </summary>
         <div className="mt-3">{children}</div>
       </details>
     );
   return (
-    <div className="border-t border-umber-200/70 py-5 first:border-t-0 first:pt-0">
-      <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-umber-500 uppercase">{title}</p>
+    <div className="border-t border-umber-900/[0.08] py-5 first:border-t-0 first:pt-0">
+      <p className="mb-3 text-xs font-semibold tracking-[0.06em] text-umber-700 uppercase">{title}</p>
       {children}
     </div>
   );
@@ -115,7 +115,7 @@ export async function CatalogBrowser({ basePath, query, lockCategory }: { basePa
             count: a === "ready_to_ship" ? facets.readyToShip : facets.madeToOrder,
           }))}
         />
-        <div className="mt-2 border-t border-dashed border-umber-200/70 pt-2">
+        <div className="mt-2 border-t border-umber-900/[0.08] pt-2">
           <OptionList options={[{ label: "Customizable — make it yours", href: toggle("customizable", true), active: !!query.customizable }]} />
         </div>
       </FilterGroup>
@@ -123,7 +123,7 @@ export async function CatalogBrowser({ basePath, query, lockCategory }: { basePa
         {ctx.fx ? (
           <OptionList options={priceBands(ctx.currency).map((b) => ({ label: b.label, href: toggle("price", b.id), active: query.price === b.id }))} />
         ) : (
-          <p className="text-sm text-umber-500">Price filters appear once exchange rates are set.</p>
+          <p className="text-sm text-umber-600">Price filters appear once exchange rates are set.</p>
         )}
       </FilterGroup>
       {facets.regions.length ? (
@@ -150,47 +150,53 @@ export async function CatalogBrowser({ basePath, query, lockCategory }: { basePa
       </aside>
 
       <div className="min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/70 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-2">
           <div className="flex items-center gap-3">
-            <details className="lg:hidden">
-              <summary className="inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-full border border-umber-300/70 bg-sand-50/70 px-4 text-sm font-medium text-umber-900 [&::-webkit-details-marker]:hidden">
+            <details className="details-sheet lg:hidden">
+              <summary className="pressable inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-umber-900 shadow-[inset_0_0_0_1px_rgb(34_26_19/0.16)] [&::-webkit-details-marker]:hidden">
                 <SlidersHorizontal className="size-4" aria-hidden />
                 Filters{chips.length ? <span className="grid size-5 place-items-center rounded-full bg-indigo-900 text-[11px] text-sand-50">{chips.length}</span> : null}
               </summary>
               <DrawerScrollReset />
-              <div className="paper fixed inset-0 z-[90] flex flex-col" role="dialog" aria-label="Filters">
-                <div className="flex items-center justify-between border-b border-umber-200/70 px-5 py-4">
-                  <p className="font-display text-2xl text-umber-900">Filters</p>
-                  <DrawerClose href={shopHref(basePath, query)} icon className="grid size-10 place-items-center rounded-full border border-umber-300/70 text-umber-800">
+              <DrawerClose href={shopHref(basePath, query)} className="details-sheet-scrim fixed inset-0 z-[89] block bg-[var(--scrim)]" aria-hidden tabIndex={-1} />
+              <div
+                className="details-sheet-panel glass-thick fixed inset-x-0 bottom-0 z-[90] flex max-h-[88dvh] flex-col rounded-t-[var(--radius-sheet)] pb-[env(safe-area-inset-bottom)]"
+                role="dialog"
+                aria-label="Filters"
+              >
+                <span className="sheet-grabber shrink-0" aria-hidden />
+                <div className="flex items-center justify-between px-5 pt-3 pb-2">
+                  <p className="text-xl font-semibold tracking-[-0.02em] text-umber-900">Filters</p>
+                  <DrawerClose href={shopHref(basePath, query)} icon className="pressable grid size-10 place-items-center rounded-full bg-umber-900/[0.07] text-umber-800">
                     <span className="sr-only">Close filters</span>
                   </DrawerClose>
                 </div>
-                <div className="flex-1 overflow-y-auto px-5 py-5">{panel}</div>
-                <div className="flex gap-3 border-t border-umber-200/70 bg-sand-50/80 px-5 py-4 backdrop-blur">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-3">{panel}</div>
+                <div className="flex gap-3 border-t border-umber-900/[0.08] px-5 py-4">
                   {chips.length ? (
-                    <Link href={clearFiltersHref(basePath, query)} className="inline-flex h-12 items-center rounded-full px-4 text-sm font-medium text-umber-700 underline-offset-4 hover:underline">
+                    <Link href={clearFiltersHref(basePath, query)} className="pressable inline-flex h-12 items-center rounded-full px-4 text-sm font-medium text-umber-800 hover:bg-umber-900/[0.06]">
                       Clear all
                     </Link>
                   ) : null}
                   <DrawerClose
                     href={shopHref(basePath, query)}
-                    className="inline-flex h-12 flex-1 items-center justify-center rounded-full bg-indigo-900 text-sm font-medium text-sand-50 shadow-soft"
+                    className="pressable inline-flex h-12 flex-1 items-center justify-center rounded-full bg-indigo-900 text-sm font-medium text-sand-50 shadow-soft"
                   >
                     Show {pluralize(result.total, "piece")}
                   </DrawerClose>
                 </div>
               </div>
             </details>
-            <p className="text-sm text-umber-600" aria-live="polite">
+            <p className="text-sm text-umber-700" aria-live="polite">
               <strong className="font-semibold text-umber-900 tabular-nums">{result.total.toLocaleString("en-US")}</strong> {result.total === 1 ? "piece" : "pieces"}
-              {pages > 1 ? <span className="text-umber-400"> · page {query.page} of {pages}</span> : null}
+              {pages > 1 ? <span className="text-umber-600"> · page {query.page} of {pages}</span> : null}
             </p>
           </div>
           <Form action={basePath} className="flex items-center gap-2">
             {hidden.map(([k, v]) => (
               <input key={k} type="hidden" name={k} value={k === "customizable" ? "1" : String(v)} />
             ))}
-            <label htmlFor="sort" className="text-sm text-umber-500">
+            <label htmlFor="sort" className="text-sm text-umber-700 max-sm:sr-only">
               Sort
             </label>
             <AutoSubmitSelect
@@ -219,20 +225,20 @@ export async function CatalogBrowser({ basePath, query, lockCategory }: { basePa
                 key={c.key}
                 href={c.href}
                 scroll={false}
-                className="group inline-flex items-center gap-1.5 rounded-full bg-indigo-900 py-1 pr-2 pl-3 text-xs font-medium text-sand-50 transition hover:bg-indigo-800"
+                className="pressable group inline-flex h-8 items-center gap-1.5 rounded-full bg-indigo-900 pr-2 pl-3 text-xs font-medium text-sand-50 hover:bg-indigo-800"
               >
                 {c.label}
                 <X className="size-3.5 opacity-70 group-hover:opacity-100" aria-hidden />
                 <span className="sr-only">Remove filter</span>
               </Link>
             ))}
-            <Link href={clearFiltersHref(basePath, query)} scroll={false} className="ml-1 text-xs font-medium text-terracotta-600 hover:underline">
+            <Link href={clearFiltersHref(basePath, query)} scroll={false} className="ml-1 inline-flex h-8 items-center px-1 text-xs font-medium text-terracotta-700 hover:underline">
               Clear all
             </Link>
           </div>
         ) : null}
 
-        <div className="mt-8">
+        <div className="mt-6">
           {result.items.length ? (
             <ProductGrid products={result.items} priorityCount={3} />
           ) : (

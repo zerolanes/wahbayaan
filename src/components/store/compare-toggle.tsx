@@ -29,8 +29,8 @@ export function CompareToggle({ productId, compared, variant = "inline", classNa
           onClick={onClick}
           aria-pressed={optimistic}
           className={cn(
-            "inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border px-5 text-sm font-medium transition",
-            optimistic ? "border-indigo-300 bg-indigo-50 text-indigo-800" : "border-umber-300/70 hover:border-umber-900",
+            "pressable inline-flex h-11 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-medium",
+            optimistic ? "bg-indigo-50 text-indigo-800 shadow-[inset_0_0_0_1px_var(--color-indigo-200)]" : "bg-white/70 text-umber-900 shadow-[inset_0_0_0_1px_rgb(34_26_19/0.16)] hover:bg-white",
             pending && "opacity-70",
           )}
         >
@@ -62,7 +62,7 @@ export function CompareToggle({ productId, compared, variant = "inline", classNa
         aria-pressed={optimistic}
         className={cn(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition",
-          optimistic ? "bg-indigo-50 text-indigo-800" : "text-umber-500 hover:bg-umber-900/5 hover:text-umber-900",
+          optimistic ? "bg-indigo-50 text-indigo-800" : "text-umber-600 hover:bg-umber-900/5 hover:text-umber-900",
         )}
       >
         {optimistic ? <Check className="size-3" aria-hidden /> : <Columns3 className="size-3" aria-hidden />}
