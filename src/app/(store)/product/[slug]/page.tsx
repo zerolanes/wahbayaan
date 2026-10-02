@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { isDemoMode } from "@/lib/settings";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Award, CalendarClock, Hammer, Layers, MapPin, MessageCircle, Package, Ruler, Scale, Sparkles, Truck } from "lucide-react";
@@ -64,7 +65,9 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     getPublicProducts({ vendorId: product.vendorId, excludeId: product.id, limit: 4 }),
     getReviewEligibility((await getCurrentUser())?.id ?? null, product.id),
   ]);
-  const photoWall = product.reviews.flatMap((r) => r.photos.map((ph) => ({ url: ph.url, reviewId: r.id, authorName: r.authorName, country: r.buyerCountry, rating: r.rating })));
+  const photoWall = product.reviews.flatMap((r) =>
+    r.photos.map((ph) => ({ url: ph.url, reviewId: r.id, authorName: r.authorName, country: r.buyerCountry, rating: r.rating })),
+  );
   const artisanWall = photoWall.length ? [] : await getReviewPhotoWall(product.vendorId, 6);
 
   const upcoming = isUpcomingDrop(product);
@@ -88,13 +91,14 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     "@type": "Product",
     name: product.title,
     description: product.summary ?? product.description ?? undefined,
-    image: product.images.map((i) => i.url),
+    image: product.images.map((i) => new URL(i.url, process.env.APP_URL ?? "http://localhost:3000").toString()),
     sku: product.id,
     category: product.category.name,
     material: product.materials.join(", ") || undefined,
     brand: { "@type": "Brand", name: product.vendor.displayName },
     countryOfOrigin: "PK",
-    ...(product.rating.count && product.rating.average
+    // Sample (demo) reviews are never published to search engines as real ratings.
+    ...(!isDemoMode() && product.rating.count && product.rating.average
       ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating.average.toFixed(1), reviewCount: product.rating.count } }
       : {}),
     ...(ctx.fx
@@ -121,7 +125,13 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     weight ? { icon: Scale, label: "Weight", value: weight.metric, sub: weight.imperial } : null,
     product.materials.length ? { icon: Layers, label: "Materials", value: product.materials.join(", ") } : null,
     product.techniques.length ? { icon: Hammer, label: "Techniques", value: product.techniques.join(", ") } : null,
-    product.region ? { icon: MapPin, label: "Made in", value: `${product.vendor.workshopCity ? `${product.vendor.workshopCity}, ` : ""}${regionLabel(product.region)}, Pakistan` } : null,
+    product.region
+      ? {
+          icon: MapPin,
+          label: "Made in",
+          value: `${product.vendor.workshopCity ? `${product.vendor.workshopCity}, ` : ""}${regionLabel(product.region)}, Pakistan`,
+        }
+      : null,
     {
       icon: CalendarClock,
       label: product.availability === "made_to_order" ? "Time to make" : "Dispatch",
@@ -142,58 +152,57 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
       <Container className="pt-6 md:pt-10">
         <Breadcrumbs
-          items={[
-            { label: "Shop", href: "/shop" },
-            { label: product.category.name, href: `/category/${product.category.slug}` },
-            { label: product.title },
-          ]}
+          items={[{ label: "Shop", href: "/shop" }, { label: product.category.name, href: `/category/${product.category.slug}` }, { label: product.title }]}
         />
       </Container>
 
       <Container className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14 xl:gap-20">
         <div className="lg:sticky lg:top-20 lg:self-start">
-          <ProductGallery
-            images={product.images.map((i) => ({ url: i.url, alt: i.alt, kind: i.kind }))}
-            title={product.title}
-            videoUrl={product.videoUrl}
-          />
+          <ProductGallery images={product.images.map((i) => ({ url: i.url, alt: i.alt, kind: i.kind }))} title={product.title} videoUrl={product.videoUrl} />
         </div>
 
         <div className="min-w-0">
           <Link href={`/artisans/${product.vendor.slug}`} className="group inline-flex items-center gap-3">
-            <span className="relative size-11 overflow-hidden rounded-full bg-sand-200 ring-2 ring-sand-50">
+            <span className="bg-sand-200 ring-sand-50 relative size-11 overflow-hidden rounded-full ring-2">
               {product.vendor.profilePhotoUrl ? (
-                <Image src={product.vendor.profilePhotoUrl} alt="" fill sizes="44px" unoptimized={isSvg(product.vendor.profilePhotoUrl)} className="object-cover" />
+                <Image
+                  src={product.vendor.profilePhotoUrl}
+                  alt=""
+                  fill
+                  sizes="44px"
+                  unoptimized={isSvg(product.vendor.profilePhotoUrl)}
+                  className="object-cover"
+                />
               ) : null}
             </span>
             <span>
-              <span className="block text-sm font-semibold text-umber-900 group-hover:text-terracotta-700">{product.vendor.displayName}</span>
-              <span className="flex items-center gap-2 text-xs text-umber-500">
+              <span className="text-umber-900 group-hover:text-terracotta-700 block text-sm font-semibold">{product.vendor.displayName}</span>
+              <span className="text-umber-500 flex items-center gap-2 text-xs">
                 {product.vendor.craft} · {product.vendor.workshopCity}
               </span>
             </span>
             {product.vendor.status === "verified" ? <VerifiedBadge size="xs" /> : null}
           </Link>
 
-          <h1 className="mt-5 font-display text-4xl leading-[1.08] text-balance text-umber-900 md:text-5xl">{product.title}</h1>
+          <h1 className="font-display text-umber-900 mt-5 text-4xl leading-[1.08] text-balance md:text-5xl">{product.title}</h1>
           <a href="#reviews" className="mt-3 inline-flex">
             <StarRating average={product.rating.average} count={product.rating.count} size="md" emptyLabel="New piece — no reviews yet" />
           </a>
-          {product.summary ? <p className="mt-4 text-lg leading-relaxed text-pretty text-umber-700">{product.summary}</p> : null}
+          {product.summary ? <p className="text-umber-700 mt-4 text-lg leading-relaxed text-pretty">{product.summary}</p> : null}
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
             {product.isOneOfAKind ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-800">
+              <span className="bg-gold-100 text-gold-800 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
                 <Sparkles className="size-3.5" aria-hidden /> One of a kind
               </span>
             ) : null}
             {product.isLimitedDrop ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-950 px-3 py-1 text-xs font-semibold text-gold-200">
+              <span className="text-gold-200 inline-flex items-center gap-1.5 rounded-full bg-indigo-950 px-3 py-1 text-xs font-semibold">
                 Limited edition{product.editionSize ? ` of ${product.editionSize}` : ""}
               </span>
             ) : null}
             {product.availability === "ready_to_ship" ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700">
+              <span className="bg-success-50 text-success-700 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
                 <Package className="size-3.5" aria-hidden /> Ready to ship
               </span>
             ) : (
@@ -201,17 +210,21 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 <Hammer className="size-3.5" aria-hidden /> Made to order
               </span>
             )}
-            {product.customizable ? <span className="rounded-full bg-terracotta-50 px-3 py-1 text-xs font-semibold text-terracotta-700">Customizable</span> : null}
+            {product.customizable ? (
+              <span className="bg-terracotta-50 text-terracotta-700 rounded-full px-3 py-1 text-xs font-semibold">Customizable</span>
+            ) : null}
           </div>
 
-          <div className="mt-6 border-t border-umber-200/70 pt-6">
+          <div className="border-umber-200/70 mt-6 border-t pt-6">
             <div className="flex flex-wrap items-baseline gap-3">
-              <BuyerPrice pkr={product.pricePkr} className="font-display text-4xl text-umber-900" />
-              {product.compareAtPricePkr && product.compareAtPricePkr > product.pricePkr ? <BuyerPrice pkr={product.compareAtPricePkr} strike className="text-lg" /> : null}
+              <BuyerPrice pkr={product.pricePkr} className="font-display text-umber-900 text-4xl" />
+              {product.compareAtPricePkr && product.compareAtPricePkr > product.pricePkr ? (
+                <BuyerPrice pkr={product.compareAtPricePkr} strike className="text-lg" />
+              ) : null}
             </div>
-            <p className="mt-1 text-sm text-umber-500">Item price in {ctx.currency}. Shipping, duty and tax for your country are itemised below.</p>
-            <p className="mt-3 flex items-center gap-2 text-sm text-umber-700">
-              <CalendarClock className="size-4 text-gold-600" aria-hidden />
+            <p className="text-umber-500 mt-1 text-sm">Item price in {ctx.currency}. Shipping, duty and tax for your country are itemised below.</p>
+            <p className="text-umber-700 mt-3 flex items-center gap-2 text-sm">
+              <CalendarClock className="text-gold-600 size-4" aria-hidden />
               {product.availability === "made_to_order"
                 ? `Made for you — about ${product.timeToMakeDays ?? "—"} days to make, then shipped.`
                 : soldOut
@@ -221,22 +234,24 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
 
           {product.vendor.vacationMode ? (
-            <p className="mt-5 rounded-xl bg-pending-50 px-4 py-3 text-sm text-umber-800 ring-1 ring-pending-600/20">
-              {product.vendor.displayName} is away from the workshop at the moment. Orders are held safely and started when they return — message them for dates.
+            <p className="bg-pending-50 text-umber-800 ring-pending-600/20 mt-5 rounded-xl px-4 py-3 text-sm ring-1">
+              {product.vendor.displayName} is away from the workshop at the moment. Orders are held safely and started when they return — message them for
+              dates.
             </p>
           ) : null}
 
           <div className="mt-6">
             {upcoming ? (
               <div className="night rounded-2xl p-6">
-                <p className="text-xs font-semibold tracking-[0.22em] text-gold-300 uppercase">Limited drop · opens {formatDate(product.dropStartsAt)}</p>
-                <p className="mt-2 font-display text-2xl text-sand-50">Not released yet</p>
+                <p className="text-gold-300 text-xs font-semibold tracking-[0.22em] uppercase">Limited drop · opens {formatDate(product.dropStartsAt)}</p>
+                <p className="font-display text-sand-50 mt-2 text-2xl">Not released yet</p>
                 <Countdown target={product.dropStartsAt!.toISOString()} tone="dark" className="mt-4" />
                 <div className="mt-5">
                   <WaitlistForm productId={product.id} defaultEmail={user?.email} tone="dark" />
                 </div>
-                <p className="mt-3 text-xs text-sand-200/60">
-                  {product.editionSize ? `An edition of ${product.editionSize}. ` : ""}Waitlist members hear first; it&apos;s first come, first served when it opens.
+                <p className="text-sand-200/60 mt-3 text-xs">
+                  {product.editionSize ? `An edition of ${product.editionSize}. ` : ""}Waitlist members hear first; it&apos;s first come, first served when it
+                  opens.
                 </p>
               </div>
             ) : (
@@ -259,16 +274,19 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             <input type="hidden" name="vendorId" value={product.vendorId} />
             <input type="hidden" name="productId" value={product.id} />
             <input type="hidden" name="back" value={here} />
-            <button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-umber-800 transition hover:bg-umber-900/5">
+            <button
+              type="submit"
+              className="text-umber-800 hover:bg-umber-900/5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition"
+            >
               <MessageCircle className="size-4" aria-hidden />
               Message {product.vendor.displayName.split(" ")[0]}
-              <span className="hidden text-umber-500 sm:inline">· usually replies {responseTimeLabel(product.vendor.responseTimeHours).toLowerCase()}</span>
+              <span className="text-umber-500 hidden sm:inline">· usually replies {responseTimeLabel(product.vendor.responseTimeHours).toLowerCase()}</span>
             </button>
           </form>
 
           <section aria-labelledby="landed-heading" className="mt-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 id="landed-heading" className="font-sans text-base font-semibold tracking-normal text-umber-900">
+              <h2 id="landed-heading" className="text-umber-900 font-sans text-base font-semibold tracking-normal">
                 What you&apos;ll pay, delivered
               </h2>
               <DestinationPicker destination={ctx.destination} />
@@ -278,9 +296,9 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 <LandedCostBreakdown landed={estimate} className="mt-3" title="Landed cost estimate" />
                 <DeliveryEstimateLine delivery={estimate.delivery} className="mt-4" />
                 {!estimate.complete ? (
-                  <p className="mt-3 text-sm text-umber-600">
-                    Lines marked <span className="font-medium text-pending-600">Pending</span> don&apos;t have confirmed rates yet. You can still order: our team
-                    confirms them and you approve the final total before anything is charged.{" "}
+                  <p className="text-umber-600 mt-3 text-sm">
+                    Lines marked <span className="text-pending-600 font-medium">Pending</span> don&apos;t have confirmed rates yet. You can still order: our
+                    team confirms them and you approve the final total before anything is charged.{" "}
                     <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
                       How importing works
                     </Link>
@@ -288,7 +306,9 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 ) : null}
               </>
             ) : (
-              <p className="mt-3 rounded-xl bg-pending-50 px-4 py-3 text-sm text-umber-800">Exchange rates aren&apos;t set yet, so we can&apos;t estimate costs in {ctx.currency}.</p>
+              <p className="bg-pending-50 text-umber-800 mt-3 rounded-xl px-4 py-3 text-sm">
+                Exchange rates aren&apos;t set yet, so we can&apos;t estimate costs in {ctx.currency}.
+              </p>
             )}
             <ImportNotices notices={notices} destination={ctx.destination} className="mt-4" />
           </section>
@@ -296,11 +316,11 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           <BuyerProtectionBox className="mt-6" />
 
           {product.isOneOfAKind ? (
-            <div className="mt-4 flex gap-3 rounded-2xl bg-gold-50 p-4 ring-1 ring-gold-300/60">
-              <Award className="mt-0.5 size-5 shrink-0 text-gold-700" aria-hidden />
-              <p className="text-sm text-gold-900">
-                <strong className="font-semibold">Certificate of authenticity included.</strong> A signed record of the artisan, materials and the date it was made
-                — with a code anyone can verify on Wahbayaan.
+            <div className="bg-gold-50 ring-gold-300/60 mt-4 flex gap-3 rounded-2xl p-4 ring-1">
+              <Award className="text-gold-700 mt-0.5 size-5 shrink-0" aria-hidden />
+              <p className="text-gold-900 text-sm">
+                <strong className="font-semibold">Certificate of authenticity included.</strong> A signed record of the artisan, materials and the date it was
+                made — with a code anyone can verify on Wahbayaan.
               </p>
             </div>
           ) : null}
@@ -308,34 +328,36 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       </Container>
 
       {/* The piece: description, story, specifications */}
-      <section className="mt-24 border-t border-umber-200/60 pt-16 md:mt-32 md:pt-24">
+      <section className="border-umber-200/60 mt-24 border-t pt-16 md:mt-32 md:pt-24">
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-20">
           <div>
             <Eyebrow>About this piece</Eyebrow>
-            {product.description ? <p className="mt-5 font-display text-2xl leading-[1.45] text-pretty text-umber-900 md:text-[1.75rem]">{product.description}</p> : null}
+            {product.description ? (
+              <p className="font-display text-umber-900 mt-5 text-2xl leading-[1.45] text-pretty md:text-[1.75rem]">{product.description}</p>
+            ) : null}
             {product.story ? (
-              <blockquote className="mt-10 border-l-2 border-gold-400 pl-6">
-                <p className="text-xs font-semibold tracking-[0.2em] text-gold-700 uppercase">The story, in the artisan&apos;s words</p>
-                <p className="mt-3 font-display text-xl text-umber-800 italic">“{product.story}”</p>
-                <footer className="mt-3 text-sm text-umber-500">— {product.vendor.displayName}</footer>
+              <blockquote className="border-gold-400 mt-10 border-l-2 pl-6">
+                <p className="text-gold-700 text-xs font-semibold tracking-[0.2em] uppercase">The story, in the artisan&apos;s words</p>
+                <p className="font-display text-umber-800 mt-3 text-xl italic">“{product.story}”</p>
+                <footer className="text-umber-500 mt-3 text-sm">— {product.vendor.displayName}</footer>
               </blockquote>
             ) : null}
             {product.careInstructions ? (
-              <div className="mt-10 rounded-2xl bg-sand-50 p-6 ring-1 ring-umber-200/60">
-                <p className="text-sm font-semibold text-umber-900">Care</p>
-                <p className="mt-1 text-umber-700">{product.careInstructions}</p>
+              <div className="bg-sand-50 ring-umber-200/60 mt-10 rounded-2xl p-6 ring-1">
+                <p className="text-umber-900 text-sm font-semibold">Care</p>
+                <p className="text-umber-700 mt-1">{product.careInstructions}</p>
               </div>
             ) : null}
           </div>
           <div>
-            <h2 className="font-sans text-base font-semibold tracking-normal text-umber-900">Specifications</h2>
-            <dl className="mt-4 divide-y divide-umber-200/60 border-y border-umber-200/60">
+            <h2 className="text-umber-900 font-sans text-base font-semibold tracking-normal">Specifications</h2>
+            <dl className="divide-umber-200/60 border-umber-200/60 mt-4 divide-y border-y">
               {specs.map((s) => (
                 <div key={s.label} className="flex gap-4 py-4">
-                  <s.icon className="mt-0.5 size-5 shrink-0 text-gold-600" aria-hidden />
+                  <s.icon className="text-gold-600 mt-0.5 size-5 shrink-0" aria-hidden />
                   <div className="min-w-0">
-                    <dt className="text-xs tracking-wider text-umber-500 uppercase">{s.label}</dt>
-                    <dd className="mt-0.5 text-umber-900">
+                    <dt className="text-umber-500 text-xs tracking-wider uppercase">{s.label}</dt>
+                    <dd className="text-umber-900 mt-0.5">
                       {s.value}
                       {"sub" in s && s.sub ? <span className="text-umber-500"> · {s.sub}</span> : null}
                     </dd>
@@ -343,10 +365,10 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 </div>
               ))}
               <div className="flex gap-4 py-4">
-                <Truck className="mt-0.5 size-5 shrink-0 text-gold-600" aria-hidden />
+                <Truck className="text-gold-600 mt-0.5 size-5 shrink-0" aria-hidden />
                 <div>
-                  <dt className="text-xs tracking-wider text-umber-500 uppercase">Ships from</dt>
-                  <dd className="mt-0.5 text-umber-900">The artisan&apos;s workshop in Pakistan, by international courier</dd>
+                  <dt className="text-umber-500 text-xs tracking-wider uppercase">Ships from</dt>
+                  <dd className="text-umber-900 mt-0.5">The artisan&apos;s workshop in Pakistan, by international courier</dd>
                 </div>
               </div>
             </dl>
@@ -362,17 +384,35 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             <Container className="grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
               <div className="relative">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] ring-1 ring-white/10">
-                  {vendor.bannerUrl ? <Image src={vendor.bannerUrl} alt="" fill sizes="(min-width:1024px) 35vw, 100vw" unoptimized={isSvg(vendor.bannerUrl)} className="object-cover" /> : null}
+                  {vendor.bannerUrl ? (
+                    <Image
+                      src={vendor.bannerUrl}
+                      alt=""
+                      fill
+                      sizes="(min-width:1024px) 35vw, 100vw"
+                      unoptimized={isSvg(vendor.bannerUrl)}
+                      className="object-cover"
+                    />
+                  ) : null}
                   <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/80 via-transparent to-transparent" />
                 </div>
-                <div className="absolute -bottom-6 left-6 size-28 overflow-hidden rounded-full border-4 border-indigo-950 bg-sand-200 shadow-lift">
-                  {vendor.profilePhotoUrl ? <Image src={vendor.profilePhotoUrl} alt={vendor.displayName} fill sizes="112px" unoptimized={isSvg(vendor.profilePhotoUrl)} className="object-cover" /> : null}
+                <div className="bg-sand-200 shadow-lift absolute -bottom-6 left-6 size-28 overflow-hidden rounded-full border-4 border-indigo-950">
+                  {vendor.profilePhotoUrl ? (
+                    <Image
+                      src={vendor.profilePhotoUrl}
+                      alt={vendor.displayName}
+                      fill
+                      sizes="112px"
+                      unoptimized={isSvg(vendor.profilePhotoUrl)}
+                      className="object-cover"
+                    />
+                  ) : null}
                 </div>
               </div>
               <div>
                 <Eyebrow dark>Made by</Eyebrow>
-                <h2 className="mt-3 font-display text-4xl text-sand-50 md:text-5xl">{vendor.displayName}</h2>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sand-200/80">
+                <h2 className="font-display text-sand-50 mt-3 text-4xl md:text-5xl">{vendor.displayName}</h2>
+                <p className="text-sand-200/80 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="text-gold-300">{vendor.craft}</span>
                   <span className="flex items-center gap-1">
                     <MapPin className="size-4" aria-hidden /> {vendor.workshopCity}
@@ -380,7 +420,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                   </span>
                   <StarRating average={vendor.rating.average} count={vendor.rating.count} tone="light" emptyLabel="New artisan — no reviews yet" />
                 </p>
-                {vendor.story ? <p className="mt-6 line-clamp-5 text-lg leading-relaxed text-sand-100/85">{vendor.story}</p> : null}
+                {vendor.story ? <p className="text-sand-100/85 mt-6 line-clamp-5 text-lg leading-relaxed">{vendor.story}</p> : null}
                 <ArtisanStats vendor={vendor} tone="dark" className="mt-8" />
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ButtonLink href={`/artisans/${vendor.slug}`} variant="gold">
@@ -406,8 +446,8 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-20">
             <div className="lg:sticky lg:top-24 lg:self-start">
               {product.rating.count && product.rating.average ? (
-                <div className="rounded-2xl bg-sand-50 p-6 ring-1 ring-umber-200/60">
-                  <p className="font-display text-6xl text-umber-900 tabular-nums">{product.rating.average.toFixed(1)}</p>
+                <div className="bg-sand-50 ring-umber-200/60 rounded-2xl p-6 ring-1">
+                  <p className="font-display text-umber-900 text-6xl tabular-nums">{product.rating.average.toFixed(1)}</p>
                   <StarRating average={product.rating.average} count={product.rating.count} size="lg" className="mt-2" />
                   <div className="mt-5">
                     <RatingHistogram histogram={product.histogram} total={product.rating.count} />
@@ -416,35 +456,39 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               ) : (
                 <p className="text-umber-600">
                   This piece is new. {product.vendor.displayName} has{" "}
-                  {product.vendorRating.count ? `a ${product.vendorRating.average?.toFixed(1)}★ rating from ${product.vendorRating.count} reviews across their work.` : "no reviews yet."}
+                  {product.vendorRating.count
+                    ? `a ${product.vendorRating.average?.toFixed(1)}★ rating from ${product.vendorRating.count} reviews across their work.`
+                    : "no reviews yet."}
                 </p>
               )}
-              <div id="write-review" className="mt-6 scroll-mt-24 rounded-2xl bg-sand-50 p-6 ring-1 ring-umber-200/60">
-                <p className="font-display text-xl text-umber-900">Bought this piece?</p>
+              <div id="write-review" className="bg-sand-50 ring-umber-200/60 mt-6 scroll-mt-24 rounded-2xl p-6 ring-1">
+                <p className="font-display text-umber-900 text-xl">Bought this piece?</p>
                 {eligibility.eligible ? (
                   <div className="mt-4">
                     <ReviewForm productId={product.id} />
                   </div>
                 ) : eligibility.reason === "signed_out" ? (
-                  <p className="mt-2 text-sm text-umber-600">
-                    <Link href={`/login?next=${encodeURIComponent(`${here}#write-review`)}`} className="font-medium text-terracotta-600 hover:underline">
+                  <p className="text-umber-600 mt-2 text-sm">
+                    <Link href={`/login?next=${encodeURIComponent(`${here}#write-review`)}`} className="text-terracotta-600 font-medium hover:underline">
                       Sign in
                     </Link>{" "}
                     to review it once it&apos;s been delivered. Reviews come only from verified buyers.
                   </p>
                 ) : eligibility.reason === "pending" ? (
-                  <p className="mt-2 text-sm text-umber-600">Thanks — your review is with our team and will appear once approved.</p>
+                  <p className="text-umber-600 mt-2 text-sm">Thanks — your review is with our team and will appear once approved.</p>
                 ) : eligibility.reason === "reviewed" ? (
-                  <p className="mt-2 text-sm text-umber-600">You&apos;ve already reviewed this piece. Thank you.</p>
+                  <p className="text-umber-600 mt-2 text-sm">You&apos;ve already reviewed this piece. Thank you.</p>
                 ) : (
-                  <p className="mt-2 text-sm text-umber-600">Reviews open once your order has been delivered — so every review comes from a real buyer.</p>
+                  <p className="text-umber-600 mt-2 text-sm">Reviews open once your order has been delivered — so every review comes from a real buyer.</p>
                 )}
               </div>
             </div>
             <div className="min-w-0 space-y-8">
               {photoWall.length || artisanWall.length ? (
                 <div>
-                  <p className="mb-3 text-sm font-semibold text-umber-900">{photoWall.length ? "Buyer photos" : `Buyer photos of ${product.vendor.displayName}'s work`}</p>
+                  <p className="text-umber-900 mb-3 text-sm font-semibold">
+                    {photoWall.length ? "Buyer photos" : `Buyer photos of ${product.vendor.displayName}'s work`}
+                  </p>
                   <ReviewPhotoWall photos={photoWall.length ? photoWall : artisanWall} />
                 </div>
               ) : null}
@@ -461,7 +505,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       </section>
 
       {related.items.length ? (
-        <section className="border-t border-umber-200/60 py-20 md:py-24">
+        <section className="border-umber-200/60 border-t py-20 md:py-24">
           <Container>
             <SectionHeading
               eyebrow={`More ${product.category.name.toLowerCase()}`}
