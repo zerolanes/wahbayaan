@@ -1,0 +1,83 @@
+{
+  "_fixture_note": "FICTIONAL demo data written by hand in the generic Shopify products.json shape. 'Sahil Menswear' is not a real brand; nothing here was copied from any brand's website.",
+  "products": [
+    {
+      "id": 7300000001,
+      "title": "Ivory Cotton Kurta Shalwar",
+      "handle": "ivory-cotton-kurta-shalwar",
+      "body_html": "<p>A crisp two-piece in breathable cotton. <strong>Straight-cut kurta</strong> with a band collar and matching shalwar.</p><ul><li>Fabric: cotton</li><li>Dry clean recommended</li></ul>",
+      "published_at": "2026-09-20T10:00:00+05:00",
+      "created_at": "2026-09-18T09:00:00+05:00",
+      "vendor": "Sahil Menswear",
+      "product_type": "Kurta Shalwar",
+      "tags": ["Men", "collection:Eid Edit 2026", "fabric:Cotton", "new-arrival"],
+      "options": [
+        { "name": "Size", "position": 1, "values": ["S", "M", "L", "XL"] },
+        { "name": "Color", "position": 2, "values": ["Ivory", "Sand"] }
+      ],
+      "variants": [
+        { "id": 4100000101, "title": "S / Ivory", "option1": "S", "option2": "Ivory", "option3": null, "sku": "SM-KS-IV-S", "available": true, "price": "3490.00", "compare_at_price": null, "grams": 650, "position": 1 },
+        { "id": 4100000102, "title": "M / Ivory", "option1": "M", "option2": "Ivory", "option3": null, "sku": "SM-KS-IV-M", "available": true, "price": "3490.00", "compare_at_price": null, "grams": 680, "position": 2 },
+        { "id": 4100000103, "title": "L / Ivory", "option1": "L", "option2": "Ivory", "option3": null, "sku": "SM-KS-IV-L", "available": false, "price": "3490.00", "compare_at_price": null, "grams": 700, "position": 3 },
+        { "id": 4100000104, "title": "XL / Ivory", "option1": "XL", "option2": "Ivory", "option3": null, "sku": "SM-KS-IV-XL", "available": true, "price": "3690.00", "compare_at_price": null, "grams": 720, "position": 4 },
+        { "id": 4100000105, "title": "M / Sand", "option1": "M", "option2": "Sand", "option3": null, "sku": "SM-KS-SA-M", "available": true, "price": "3490.00", "compare_at_price": null, "grams": 680, "position": 5 },
+        { "id": 4100000106, "title": "L / Sand", "option1": "L", "option2": "Sand", "option3": null, "sku": "SM-KS-SA-L", "available": true, "price": "3490.00", "compare_at_price": null, "grams": 700, "position": 6 }
+      ],
+      "images": [
+        { "id": 1, "src": "/brand-art/kurta/4101.svg", "position": 1, "alt": "Ivory cotton kurta shalwar, front" },
+        { "id": 2, "src": "/brand-art/kurta/4102.svg", "position": 2, "alt": "Ivory cotton kurta shalwar, detail" }
+      ]
+    },
+    {
+      "id": 7300000002,
+      "title": "Charcoal Wash-and-Wear Kameez Shalwar",
+      "handle": "charcoal-wash-and-wear-kameez-shalwar",
+      "body_html": "<p>Everyday wash-and-wear suit with a classic collar. Easy care &amp; quick dry.</p>",
+      "published_at": "2026-07-02T12:00:00+05:00",
+      "vendor": "Sahil Menswear",
+      "product_type": "Kameez Shalwar",
+      "tags": "Mens, collection:Everyday Essentials, fabric:Wash & Wear, sale",
+      "options": [{ "name": "Size", "position": 1, "values": ["38", "40", "42", "44"] }],
+      "variants": [
+        { "id": 4100000201, "title": "38", "option1": "38", "option2": null, "option3": null, "sku": "SM-WW-CH-38", "available": true, "price": "2990.00", "compare_at_price": "3990.00", "grams": 600, "position": 1 },
+        { "id": 4100000202, "title": "40", "option1": "40", "option2": null, "option3": null, "sku": "SM-WW-CH-40", "available": true, "price": "2990.00", "compare_at_price": "3990.00", "grams": 620, "position": 2 },
+        { "id": 4100000203, "title": "42", "option1": "42", "option2": null, "option3": null, "sku": "SM-WW-CH-42", "available": true, "price": "2990.00", "compare_at_price": "3990.00", "grams": 640, "position": 3 },
+        { "id": 4100000204, "title": "44", "option1": "44", "option2": null, "option3": null, "sku": "SM-WW-CH-44", "available": false, "price": "2990.00", "compare_at_price": "3990.00", "grams": 660, "position": 4 }
+      ],
+      "images": [{ "id": 3, "src": "/brand-art/kurta/4201.svg", "position": 1, "alt": "Charcoal kameez shalwar" }]
+    },
+    {
+      "id": 7300000003,
+      "title": "Embroidered Velvet Waistcoat",
+      "handle": "embroidered-velvet-waistcoat",
+      "body_html": "<p>Formal waistcoat in deep maroon velvet with tilla embroidery at the front edges. Pair with any kurta.</p>",
+      "published_at": "2026-09-25T09:30:00+05:00",
+      "vendor": "Sahil Menswear",
+      "product_type": "Waistcoat",
+      "tags": ["men", "collection:Wedding Season", "fabric:Velvet", "formal"],
+      "options": [
+        { "name": "Size", "position": 1, "values": ["M", "L", "XL"] },
+        { "name": "Colour", "position": 2, "values": ["Maroon", "Black"] }
+      ],
+      "variants": [
+        { "id": 4100000301, "title": "M / Maroon", "option1": "M", "option2": "Maroon", "option3": null, "sku": "SM-WC-MA-M", "available": true, "price": "6490.00", "compare_at_price": null, "grams": 480, "position": 1 },
+        { "id": 4100000302, "title": "L / Maroon", "option1": "L", "option2": "Maroon", "option3": null, "sku": "SM-WC-MA-L", "available": true, "price": "6490.00", "compare_at_price": null, "grams": 500, "position": 2 },
+        { "id": 4100000303, "title": "XL / Black", "option1": "XL", "option2": "Black", "option3": null, "sku": "SM-WC-BL-XL", "available": true, "price": "6490.00", "compare_at_price": "7490.00", "grams": 520, "position": 3 }
+      ],
+      "images": [{ "id": 4, "src": "/brand-art/waistcoat/4301.svg", "position": 1, "alt": "Maroon velvet waistcoat" }]
+    },
+    {
+      "id": 7300000004,
+      "title": "Gift Card",
+      "handle": "gift-card",
+      "body_html": "<p>Store credit.</p>",
+      "published_at": "2026-01-01T00:00:00+05:00",
+      "vendor": "Sahil Menswear",
+      "product_type": "Gift Card",
+      "tags": [],
+      "options": [{ "name": "Title", "position": 1, "values": ["Default Title"] }],
+      "variants": [{ "id": 4100000401, "title": "Default Title", "option1": "Default Title", "price": "0.00", "available": true }],
+      "images": []
+    }
+  ]
+}

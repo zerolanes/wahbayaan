@@ -1,0 +1,11 @@
+# FICTIONAL fixture robots.txt (generic storefront style) for adapter tests.
+User-agent: *
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkout
+Disallow: /account
+Disallow: /collections/*sort_by*
+Disallow: /search
+Allow: /products.json
+Crawl-delay: 1
