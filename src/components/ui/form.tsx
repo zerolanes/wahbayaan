@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils/cn";
 
 /** `ui-control` is a style hook for the admin theme (globals.css). */
 const control =
-  "ui-control w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 shadow-[inset_0_1px_2px_rgb(34_26_19/0.04)] transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none disabled:bg-sand-100";
+  "ui-control w-full rounded-[var(--radius-control)] border border-umber-200 bg-white px-3.5 py-2.5 text-base text-umber-900 placeholder:text-umber-500 shadow-[inset_0_1px_2px_rgb(34_26_19/0.04)] transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none disabled:bg-sand-100 sm:text-[0.95rem]";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input className={cn(control, "h-11", className)} {...props} />;
@@ -64,7 +64,7 @@ export function Field({
 export function Checkbox({ label, className, ...props }: ComponentProps<"input"> & { label: ReactNode }) {
   return (
     <label className={cn("flex cursor-pointer items-start gap-2.5 text-sm text-umber-800", className)}>
-      <input type="checkbox" className="mt-0.5 size-4 rounded border-umber-300 accent-indigo-800" {...props} />
+      <input type="checkbox" className="mt-0.5 size-4 shrink-0 rounded border-umber-300 accent-indigo-800" {...props} />
       <span>{label}</span>
     </label>
   );
@@ -73,7 +73,7 @@ export function Checkbox({ label, className, ...props }: ComponentProps<"input">
 export function Radio({ label, className, ...props }: ComponentProps<"input"> & { label: ReactNode }) {
   return (
     <label className={cn("flex cursor-pointer items-start gap-2.5 text-sm text-umber-800", className)}>
-      <input type="radio" className="mt-0.5 size-4 accent-indigo-800" {...props} />
+      <input type="radio" className="mt-0.5 size-4 shrink-0 accent-indigo-800" {...props} />
       <span>{label}</span>
     </label>
   );

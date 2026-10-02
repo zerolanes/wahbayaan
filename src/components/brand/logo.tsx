@@ -27,11 +27,11 @@ export function StarMark({ className, filled = true }: { className?: string; fil
 export function Logo({ className, tone = "dark", href = "/", compact = false }: { className?: string; tone?: "dark" | "light" | "current"; href?: string | null; compact?: boolean }) {
   const inner = (
     <span className={cn("group inline-flex items-center gap-2.5", className)}>
-      <StarMark className="size-7 transition-transform duration-700 sm:size-8" />
+      <StarMark className="size-6 sm:size-7" />
       <span className="flex items-baseline gap-2">
         <span
           className={cn(
-            "font-display text-[1.35rem] leading-none font-medium tracking-[-0.02em] sm:text-[1.6rem]",
+            "font-serif text-[1.3rem] leading-none font-medium tracking-[-0.02em] sm:text-[1.5rem]",
             tone === "dark" ? "text-ink" : tone === "light" ? "text-sand-50" : "text-current",
           )}
           style={{ fontVariationSettings: '"SOFT" 100, "WONK" 1, "opsz" 72' }}
