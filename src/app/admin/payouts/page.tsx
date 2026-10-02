@@ -107,7 +107,7 @@ export default async function PayoutsPage(props: PageProps<"/admin/payouts">) {
         </Notice>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <Panel title="Owed by artisan" description="Pending + scheduled, PKR" bodyClassName="p-0">
           {byArtisan.length ? (
             <ul className="divide-y divide-umber-200/60">

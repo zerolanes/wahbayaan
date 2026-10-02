@@ -51,7 +51,7 @@ export default async function EditJournal(props: PageProps<"/admin/content/journ
           ) : null
         }
       />
-      <ActionForm action={updateJournalAction} inline className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <ActionForm action={updateJournalAction} inline className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <input type="hidden" name="id" value={p.id} />
         <div className="min-w-0 space-y-4">
           <FieldRow label="Title">
@@ -123,7 +123,7 @@ export default async function EditJournal(props: PageProps<"/admin/content/journ
           </Panel>
         </aside>
       </ActionForm>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <AuditTrail entity="journal" entityId={p.id} title="Edit history" />
         <Panel title="Danger zone">
           <ActionButton action={deleteJournalAction} fields={{ id: p.id }} variant="danger" confirm={`Delete “${p.title}”?`}>

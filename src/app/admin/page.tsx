@@ -130,7 +130,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
         <MiniStat label="Pending moderation" value={c.apps + c.listings + c.reviews} hint={`${c.apps} applications · ${c.listings} listings · ${c.reviews} reviews`} href="/admin/listings?status=pending_review" />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Panel title="Orders, last 30 days" description={`${c.d30} orders placed · daily count`}>
           <BarChart height={230} title="Orders per day, last 30 days" data={series.map((p) => ({ ...p, display: `${p.value} order${p.value === 1 ? "" : "s"}` }))} />
         </Panel>
@@ -171,7 +171,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
         </Panel>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Panel title="Recent activity" action={<Link href="/admin/activity" className="text-sm text-terracotta-600 hover:underline">View all</Link>} bodyClassName="p-0">
           <ul className="divide-y divide-umber-200/60">
             {feed.map((f) => (

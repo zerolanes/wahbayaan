@@ -21,7 +21,7 @@ type Row = typeof redirects.$inferSelect;
 
 function RedirectFields({ r }: { r?: Row }) {
   return (
-    <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
       <FieldRow label="From path" hint="The old URL path, e.g. /shop/rugs-old">
         <TextInput name="fromPath" defaultValue={r?.fromPath} required placeholder="/old-path" />
       </FieldRow>

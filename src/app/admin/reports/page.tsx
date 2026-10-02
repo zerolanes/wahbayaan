@@ -30,7 +30,7 @@ const SECTIONS = [
 
 function Section({ id, title, description, exportHref, children }: { id: string; title: string; description: ReactNode; exportHref: string; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24">
+    <section id={id} className="min-w-0 scroll-mt-24">
       <Panel title={title} description={description} action={<ExportLink href={exportHref}>CSV</ExportLink>}>
         {children}
       </Panel>

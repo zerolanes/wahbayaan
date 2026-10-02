@@ -69,7 +69,7 @@ export default async function QuotesPage(props: PageProps<"/admin/quotes">) {
                 Full order →
               </Link>
             </div>
-            <div className="grid gap-0 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <div className="grid grid-cols-1 gap-0 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
               <div className="space-y-4 border-umber-200/60 p-5 lg:border-r">
                 {parcels.map((p, idx) => (
                   <div key={p.id} className="rounded-xl border border-umber-200 bg-white/60 p-4">

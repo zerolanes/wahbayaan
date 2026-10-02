@@ -43,7 +43,7 @@ export default async function EditPage(props: PageProps<"/admin/content/pages/[s
           Replace the “pending” / “draft” notes with the confirmed policy before launch — buyers see exactly what&apos;s written here.
         </Notice>
       ) : null}
-      <ActionForm action={updatePageAction} inline className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <ActionForm action={updatePageAction} inline className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <input type="hidden" name="slug" value={p.slug} />
         <div className="min-w-0 space-y-4">
           <FieldRow label="Title">
@@ -74,7 +74,7 @@ export default async function EditPage(props: PageProps<"/admin/content/pages/[s
           </Panel>
         </aside>
       </ActionForm>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <AuditTrail entity="page" entityId={p.slug} title="Edit history" />
         {!policy ? (
           <Panel title="Danger zone">

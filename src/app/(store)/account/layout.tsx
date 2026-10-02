@@ -24,8 +24,8 @@ export default async function AccountLayout({ children }: { children: React.Reac
   ]);
   return (
     <Container className="py-10 md:py-14">
-      <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <div className="mb-5 hidden lg:block">
             <p className="text-xs font-semibold tracking-[0.2em] text-gold-600 uppercase">Your account</p>
             <p className="mt-1 truncate font-display text-xl text-umber-900">{user.name}</p>

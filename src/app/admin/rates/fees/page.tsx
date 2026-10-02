@@ -77,7 +77,7 @@ async function preview(productId: string, destination: string, qty: number, gift
 function PreviewResult({ lc, row }: { lc: LandedCost; row: { p: typeof products.$inferSelect; vendor: string; category: string; hsCode: string | null } }) {
   const ship = lc.shipments[0];
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="overflow-hidden rounded-lg border border-umber-200">
         <Table>
           <THead>

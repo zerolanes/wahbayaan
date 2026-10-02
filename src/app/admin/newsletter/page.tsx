@@ -64,7 +64,7 @@ export default async function NewsletterPage(props: PageProps<"/admin/newsletter
         <MiniStat label="Subscribers who bought" value={String(stats.buyers)} hint={`${percent(ratio(stats.buyers, stats.subscribed), 0)} of subscribers`} />
         <MiniStat label="Buyer accounts opted in" value={String(stats.optin)} hint="Marketing consent on the account" href="/admin/customers?marketing=1" />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">
           <FilterBar action="/admin/newsletter" q={str(params, "q")} placeholder="Email">
             <FilterSelect name="status" label="Status" value={str(params, "status")} options={[{ value: "subscribed", label: "Subscribed" }, { value: "unsubscribed", label: "Unsubscribed" }]} />

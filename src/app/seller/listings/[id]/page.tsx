@@ -51,7 +51,7 @@ export default async function EditListing(props: PageProps<"/seller/listings/[id
         </Notice>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_380px]">
         <div className="space-y-6">
           <Card>
             <CardHeader title="Photos" description="The first photo is the one buyers see first." />

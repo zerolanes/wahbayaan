@@ -202,7 +202,7 @@ export default async function ReferralsPage() {
         )}
       </TableCard>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <TableCard toolbar={<p className="text-sm font-medium text-umber-900">Loyalty ledger · latest 30</p>}>
           {ledger.length ? (
             <Table>

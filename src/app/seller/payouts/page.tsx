@@ -42,7 +42,7 @@ export default async function SellerPayouts() {
         <Stat label="Paid to you" value={<SellerPrice pkr={stats.paidOutPkr} />} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr]">
         <Card className="overflow-hidden">
           <CardHeader title="Order earnings" description="Each order's rupee earnings and where the money is." />
           {ledger.length ? (

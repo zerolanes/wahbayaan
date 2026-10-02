@@ -88,7 +88,7 @@ export default async function HealthPage() {
         actions={<Badge tone={worst === "ok" ? "success" : worst === "warn" ? "warning" : "danger"}>{worst === "ok" ? "All systems normal" : worst === "warn" ? "Needs attention" : "Action required"}</Badge>}
       />
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Panel title="Checks" description={`Run ${formatDateTime(now)}`} bodyClassName="p-0">
           <ul className="divide-y divide-umber-200/60">
             {checks.map((c, i) => (
@@ -165,7 +165,7 @@ export default async function HealthPage() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         {counts ? (
           <TableCard toolbar={<p className="text-sm text-umber-600">Key tables</p>}>
             <Table>

@@ -70,7 +70,7 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="System" title="Settings" description="Store-wide configuration. Each section saves on its own and is recorded in the audit log with the exact fields changed." />
-      <div className="grid items-start gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
         <nav className="top-20 space-y-0.5 text-sm lg:sticky" aria-label="Settings sections">
           {SECTIONS.map((x) => (
             <a key={x.id} href={`#${x.id}`} className="block rounded-md px-3 py-1.5 text-umber-600 hover:bg-umber-100 hover:text-umber-900">
