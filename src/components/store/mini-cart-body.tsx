@@ -15,7 +15,7 @@ export function MiniCartBody({ cart, currency, priced }: { cart: CartView; curre
         <span className="grid size-16 place-items-center rounded-full bg-umber-900/[0.06] text-umber-700">
           <ShoppingBag className="size-7" aria-hidden />
         </span>
-        <p className="mt-4 text-lg font-semibold text-umber-900">Your bag is empty</p>
+        <p className="mt-4 text-lg font-semibold text-umber-900">Your cart is empty</p>
         <p className="mt-1 max-w-xs text-sm text-umber-700">Add a piece and you&apos;ll see its full landed cost — shipping, duty and tax — before checkout.</p>
         <Link href="/shop" className={buttonClass("primary", "md", "mt-6")}>
           Browse the crafts
@@ -57,10 +57,10 @@ export function MiniCartFooter({ cart, currency, priced }: { cart: CartView; cur
         <span className="text-umber-800">Items subtotal</span>
         <span className="text-base font-semibold text-umber-900 tabular-nums">{priced ? formatMoney(subtotal, cur, { cents: true }) : "Price on request"}</span>
       </div>
-      <p className="text-xs text-umber-700">Shipping, import duty and tax for your country are itemised in your bag before you pay.</p>
+      <p className="text-xs text-umber-700">Shipping, import duty and tax for your country are itemised in your cart before you pay.</p>
       <div className="grid grid-cols-2 gap-2">
         <Link href="/cart" className={buttonClass("outline", "md", "w-full")}>
-          View bag
+          View cart
         </Link>
         <Link href="/checkout" className={buttonClass("accent", "md", "w-full")}>
           Checkout <ArrowRight className="size-4" aria-hidden />

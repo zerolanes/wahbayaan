@@ -10,14 +10,14 @@ import { StarRating } from "./trust";
 /** Buyer protection summary — shown on every listing, in the cart and at checkout. */
 export function BuyerProtectionBox({ className, compact }: { className?: string; compact?: boolean }) {
   return (
-    <div className={cn("night relative overflow-hidden rounded-2xl p-5", className)}>
+    <div className={cn("night relative overflow-hidden rounded-[var(--radius-card)] p-5", className)}>
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-400/15 ring-1 ring-gold-300/30">
           <ShieldCheck className="size-5 text-gold-300" aria-hidden />
         </span>
         <div>
           <p className="font-display text-lg text-sand-50">Wahbayaan Buyer Protection</p>
-          <p className="mt-1 text-sm text-sand-200/75">Your payment is held by us — not sent to the artisan — until your piece arrives as described.</p>
+          <p className="mt-1 text-sm text-sand-100/85">Your payment is held by us — not sent to the artisan — until your piece arrives as described.</p>
         </div>
       </div>
       {!compact ? (
@@ -55,7 +55,7 @@ export function ImportNotices({ notices, destination, className }: { notices: Im
       {notices.map((n, i) => {
         const s = NOTICE_STYLE[n.level];
         return (
-          <li key={i} className={cn("flex gap-3 rounded-xl px-4 py-3 text-sm ring-1 ring-inset", s.tone)}>
+          <li key={i} className={cn("flex gap-3 rounded-[var(--radius-control)] px-4 py-3 text-sm ring-1 ring-inset", s.tone)}>
             <s.icon className="mt-0.5 size-4 shrink-0" aria-hidden />
             <div>
               <p className="font-semibold">

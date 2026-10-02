@@ -18,7 +18,7 @@ export function MobileTabBar({ cartCount, wishlistCount, accountHref }: { cartCo
     { href: "/", label: "Home", icon: Home, active: pathname === "/" },
     { href: "/shop", label: "Shop", icon: LayoutGrid, active: pathname.startsWith("/shop") || pathname.startsWith("/category") || pathname.startsWith("/collections") },
     { href: "/wishlist", label: "Saved", icon: Heart, active: pathname.startsWith("/wishlist"), badge: wishlistCount },
-    { href: "/cart", label: "Bag", icon: ShoppingBag, active: pathname.startsWith("/cart"), badge: cartCount },
+    { href: "/cart", label: "Cart", icon: ShoppingBag, active: pathname.startsWith("/cart"), badge: cartCount },
     {
       href: accountHref,
       label: "Account",

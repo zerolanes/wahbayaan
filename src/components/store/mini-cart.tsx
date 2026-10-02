@@ -7,13 +7,13 @@ import { ShoppingBag } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils/cn";
 
-/** Fired by the purchase form after a successful add, so the bag can open itself. */
+/** Fired by the purchase form after a successful add, so the cart can open itself. */
 export const CART_ADDED_EVENT = "wb:cart-added";
 
 const desktop = () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
 
 /**
- * Header bag. A plain link to /cart (phones, no JS); on tablets and desktops it
+ * Header cart. A plain link to /cart (phones, no JS); on tablets and desktops it
  * opens a slide-over mini-cart instead, and opens itself after "Add to cart".
  * The body is rendered on the server and passed in, so prices stay in the
  * buyer's currency and refresh with the page after every cart action.
@@ -43,7 +43,7 @@ export function MiniCart({ count, className, children, footer }: { count: number
         <ShoppingBag className="size-[18px]" aria-hidden />
         {count > 0 ? <CountBadge n={count} /> : null}
       </Link>
-      <Sheet open={open} onClose={() => setOpen(false)} side="right" title="Your bag" description={count ? `${count} ${count === 1 ? "piece" : "pieces"}` : undefined} footer={footer}>
+      <Sheet open={open} onClose={() => setOpen(false)} side="right" title="Your cart" description={count ? `${count} ${count === 1 ? "piece" : "pieces"}` : undefined} footer={footer}>
         {children}
       </Sheet>
     </>

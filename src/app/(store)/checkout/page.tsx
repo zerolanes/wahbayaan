@@ -3,11 +3,12 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ClipboardCheck, ShieldCheck } from "lucide-react";
 import { CheckoutForm } from "@/components/store/checkout-form";
+import { CheckoutSteps } from "@/components/store/checkout-steps";
 import { isSvg } from "@/components/store/illustration-tag";
 import { DeliveryEstimateLine, LandedCostBreakdown } from "@/components/store/landed-cost";
 import { BuyerProtectionBox } from "@/components/store/protection";
 import { joinCostLabels } from "@/lib/commerce/order-view";
-import { Breadcrumbs, Container } from "@/components/ui/misc";
+import { Container } from "@/components/ui/misc";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getBuyerContext } from "@/lib/buyer-context";
 import { loadCart, type CartView } from "@/lib/commerce/cart";
@@ -24,13 +25,13 @@ function Summary({ cart }: { cart: CartView }) {
       <ul className="space-y-4">
         {cart.lines.map((l) => (
           <li key={l.id} className="flex items-center gap-4">
-            <span className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-sand-200">
+            <span className="relative size-16 shrink-0 overflow-hidden rounded-[var(--radius-control)] bg-sand-200">
               {l.imageUrl ? <Image src={l.imageUrl} alt="" fill sizes="64px" unoptimized={isSvg(l.imageUrl)} className="object-cover" /> : null}
               {l.qty > 1 ? <span className="absolute top-1 right-1 grid size-5 place-items-center rounded-full bg-indigo-900 text-[10px] font-semibold text-sand-50">{l.qty}</span> : null}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-umber-900">{l.title}</span>
-              <span className="block text-xs text-umber-500">
+              <span className="block text-xs text-umber-600">
                 {l.vendorName}
                 {l.customizationLabels.length ? ` · ${l.customizationLabels.map((c) => c.value).join(", ")}` : ""}
               </span>
@@ -42,7 +43,7 @@ function Summary({ cart }: { cart: CartView }) {
       <LandedCostBreakdown landed={landed} title="Landed cost" />
       <DeliveryEstimateLine delivery={landed.delivery} />
       {!landed.complete ? (
-        <div className="flex gap-3 rounded-2xl bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
+        <div className="flex gap-3 rounded-[var(--radius-card)] bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
           <ClipboardCheck className="mt-0.5 size-5 shrink-0 text-pending-600" aria-hidden />
           <div>
             <p className="font-semibold">What happens next</p>
@@ -66,31 +67,31 @@ export default async function CheckoutPage() {
   const total = formatMoney(landed.knownTotal, landed.currency, { cents: true });
 
   return (
-    <Container className="py-10 md:py-14">
-      <Breadcrumbs items={[{ label: "Cart", href: "/cart" }, { label: "Checkout" }]} />
+    <Container className="pt-6 pb-12 md:py-12">
+      <CheckoutSteps current="details" />
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-display text-5xl text-umber-900 md:text-6xl">Checkout</h1>
-        <p className="flex items-center gap-2 text-sm text-umber-600">
+        <h1 className="font-display text-4xl tracking-[-0.035em] text-umber-900 md:text-6xl">Checkout</h1>
+        <p className="flex items-center gap-2 text-sm text-umber-700">
           <ShieldCheck className="size-4 text-success-600" aria-hidden /> Payment held until delivery · verified artisans
         </p>
       </div>
 
-      <details className="group mt-8 rounded-2xl bg-sand-50 ring-1 ring-umber-200/60 lg:hidden">
-        <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 [&::-webkit-details-marker]:hidden">
+      <details className="group mt-6 rounded-[var(--radius-panel)] bg-white shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)] lg:hidden">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between rounded-[var(--radius-panel)] px-5 py-4 [&::-webkit-details-marker]:hidden">
           <span className="text-sm font-semibold text-umber-900">
-            Order summary <span className="font-normal text-umber-500 group-open:hidden">· show</span>
+            Order summary <span className="font-normal text-umber-700 group-open:hidden">· show</span>
           </span>
-          <span className="font-display text-xl text-umber-900 tabular-nums">
+          <span className="font-display text-xl tracking-[-0.02em] text-umber-900 tabular-nums">
             {total}
-            {!landed.complete ? <span className="text-umber-400"> +</span> : null}
+            {!landed.complete ? <span className="text-umber-600"> +</span> : null}
           </span>
         </summary>
-        <div className="border-t border-umber-200/60 p-5">
+        <div className="border-t border-umber-900/[0.07] p-5">
           <Summary cart={cart} />
         </div>
       </details>
 
-      <div className="mt-8 grid gap-12 lg:mt-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+      <div className="mt-6 grid gap-10 lg:mt-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
         <CheckoutForm
           destination={ctx.destination}
           destinationName={destinationName(ctx.destination)}
@@ -105,7 +106,7 @@ export default async function CheckoutPage() {
           complete={landed.complete}
         />
         <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-5 rounded-[var(--radius-card)] bg-sand-50/70 p-6 ring-1 ring-umber-200/60">
+          <div className="sticky top-24 space-y-5 rounded-[var(--radius-panel)] bg-sand-50 p-6 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
             <h2 className="font-sans text-base font-semibold tracking-normal text-umber-900">Your order</h2>
             <Summary cart={cart} />
           </div>
