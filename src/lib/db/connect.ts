@@ -9,6 +9,7 @@
  * time. A pid lock file guards against running a script while `next dev` is up.
  */
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
@@ -38,22 +39,52 @@ function isPidAlive(pid: number) {
   }
 }
 
+/** Our own parent processes (e.g. the `tsx` or `npm` wrapper) never count as another holder. */
+function isAncestor(pid: number) {
+  let current = process.ppid;
+  for (let depth = 0; current > 1 && depth < 16; depth++) {
+    if (current === pid) return true;
+    try {
+      // /proc/<pid>/stat: "pid (comm) state ppid ..."; comm may contain spaces.
+      const stat = fs.readFileSync(`/proc/${current}/stat`, "utf8");
+      current = Number(stat.slice(stat.lastIndexOf(")") + 2).split(" ")[1]);
+    } catch {
+      break;
+    }
+  }
+  return false;
+}
+
+/**
+ * The lock records "pid@host". It lives next to the data (on a persistent
+ * volume in production), so a lock written by another machine or container is
+ * stale: process numbers are reused across containers.
+ */
+export function lockIsHeld(content: string, host = os.hostname()) {
+  const [pidText, owner] = content.trim().split("@");
+  const pid = Number(pidText);
+  if (!pid || pid === process.pid) return false;
+  if (owner !== undefined && owner !== host) return false;
+  return isPidAlive(pid) && !isAncestor(pid);
+}
+
 function acquireLock() {
   const file = lockPath();
   fs.mkdirSync(path.dirname(file), { recursive: true });
   if (fs.existsSync(file)) {
-    const pid = Number(fs.readFileSync(file, "utf8"));
-    if (pid && pid !== process.pid && isPidAlive(pid)) {
+    const content = fs.readFileSync(file, "utf8");
+    if (lockIsHeld(content)) {
       throw new Error(
-        `The embedded database at ${pgliteDir()} is in use by process ${pid} (probably \`next dev\`). ` +
+        `The embedded database at ${pgliteDir()} is in use by process ${content.trim()} (probably \`next dev\`). ` +
           "Stop it before running database scripts, or set PGLITE_DIR to a different directory.",
       );
     }
   }
-  fs.writeFileSync(file, String(process.pid));
+  const mine = `${process.pid}@${os.hostname()}`;
+  fs.writeFileSync(file, mine);
   const release = () => {
     try {
-      if (fs.existsSync(file) && fs.readFileSync(file, "utf8") === String(process.pid)) fs.unlinkSync(file);
+      if (fs.existsSync(file) && fs.readFileSync(file, "utf8") === mine) fs.unlinkSync(file);
     } catch {
       // best effort
     }
