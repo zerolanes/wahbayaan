@@ -1,28 +1,30 @@
 import Link from "next/link";
-import { Logo, ScallopDivider } from "@/components/brand/logo";
+import { BadgeCheck, Lock, ShieldCheck } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { featureFlags } from "@/lib/features";
 import { getPublicCategories } from "@/lib/queries/catalog";
 import { NewsletterForm } from "./newsletter-form";
 
-export async function SiteFooter() {
+/** Plain deep-indigo footer. `tabBarSpace` leaves room for the phone tab bar. */
+export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean }) {
   const [categories, flags] = await Promise.all([getPublicCategories(), featureFlags()]);
-  const col = "space-y-2.5 text-sm text-sand-200/70";
-  const link = "transition hover:text-gold-200";
+  const col = "space-y-1 text-sm text-sand-100/85";
+  const link = "inline-flex min-h-9 items-center transition-colors hover:text-gold-200 md:min-h-0 md:py-1";
+  const head = "text-xs font-semibold tracking-[0.08em] text-gold-300 uppercase";
   return (
-    <footer className="night relative mt-24">
-      <ScallopDivider />
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-10">
+    <footer className="night relative mt-24 overflow-hidden rounded-t-[var(--radius-sheet)] md:mt-32">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 pt-14 pb-10 sm:px-6 md:gap-12 md:pt-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-10">
         <div className="max-w-sm">
           <Logo tone="light" />
-          <p className="mt-5 text-sm leading-relaxed text-sand-200/70">
+          <p className="mt-5 text-sm leading-relaxed text-sand-100/85">
             Heritage craft from verified Pakistani artisans, delivered to the US, UK and Canada — with the full landed cost shown before you pay and your
             payment held until your piece arrives.
           </p>
           <NewsletterForm />
         </div>
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Crafts</p>
-          <ul className={`mt-4 ${col}`}>
+          <p className={head}>Crafts</p>
+          <ul className={`mt-3 ${col}`}>
             {categories.map((c) => (
               <li key={c.slug}>
                 <Link className={link} href={`/category/${c.slug}`}>
@@ -33,8 +35,8 @@ export async function SiteFooter() {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Buying</p>
-          <ul className={`mt-4 ${col}`}>
+          <p className={head}>Buying</p>
+          <ul className={`mt-3 ${col}`}>
             <li><Link className={link} href="/how-importing-works">How importing works</Link></li>
             <li><Link className={link} href="/track">Track an order</Link></li>
             <li><Link className={link} href="/buyer-protection">Buyer protection</Link></li>
@@ -45,8 +47,8 @@ export async function SiteFooter() {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-gold-300 uppercase">Wahbayaan</p>
-          <ul className={`mt-4 ${col}`}>
+          <p className={head}>Wahbayaan</p>
+          <ul className={`mt-3 ${col}`}>
             <li><Link className={link} href="/about">About us</Link></li>
             <li><Link className={link} href="/artisans">Our artisans</Link></li>
             {flags.journal ? <li><Link className={link} href="/journal">Heritage journal</Link></li> : null}
@@ -57,15 +59,15 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 py-6 text-xs text-sand-200/70 sm:px-6 lg:px-10">
+        <div
+          className={`mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-5 pt-6 text-xs text-sand-100/80 sm:px-6 lg:px-10 ${tabBarSpace ? "pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-6" : "pb-6"}`}
+        >
           <p>© {new Date().getFullYear()} Wahbayaan. Handmade in Pakistan.</p>
-          <p className="flex items-center gap-3">
-            <span>Secure card payments</span>
-            <span aria-hidden>·</span>
-            <span>Funds held until delivery</span>
-            <span aria-hidden>·</span>
-            <span>Verified artisans</span>
-          </p>
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <li className="inline-flex items-center gap-1.5"><Lock className="size-3.5 text-gold-300" aria-hidden /> Secure card payments</li>
+            <li className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-gold-300" aria-hidden /> Funds held until delivery</li>
+            <li className="inline-flex items-center gap-1.5"><BadgeCheck className="size-3.5 text-gold-300" aria-hidden /> Verified artisans</li>
+          </ul>
         </div>
       </div>
     </footer>
