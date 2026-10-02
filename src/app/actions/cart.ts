@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { getSetting } from "@/lib/settings";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { cartItems, carts, products, wishlistItems } from "@/lib/db/schema";
@@ -77,6 +78,7 @@ export async function removeCoupon() {
 export async function saveGiftOptions(_prev: CartFormState, formData: FormData): Promise<CartFormState> {
   const ctx = await getBuyerContext();
   if (!ctx.ownerKey) return { error: "Please enable cookies to use the cart." };
+  if (!(await getSetting("feature_flags")).gifting) return { error: "Gift options aren't available right now." };
   const isGift = formData.get("isGift") === "on";
   const message = String(formData.get("giftMessage") ?? "").trim().slice(0, 500);
   const d = await db();

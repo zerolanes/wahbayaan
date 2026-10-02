@@ -23,7 +23,7 @@ import { removeCartLine, saveLineForLater, updateCartQty } from "@/app/actions/c
 export const metadata: Metadata = { title: "Your cart", robots: { index: false } };
 
 export default async function CartPage() {
-  const [ctx, cart, vendors, giftWrap, fxTable] = await Promise.all([getBuyerContext(), loadCart(), getPublicVendors(), getSetting("gift_wrap"), getFxTable()]);
+  const [ctx, cart, vendors, giftWrap, fxTable, flags] = await Promise.all([getBuyerContext(), loadCart(), getPublicVendors(), getSetting("gift_wrap"), getFxTable(), getSetting("feature_flags")]);
   const count = cart.lines.reduce((a, l) => a + l.qty, 0);
 
   if (!cart.lines.length) {
@@ -232,7 +232,7 @@ export default async function CartPage() {
               </p>
             )}
             <CouponForm code={cart.couponCode} error={cart.couponError} />
-            <GiftForm isGift={cart.isGift} giftWrap={cart.giftWrap} message={cart.giftMessage} wrapNote={wrapNote} />
+            {flags.gifting ? <GiftForm isGift={cart.isGift} giftWrap={cart.giftWrap} message={cart.giftMessage} wrapNote={wrapNote} /> : null}
             {unavailable.length || !landed ? (
               <p className="flex h-13 w-full items-center justify-center rounded-full bg-umber-200 text-sm font-medium text-umber-600">Resolve the items above to check out</p>
             ) : (

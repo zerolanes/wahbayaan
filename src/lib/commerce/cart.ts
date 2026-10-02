@@ -9,6 +9,7 @@ import { getPublicCollections } from "@/lib/queries/storefront";
 import { computeBundleSavings } from "./bundles";
 import { computeLandedCost, buyerUnitPrice, type LandedCost, type LcItem } from "./landed-cost";
 import { getRateContext } from "./rates";
+import { getSetting } from "@/lib/settings";
 import { applyBps, convert } from "@/lib/money/currency";
 
 export async function getOrCreateCart(ownerKey: string) {
@@ -77,8 +78,11 @@ export async function loadCart(): Promise<CartView> {
   const empty: CartView = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null };
   if (!ctx.ownerKey) return empty;
   const d = await db();
-  const cart = await d.query.carts.findFirst({ where: eq(carts.ownerKey, ctx.ownerKey) });
-  if (!cart) return empty;
+  const found = await d.query.carts.findFirst({ where: eq(carts.ownerKey, ctx.ownerKey) });
+  if (!found) return empty;
+  // With gifting switched off (Admin → Feature flags), stored gift options are ignored everywhere.
+  const giftingOn = (await getSetting("feature_flags")).gifting;
+  const cart = giftingOn ? found : { ...found, isGift: false, giftWrap: false, giftMessage: null };
 
   const rows = await d
     .select({
