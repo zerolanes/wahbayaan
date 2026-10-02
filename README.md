@@ -9,6 +9,7 @@ This repository is a from-scratch rebuild (the previous site was WordPress + Woo
 | Area | Path | Notes |
 | --- | --- | --- |
 | Storefront (buyers) | `src/app/(store)` | Editorial homepage, shop & search, crafts (incl. furniture and snooker tables), artisans, product pages, cart, checkout with gifting, order tracking, account, commissions, collections, journal, help and policy pages. Prices in USD / GBP / CAD (PKR only via the switcher). |
+| Pakistani Brands | `src/app/(store)/brands`, `src/lib/brands` | Fashion brands bought by Wahbayaan on the buyer's behalf, delivered within Pakistan (PKR) or abroad (USD/GBP/CAD), gifts to Pakistan, "shop any brand by link" requests, a separate service-fee line. Catalogue import via pluggable sources gated by a recorded brand permission; only authorised partners get a public catalogue. Admin under Pakistani Brands and Delivery & payments. |
 | Haveli walk-through | `src/app/(home)/haveli` | Optional interactive 3D tour at `/haveli`; no 3D elsewhere on the storefront. |
 | Artisan dashboard | `src/app/seller` | Listings, orders, custom requests, payouts. Always PKR. |
 | Company admin | `src/app/admin` | Orders, quotes, escrow, disputes, refunds, payouts, shipments; artisans, applications, listings, reviews; customers, inbox, commissions; coupons, referrals, trade, waitlists, newsletter; homepage, pages, journal, announcements; rates and fees; reports; settings, feature flags, staff & roles, audit log, health, redirects, media, emails, launch readiness. Neutral dashboard theme shared with the artisan dashboard. |
@@ -69,3 +70,4 @@ The software is complete enough to run, but these numbers are business decisions
 - Stripe / PayPal accounts (without keys, checkout runs in a clearly labelled test mode)
 - Legal review of terms and privacy policy
 - Real product and artisan photography (the launch-readiness page lists every illustration still in use)
+- Pakistani Brands: each brand's written permission / partnership (nothing syncs and no brand catalogue is public until it is recorded and the brand is authorised); domestic courier contracts, city zones and rate cards (Admin → Couriers, Domestic zones); the international service fee and the domestic fee outside the owner's Rs 3,000–4,000 starting band (Admin → Service fee); JazzCash / Easypaisa merchant accounts and their integration documents (Admin → Payment methods)

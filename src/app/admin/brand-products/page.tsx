@@ -139,7 +139,7 @@ export default async function BrandProductsPage(props: PageProps<"/admin/brand-p
                       {canManage ? (
                         <ActionForm action={priceOverrideAction} className="flex items-center gap-1.5">
                           <input type="hidden" name="id" value={p.id} />
-                          <TextInput name="priceOverride" defaultValue={minorToInput(p.priceOverridePkr)} placeholder="brand price" className="w-24" aria-label={`Price override for ${p.title} (PKR)`} />
+                          <TextInput name="priceOverride" defaultValue={minorToInput(p.priceOverridePkr)} placeholder="—" className="w-24" aria-label={`Price override for ${p.title} (PKR)`} />
                           <SubmitButton variant="ghost">Set</SubmitButton>
                         </ActionForm>
                       ) : (
@@ -163,7 +163,7 @@ export default async function BrandProductsPage(props: PageProps<"/admin/brand-p
 
       {canManage ? (
         <Panel title="Add a product by hand" description="For brands whose source is manual entry: the brand's own product details and photos as they supplied them. Starts as a draft.">
-          <ActionForm action={createManualProductAction} encType="multipart/form-data" inline className="grid gap-3 md:grid-cols-3">
+          <ActionForm action={createManualProductAction} inline className="grid gap-3 md:grid-cols-3">
             <FieldRow label="Brand" htmlFor="m-brand">
               <SelectInput id="m-brand" name="brandId" defaultValue={brandF}>
                 {allBrands.map((b) => (

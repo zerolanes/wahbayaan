@@ -23,6 +23,8 @@ Read this before adding pages. It is short on purpose.
 - Seller dashboard (`src/app/seller`, `src/components/seller`): `<SellerPrice pkr={…} />` only. Never import `BuyerPrice` or `getBuyerContext`.
 - Admin: PKR by default via `SellerPrice`; buyer-order totals are shown with `formatMoney(amount, order.currency)` and labelled with the currency.
 - `tests/currency-surfaces.test.ts` fails the build if these are mixed.
+- **Buyers in Pakistan.** `BUYER_DESTINATIONS` = the import destinations (`DESTINATIONS`: US/GB/CA — duty, import rules and courier tables iterate these) **plus `PK`**. A buyer whose destination is `PK` defaults to PKR through the same buyer context; overseas buyers keep USD/GBP/CAD. The currency follows the buyer, not the parcel: an overseas buyer sending a gift to Pakistan still pays in their currency. Storefront pages never hard-code a currency — they use `BuyerPrice` / `formatMoney(amount, landed.currency)` exactly as before.
+- Destination `PK` is domestic in the landed-cost engine: "Delivery within Pakistan", import duty not applicable, shipping still pending until a real rate exists.
 
 ## Honesty rules
 
@@ -30,6 +32,17 @@ Read this before adding pages. It is short on purpose.
 - Demo rows have `isDemo = true`. Anything shown to buyers goes through the guards in `src/lib/queries/catalog.ts` (which use `src/lib/trust/visibility.ts`). Do not query `products`/`vendors`/`categories` directly for public listings.
 - Artwork from `/art/...` is an illustration standing in for photography. Customers never see QA labels ("Illustration", "Demo content", "Sample review", demo logins): they render only when the build sets `NEXT_PUBLIC_WB_QA_LABELS=1` (`SHOW_QA_LABELS` in `src/lib/qa.ts`). The admin launch-readiness check lists every illustration that still needs a real photo before launch.
 - Shipments over `FREIGHT_THRESHOLD_G` (70 kg — furniture, snooker tables) are freight: shipping stays `pending` with a freight explanation until logistics quotes it.
+
+## Pakistani Brands (`/brands`)
+
+- Separate catalogue: `brands`, `brand_sources`, `brand_sync_runs`, `brand_products` (+ variants with size/colour/stock, images), a separate brand bag, and `orders.kind = "brand"` with `brand_order_items` and a per-brand `brand_fulfilments` checklist. Never put brand items in `products`.
+- **Permission gate.** Automatic import (Sync now, `/api/cron/brands`, feed upload) runs only after an admin recorded the brand's permission (who, when, note — audited); the engine (`src/lib/brands/sync.ts`) checks it itself. A brand's catalogue, logo and photos are public only when `partnership = "authorised"` *and* the permission is recorded (`catalogueDisplayGate`, used by `brandIssues`). Other brands are reachable only through the wording-neutral "Shop by link" flow (`/brands/request`), which never fetches the link and shows only its domain.
+- Public brand queries go through `src/lib/queries/brands.ts` (guards in `src/lib/trust/visibility.ts`).
+- The Wahbayaan service fee (`brand_margin` setting, `src/lib/brands/margin.ts`) is always its own line — never folded into the item price. Pending outside the configured bands.
+- Brand quotes reuse the landed-cost engine via `computeBrandQuote` (`src/lib/brands/pricing.ts`).
+- Couriers: `couriers` table; rate cards are `shipping_rates` rows linked by `courierId` (domestic rows: destination `PK` + city `zone`). Inactive couriers' rates are never offered.
+- Payment methods (`src/lib/payments/methods.ts`): card / JazzCash / Easypaisa per market. Only non-secret config in settings; secrets are env vars. No cash on delivery.
+- Recorded adapter fixtures (FICTIONAL brands) live in `tests/fixtures/brands/`; `fixture:<name>` source URLs work outside production only.
 
 ## Auth
 

@@ -95,7 +95,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
               )}
               {canPermission ? (
                 <div className="mt-5 grid gap-6 lg:grid-cols-2">
-                  <ActionForm action={recordPermissionAction} className="space-y-3">
+                  <ActionForm key={`r-${brand.permissionGrantedAt?.toISOString() ?? "none"}`} action={recordPermissionAction} className="space-y-3">
                     <input type="hidden" name="id" value={brand.id} />
                     <p className="text-sm font-semibold text-umber-900">{permitted ? "Update the permission record" : "Record permission"}</p>
                     <FieldRow label="Who granted it and how (note)" htmlFor="note">
@@ -112,7 +112,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                     <SubmitButton>Record permission</SubmitButton>
                   </ActionForm>
                   <div className="space-y-6">
-                    <ActionForm action={setPartnershipAction} className="space-y-3">
+                    <ActionForm key={`p-${brand.partnership}`} action={setPartnershipAction} className="space-y-3">
                       <input type="hidden" name="id" value={brand.id} />
                       <p className="text-sm font-semibold text-umber-900">Partnership</p>
                       <SelectInput name="partnership" defaultValue={brand.partnership} aria-label="Partnership">
@@ -177,7 +177,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                 ) : null}
               </div>
               {source?.type === "csv_feed" && canManage ? (
-                <ActionForm action={uploadFeedAction} encType="multipart/form-data" className="mt-4 flex flex-wrap items-center gap-3">
+                <ActionForm action={uploadFeedAction} className="mt-4 flex flex-wrap items-center gap-3">
                   <input type="hidden" name="id" value={brand.id} />
                   <input type="file" name="feed" accept=".csv,text/csv" className="text-sm" aria-label="Feed CSV" />
                   <SubmitButton>Import feed</SubmitButton>
@@ -213,7 +213,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                         <Td className="text-right text-sm tabular-nums">{r.updated}</Td>
                         <Td className="text-right text-sm tabular-nums">{r.unchanged}</Td>
                         <Td className="text-right text-sm tabular-nums">{r.failed}</Td>
-                        <Td className="max-w-80 text-xs text-umber-600">
+                        <Td className="min-w-56 max-w-96 text-xs text-umber-600">
                           {r.errors.length ? (
                             <details>
                               <summary className="cursor-pointer">{r.errors[0].slice(0, 80)}</summary>
@@ -240,7 +240,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
         side={
           <>
             <Panel title="Brand details">
-              <ActionForm action={updateBrandAction} encType="multipart/form-data" className="space-y-3">
+              <ActionForm action={updateBrandAction} className="space-y-3">
                 <input type="hidden" name="id" value={brand.id} />
                 <FieldRow label="Name" htmlFor="b-name">
                   <TextInput id="b-name" name="name" defaultValue={brand.name} required />

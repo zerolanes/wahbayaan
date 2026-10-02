@@ -122,6 +122,11 @@ export async function BrandOrderAdmin({ number, user }: { number: string; user: 
 
       {quoteable ? (
         <Panel title="Quote" description="Computed from the service-fee settings and active courier rates. Pending lines stay pending — enter a confirmed amount to send the quote, never a guess.">
+          {order.status === "quote_sent" && order.quoteSentAt ? (
+            <Notice tone="success" className="mb-4" title={`Quote sent ${formatDateTime(order.quoteSentAt)}: ${orderMoney(order.total, cur)}`}>
+              Waiting for the buyer to approve and pay. Sending again replaces it.
+            </Notice>
+          ) : null}
           {!ready?.ok ? (
             <Notice tone="pending">{ready?.reason}</Notice>
           ) : quote ? (

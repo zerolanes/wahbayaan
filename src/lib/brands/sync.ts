@@ -4,6 +4,7 @@ import { and, eq, inArray, isNotNull, notInArray } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { brandProductImages, brandProducts, brandProductVariants, brands, brandSources, brandSyncRuns } from "@/lib/db/schema";
 import { audit } from "@/lib/audit";
+import { queueBrandAlerts } from "./alerts";
 import { parseBrandCsv } from "./adapters/csv";
 import { fetchShopifyCatalog, type Transport } from "./adapters/shopify";
 import { fixtureTransport, httpTransport, resolveSourceUrl } from "./adapters/transport";
@@ -150,6 +151,7 @@ export async function runBrandSync(brandId: string, opts: SyncOptions): Promise<
     .set({ status: out.status, added: out.added, updated: out.updated, unchanged: out.unchanged, failed: out.failed, markedUnavailable: out.markedUnavailable, errors: out.errors, finishedAt: new Date() })
     .where(eq(brandSyncRuns.id, run.id));
   await d.update(brandSources).set({ lastSyncAt: new Date() }).where(eq(brandSources.id, source.id));
+  await queueBrandAlerts(brand.id);
   await audit({
     actorUserId: opts.actorUserId,
     action: "brand.sync",

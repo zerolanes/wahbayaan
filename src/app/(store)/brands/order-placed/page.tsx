@@ -20,7 +20,8 @@ export default async function BrandOrderPlacedPage(props: PageProps<"/brands/ord
   return (
     <Container className="max-w-3xl py-12 md:py-16">
       <CheckCircle2 className="size-10 text-success-600" aria-hidden />
-      <h1 className="mt-4 font-display text-4xl text-umber-900">{isRequest ? "Request received" : "Order received"}</h1>
+      <h1 className="mt-4 font-display text-4xl text-umber-900">{order.paymentStatus === "paid" ? "Paid — thank you" : isRequest ? "Request received" : "Order received"}</h1>
+      {order.paymentStatus === "paid" ? <p className="mt-2 text-umber-700">We&apos;re ordering your pieces from the brand now and will update you at every step.</p> : null}
       <p className="mt-2 text-umber-600">
         {order.number} · we&apos;ve emailed {order.email}
       </p>

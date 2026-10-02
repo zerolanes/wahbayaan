@@ -12,6 +12,7 @@ import { FIXTURE_PREFIX, fixturesAllowed } from "@/lib/brands/adapters/transport
 import { canAuthorise, canEnableSync, PARTNERSHIP_LABEL } from "@/lib/brands/permission";
 import { parseSizeGuide } from "@/lib/brands/size-guide";
 import { runBrandSync } from "@/lib/brands/sync";
+import { queueBrandAlerts } from "@/lib/brands/alerts";
 import { saveUpload } from "@/lib/storage";
 
 /** Paths under /brands that a brand slug must never take. */
@@ -240,6 +241,7 @@ export const setBrandProductStatusAction = adminAction(
       .set({ status: data.status, ...(data.status === "published" ? { publishedAt: new Date() } : {}) })
       .where(inArray(brandProducts.id, data.ids));
     await audit({ action: `brand_product.${data.status}`, entity: "brand_product", entityId: rows.length === 1 ? rows[0].id : null, summary: `Set ${rows.length} brand product${rows.length === 1 ? "" : "s"} to ${data.status}: ${rows.map((r) => r.title).slice(0, 5).join(", ")}`, data: { ids: data.ids } });
+    if (data.status === "published") for (const brandId of new Set((await d.select({ b: brandProducts.brandId }).from(brandProducts).where(inArray(brandProducts.id, data.ids))).map((r) => r.b))) await queueBrandAlerts(brandId);
     return { message: `${rows.length} product${rows.length === 1 ? "" : "s"} ${data.status === "published" ? "published" : data.status === "hidden" ? "hidden" : "moved to draft"}` };
   },
 );
