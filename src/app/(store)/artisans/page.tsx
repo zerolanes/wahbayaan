@@ -171,7 +171,7 @@ export default async function ArtisansPage(props: PageProps<"/artisans">) {
                 <li key={s.title} className={cn("rounded-2xl bg-sand-50 p-6 ring-1 ring-umber-200/60", i === STEPS.length - 1 && "sm:col-span-2")}>
                   <div className="flex items-center justify-between">
                     <s.icon className="size-6 text-gold-600" aria-hidden />
-                    <span className="font-display text-3xl text-umber-200 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                    <span aria-hidden className="font-display text-3xl text-umber-400 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                   </div>
                   <p className="mt-4 font-display text-xl text-umber-900">{s.title}</p>
                   <p className="mt-1.5 text-sm leading-relaxed text-umber-600">{s.text}</p>

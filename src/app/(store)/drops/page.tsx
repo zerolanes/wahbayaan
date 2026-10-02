@@ -55,7 +55,7 @@ export default async function DropsPage() {
                   </h2>
                   <p className="mt-2 text-sand-200/75">
                     by{" "}
-                    <Link href={`/artisans/${p.vendorSlug}`} className="text-sand-50 underline-offset-4 hover:underline">
+                    <Link href={`/artisans/${p.vendorSlug}`} className="text-sand-50 underline underline-offset-4">
                       {p.vendorName}
                     </Link>
                     {editions.get(p.id) ? ` · an edition of ${editions.get(p.id)}` : ""}

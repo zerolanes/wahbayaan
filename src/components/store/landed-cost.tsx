@@ -26,14 +26,12 @@ export function LandedCostBreakdown({ landed, className, title = "Landed cost", 
       </div>
       <dl className="divide-y divide-umber-200/50 px-4">
         {landed.lines.map((line) => (
-          <div key={line.key} className="py-2.5">
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <dt className="text-umber-700">{line.label}</dt>
-              <dd>
-                <LineAmount line={line} currency={currency} />
-              </dd>
-            </div>
-            {line.note && !compact ? <p className="mt-0.5 text-xs text-umber-500">{line.note}</p> : null}
+          <div key={line.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 py-2.5 text-sm">
+            <dt className="text-umber-700">{line.label}</dt>
+            <dd>
+              <LineAmount line={line} currency={currency} />
+            </dd>
+            {line.note && !compact ? <dd className="col-span-2 mt-0.5 text-xs text-umber-500">{line.note}</dd> : null}
           </div>
         ))}
       </dl>

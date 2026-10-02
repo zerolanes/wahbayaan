@@ -353,23 +353,23 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             <h2 className="text-umber-900 font-sans text-base font-semibold tracking-normal">Specifications</h2>
             <dl className="divide-umber-200/60 border-umber-200/60 mt-4 divide-y border-y">
               {specs.map((s) => (
-                <div key={s.label} className="flex gap-4 py-4">
-                  <s.icon className="text-gold-600 mt-0.5 size-5 shrink-0" aria-hidden />
-                  <div className="min-w-0">
-                    <dt className="text-umber-500 text-xs tracking-wider uppercase">{s.label}</dt>
-                    <dd className="text-umber-900 mt-0.5">
-                      {s.value}
-                      {"sub" in s && s.sub ? <span className="text-umber-500"> · {s.sub}</span> : null}
-                    </dd>
-                  </div>
+                <div key={s.label} className="relative py-4 pl-9">
+                  <dt className="text-umber-500 text-xs tracking-wider uppercase">
+                    <s.icon className="text-gold-600 absolute top-4.5 left-0 size-5" aria-hidden />
+                    {s.label}
+                  </dt>
+                  <dd className="text-umber-900 mt-0.5">
+                    {s.value}
+                    {"sub" in s && s.sub ? <span className="text-umber-500"> · {s.sub}</span> : null}
+                  </dd>
                 </div>
               ))}
-              <div className="flex gap-4 py-4">
-                <Truck className="text-gold-600 mt-0.5 size-5 shrink-0" aria-hidden />
-                <div>
-                  <dt className="text-umber-500 text-xs tracking-wider uppercase">Ships from</dt>
-                  <dd className="text-umber-900 mt-0.5">The artisan&apos;s workshop in Pakistan, by international courier</dd>
-                </div>
+              <div className="relative py-4 pl-9">
+                <dt className="text-umber-500 text-xs tracking-wider uppercase">
+                  <Truck className="text-gold-600 absolute top-4.5 left-0 size-5" aria-hidden />
+                  Ships from
+                </dt>
+                <dd className="text-umber-900 mt-0.5">The artisan&apos;s workshop in Pakistan, by international courier</dd>
               </div>
             </dl>
           </div>

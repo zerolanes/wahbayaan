@@ -57,7 +57,7 @@ export function StarRating({
       </span>
       <span className={cn("text-xs tabular-nums", tone === "dark" ? "text-umber-600" : "text-sand-200/80")}>
         {average.toFixed(1)}
-        {showCount ? <span className="opacity-70"> ({count})</span> : null}
+        {showCount ? <span> ({count})</span> : null}
       </span>
     </span>
   );

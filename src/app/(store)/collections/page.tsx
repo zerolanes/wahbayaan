@@ -31,7 +31,7 @@ export default async function CollectionsPage() {
         {collections.length ? (
           collections.map((c, i) => (
             <article key={c.id} className="grid items-center gap-8 md:gap-14 lg:grid-cols-2">
-              <Link href={`/collections/${c.slug}`} className={cn("group relative block aspect-[4/3] overflow-hidden rounded-[2rem] bg-sand-200 shadow-soft", i % 2 === 1 && "lg:order-2")}>
+              <Link href={`/collections/${c.slug}`} aria-label={c.title} className={cn("group relative block aspect-[4/3] overflow-hidden rounded-[2rem] bg-sand-200 shadow-soft", i % 2 === 1 && "lg:order-2")}>
                 {c.coverImageUrl ? (
                   <Image src={c.coverImageUrl} alt="" fill sizes="(min-width:1024px) 50vw, 100vw" unoptimized={isSvg(c.coverImageUrl)} className="object-cover transition duration-1000 ease-[var(--ease-out-expo)] group-hover:scale-[1.04]" />
                 ) : null}

@@ -57,7 +57,7 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 py-6 text-xs text-sand-200/50 sm:px-6 lg:px-10">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 py-6 text-xs text-sand-200/70 sm:px-6 lg:px-10">
           <p>© {new Date().getFullYear()} Wahbayaan. Handmade in Pakistan.</p>
           <p className="flex items-center gap-3">
             <span>Secure card payments</span>

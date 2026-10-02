@@ -110,7 +110,7 @@ export default async function CategoryPage(props: PageProps<"/category/[slug]">)
                   <p className="font-semibold text-umber-900">Landed cost before you pay</p>
                   <p className="mt-0.5 text-sm text-umber-600">
                     Shipping, duty and tax itemised for your country.{" "}
-                    <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
+                    <Link href="/how-importing-works" className="text-terracotta-700 underline underline-offset-4">
                       How importing works
                     </Link>
                   </p>
