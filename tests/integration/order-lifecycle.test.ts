@@ -128,6 +128,14 @@ describe("order lifecycle", () => {
     const payout = await db.query.payouts.findFirst({ where: eq(m.t.payouts.id, done!.vendorOrders[0].payoutId!) });
     expect(payout!.amountPkr).toBe(net);
     expect(done!.items[0].certificateId).toBeTruthy();
+
+    // Everyone hears about each step, and the timeline says "Delivered" once.
+    const sent = await db.select({ template: m.t.emailOutbox.template, to: m.t.emailOutbox.to, body: m.t.emailOutbox.body }).from(m.t.emailOutbox);
+    const templates = sent.map((e) => e.template);
+    for (const t of ["order_placed", "quote_sent", "paid", "vendor_new_order", "shipped", "delivered", "vendor_funds_released"]) expect(templates).toContain(t);
+    for (const e of sent.filter((x) => x.template?.startsWith("vendor_"))) expect(e.body).not.toMatch(/\$|£|USD|GBP|CAD/);
+    const deliveredEvents = await db.query.orderEvents.findMany({ where: (e, { and, eq: is, inArray }) => and(is(e.orderId, order.id), inArray(e.kind, ["delivered", "vendor_delivered"])) });
+    expect(deliveredEvents).toHaveLength(1);
   });
 
   it("freezes funds when a case is opened and refunds on resolution", async () => {

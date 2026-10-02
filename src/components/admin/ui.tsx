@@ -32,7 +32,7 @@ export function PendingBadge({ children = "Pending" }: { children?: ReactNode })
 /** Buyer-order amount with its currency code, e.g. "$1,250 USD". */
 export function OrderAmount({ amount, currency, className }: { amount: number | null | undefined; currency: string; className?: string }) {
   if (amount == null) return <span className={cn("text-umber-400", className)}>—</span>;
-  return <span className={cn("tabular-nums", className)}>{orderMoney(amount, currency)}</span>;
+  return <span className={cn("tabular-nums", className)}>{orderMoney(amount, currency, { cents: true })}</span>;
 }
 
 export function DetailGrid({ main, side }: { main: ReactNode; side: ReactNode }) {

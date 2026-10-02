@@ -16,6 +16,7 @@ import {
   payouts,
   products,
   refunds,
+  users,
   vendorOrders,
   vendors,
   type OrderAddress,
@@ -67,6 +68,20 @@ async function notifyVendors(x: Executor, orderId: string, n: { kind: string; ti
   const rows = await x.select({ userId: vendors.userId }).from(vendorOrders).innerJoin(vendors, eq(vendors.id, vendorOrders.vendorId)).where(eq(vendorOrders.orderId, orderId));
   for (const r of rows) await notify(x, r.userId, n);
 }
+
+/** Emails each artisan on the order (artisan emails never mention buyer-currency amounts). */
+async function emailVendors(orderId: string, msg: (displayName: string) => { subject: string; body: string; template: string }) {
+  const d = await db();
+  const rows = await d
+    .select({ email: users.email, displayName: vendors.displayName })
+    .from(vendorOrders)
+    .innerJoin(vendors, eq(vendors.id, vendorOrders.vendorId))
+    .innerJoin(users, eq(users.id, vendors.userId))
+    .where(eq(vendorOrders.orderId, orderId));
+  for (const r of rows) await sendEmail({ to: r.email, ...msg(r.displayName) });
+}
+
+const appUrl = () => process.env.APP_URL ?? "http://localhost:3000";
 
 export async function getOrderByNumber(number: string) {
   const d = await db();
@@ -303,6 +318,11 @@ export async function markPaid(orderId: string, providerRef: string | null) {
     await notifyVendors(tx, orderId, { kind: "order", title: `New paid order ${order.number}`, link: "/seller/orders" });
   });
   await sendEmail({ to: order.email, subject: `Payment received for ${order.number}`, template: "paid", body: "Your payment is held by Wahbayaan and only released to the artisan once your piece arrives." });
+  await emailVendors(orderId, (name) => ({
+    subject: `New paid order ${order.number}`,
+    template: "vendor_new_order",
+    body: `Salaam ${name},\n\nYou have a new paid order, ${order.number}. The buyer's payment is already held by Wahbayaan.\n\nPlease accept it and start work:\n\n${appUrl()}/seller/orders\n\nYou'll be paid in rupees once the buyer confirms delivery.`,
+  }));
 }
 
 // ── Fulfilment (artisan side) ───────────────────────────────────────────────
@@ -363,15 +383,19 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
   // Read settings before opening the transaction: the embedded database has a
   // single connection, so a query outside `tx` inside it would deadlock.
   const { escrow } = await getSettings(["escrow"]);
+  let next = order.status;
   await d.transaction(async (tx) => {
     await tx.update(vendorOrders).set(patch).where(eq(vendorOrders.id, vendorOrderId));
-    await event(tx, order.id, `vendor_${action.type}`, message, { actorUserId: actor.userId, vendorOrderId });
     const siblings = await tx.select().from(vendorOrders).where(eq(vendorOrders.orderId, order.id));
     const statuses = siblings.map((s) => (s.id === vendorOrderId ? patch.status ?? s.status : s.status));
-    let next = order.status;
     if (statuses.every((s) => s === "delivered")) next = "delivered";
     else if (statuses.every((s) => s === "shipped" || s === "delivered")) next = "shipped";
     else if (order.status === "paid") next = "in_fulfilment";
+    const orderBecomesDelivered = next === "delivered" && next !== order.status && order.status !== "disputed";
+    // The order-level "Delivered" event says it all; don't repeat it per parcel.
+    if (!(action.type === "delivered" && orderBecomesDelivered)) {
+      await event(tx, order.id, `vendor_${action.type}`, message, { actorUserId: actor.userId, vendorOrderId });
+    }
     if (next !== order.status && order.status !== "disputed") {
       await tx
         .update(orders)
@@ -385,6 +409,23 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
     }
     await notify(tx, order.userId, { kind: "order", title: `${order.number}: ${message}`, link: `/account/orders/${order.number}` });
   });
+  const orderLink = `${appUrl()}/account/orders/${order.number}`;
+  if (action.type === "ship") {
+    await sendEmail({
+      to: order.email,
+      subject: `Your Wahbayaan order ${order.number} has shipped`,
+      template: "shipped",
+      body: `Good news — your piece is on its way with ${action.courier}.\n\nTracking number: ${action.trackingNumber}${action.trackingUrl ? `\nTrack it: ${action.trackingUrl}` : ""}\n\nYour payment stays held until it arrives. Follow your order here:\n\n${orderLink}`,
+    });
+  }
+  if (next === "delivered" && order.status !== "delivered" && order.status !== "disputed") {
+    await sendEmail({
+      to: order.email,
+      subject: `Delivered: please confirm order ${order.number}`,
+      template: "delivered",
+      body: `Your order ${order.number} has been delivered. Please confirm it arrived as described — that releases payment to the artisan. If anything is wrong, open a case from the same page and your payment stays held.\n\n${orderLink}`,
+    });
+  }
 }
 
 // ── Completion, escrow release & payouts ────────────────────────────────────
@@ -412,6 +453,11 @@ export async function releaseFunds(orderId: string, actor: { userId: string | nu
     await notifyVendors(tx, orderId, { kind: "payout", title: `Funds released for ${order.number}`, link: "/seller/payouts" });
   });
   await issueCertificates(orderId);
+  await emailVendors(orderId, (name) => ({
+    subject: `Funds released for order ${order.number}`,
+    template: "vendor_funds_released",
+    body: `Salaam ${name},\n\nThe buyer's payment for order ${order.number} has been released to you. Your payout in rupees is listed here:\n\n${appUrl()}/seller/payouts`,
+  }));
 }
 
 export async function confirmDelivery(orderNumber: string, userId: string) {

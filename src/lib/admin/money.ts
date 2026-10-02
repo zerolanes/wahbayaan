@@ -24,10 +24,11 @@ export function minorToInput(minor: number | null | undefined): string {
 }
 
 /** A buyer-side amount with its ISO code always visible, e.g. "$1,250 USD". */
-export function orderMoney(minor: number | null | undefined, currency: string): string {
+/** `cents: true` keeps columns aligned ($4.00 next to $6.20); prose like coupon text reads better without. */
+export function orderMoney(minor: number | null | undefined, currency: string, opts: { cents?: boolean } = {}): string {
   if (minor == null) return "—";
   if (!isBuyerCurrency(currency)) return `${(minor / 100).toFixed(2)} ${currency}`;
-  const s = formatMoney(minor, currency as Currency);
+  const s = formatMoney(minor, currency as Currency, opts.cents && currency !== "PKR" ? { cents: true } : {});
   return currency === "PKR" ? `${s} (PKR)` : `${s} ${currency}`;
 }
 
