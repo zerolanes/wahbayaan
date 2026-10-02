@@ -28,6 +28,7 @@ import { formatMoney, type Currency } from "@/lib/money/currency";
 import { applyBps } from "@/lib/money/currency";
 import { refundPayment, startCheckout } from "@/lib/payments";
 import type { CartView } from "./cart";
+import { joinCostLabels } from "./order-view";
 
 /**
  * Order lifecycle — the single state machine used by the storefront, the
@@ -196,7 +197,7 @@ export async function placeOrder(input: PlaceOrderInput) {
         tx,
         order.id,
         "awaiting_quote",
-        `Our team is confirming ${landed.pendingLines.map((l) => l.label.toLowerCase()).join(", ")}. You'll approve the final total before anything is charged.`,
+        `Our team is confirming ${joinCostLabels(landed.pendingLines.map((l) => l.label))}. You'll approve the final total before anything is charged.`,
       );
     }
     await notify(tx, input.userId, { kind: "order", title: `Order ${number} placed`, link: `/account/orders/${number}` });
