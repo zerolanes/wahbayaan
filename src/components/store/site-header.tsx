@@ -46,10 +46,12 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
           <nav className="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Primary">
             {[
               { href: "/shop", label: "Shop" },
+              // Pakistani Brands section (/brands) sits next to Shop.
+              { href: "/brands", label: "Brands" },
               { href: "/artisans", label: "Artisans" },
-              { href: "/how-importing-works", label: "How importing works" },
+              { href: "/how-importing-works", label: "How importing works", wide: true },
             ].map((l) => (
-              <Link key={l.href} href={l.href} className="pressable rounded-full px-3 py-2 hover:bg-current/[0.07]">
+              <Link key={l.href} href={l.href} className={`pressable rounded-full px-3 py-2 hover:bg-current/[0.07] ${"wide" in l ? "hidden xl:inline-flex" : ""}`}>
                 {l.label}
               </Link>
             ))}

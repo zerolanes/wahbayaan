@@ -35,6 +35,7 @@ export function MenuOverlay({
 
   const explore = [
     { href: "/shop", label: "Shop everything" },
+    { href: "/brands", label: "Pakistani brands" },
     { href: "/artisans", label: "Meet the artisans" },
     { href: "/collections", label: "Collections & bundles" },
     { href: "/drops", label: "Limited drops" },
