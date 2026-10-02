@@ -1,5 +1,6 @@
 import "server-only";
 import { eq } from "drizzle-orm";
+import { renderEmailHtml } from "./email-html";
 import { db } from "@/lib/db/client";
 import { emailOutbox } from "@/lib/db/schema";
 
@@ -28,7 +29,7 @@ export async function deliverOutboxEmail(row: { id: string; to: string; subject:
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-      body: JSON.stringify({ from: process.env.EMAIL_FROM ?? "Wahbayaan <hello@wahbayaan.com>", to: row.to, subject: row.subject, text: row.body }),
+      body: JSON.stringify({ from: process.env.EMAIL_FROM ?? "Wahbayaan <hello@wahbayaan.com>", to: row.to, subject: row.subject, text: row.body, html: renderEmailHtml(row.subject, row.body) }),
     });
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
     await d.update(emailOutbox).set({ status: "sent", sentAt: new Date(), error: null }).where(eq(emailOutbox.id, row.id));
