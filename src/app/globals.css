@@ -550,6 +550,26 @@
     transition: opacity var(--dur-base) ease;
   }
 
+  /* Static hero wordmark (instant paint; fallback for no-WebGL / reduced motion):
+     an indigo lacquer face with a gilded edge and a stepped gold "extrusion". */
+  .wordmark-static {
+    font-family: var(--font-serif);
+    font-size: clamp(3.25rem, 15vw, 9.5rem);
+    font-weight: 560;
+    font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 1;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--color-indigo-900);
+    -webkit-text-stroke: 0.012em var(--color-gold-500);
+    paint-order: stroke fill;
+    text-shadow:
+      0 0.01em 0 #c99a48,
+      0 0.02em 0 #b8893b,
+      0 0.03em 0 #9a6f2d,
+      0 0.04em 0 #7b5724,
+      0 0.12em 0.18em rgb(74 61 48 / 0.28);
+  }
+
   /* Scroll-edge effect under floating chrome instead of a hard divider. */
   .scroll-edge-top {
     mask-image: linear-gradient(to bottom, transparent, #000 1.25rem);

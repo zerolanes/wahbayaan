@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { and, desc, eq } from "drizzle-orm";
 import { ArrowRight, ArrowUpRight, BadgeCheck, Calculator, MapPin, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { HeroWordmark } from "@/components/store/hero/hero-wordmark";
 import { ProductCard } from "@/components/store/product-card";
 import { VerifiedBadge } from "@/components/store/trust";
 import { ButtonLink } from "@/components/ui/button";
@@ -20,18 +21,18 @@ import { formatDate } from "@/lib/utils/format";
 const isSvg = (url: string) => url.split("?")[0].endsWith(".svg");
 
 const PROMISES = [
-  { icon: Calculator, title: "Landed cost up front", text: "Shipping, import duty and tax for your country, itemised before you pay." },
-  { icon: ShieldCheck, title: "Payment held until delivery", text: "The artisan is paid only after your piece arrives as described." },
-  { icon: BadgeCheck, title: "Verified artisans", text: "Identity, workshop and sample work checked by our team." },
-  { icon: Truck, title: "Tracked, insured shipping", text: "Packed for export and tracked door to door to the US, UK and Canada." },
+  { icon: Calculator, title: "Every cost up front", text: "Shipping, duty and tax shown before you pay." },
+  { icon: ShieldCheck, title: "Protected payment", text: "The artisan is paid once it arrives." },
+  { icon: BadgeCheck, title: "Verified artisans", text: "Every workshop checked by us." },
+  { icon: Truck, title: "Tracked shipping", text: "Insured, door to door." },
 ];
 
 const STEPS = [
-  { title: "Choose a piece", text: "Every listing names its maker, materials, size and how long it takes to make." },
-  { title: "See every cost", text: "We show the item, international shipping and your country's import duty and tax — before checkout." },
-  { title: "Pay in your currency", text: "USD, GBP or CAD. Wahbayaan holds the payment; nothing reaches the artisan yet." },
-  { title: "Made, packed, exported", text: "The artisan makes or packs your piece. We handle export paperwork and the courier." },
-  { title: "Confirm it arrived", text: "When it's in your hands and as described, the artisan is paid. One-of-a-kind pieces include a certificate." },
+  { title: "Choose a piece", text: "Every listing names its maker." },
+  { title: "See every cost", text: "Shipping, duty and tax — before checkout." },
+  { title: "Pay in your currency", text: "We hold the payment, not the artisan." },
+  { title: "Made and shipped", text: "Packed and sent by tracked courier." },
+  { title: "Confirm it arrived", text: "Then the artisan is paid." },
 ];
 
 export default async function HomePage() {
@@ -59,9 +60,6 @@ export default async function HomePage() {
     ? // In the order picked in Admin → Content → Homepage; hidden artisans drop out.
       home.featuredVendorIds.map((id) => vendors.find((v) => v.id === id)).filter((v) => v !== undefined)
     : [...vendors.filter((v) => v.isFeatured), ...vendors.filter((v) => !v.isFeatured)];
-  const pieceCount = categories.reduce((n, c) => n + c.productCount, 0);
-  const cities = new Set(vendors.map((v) => v.workshopCity).filter(Boolean));
-  const heroPieces = (featured.items.length >= 3 ? featured.items : recent.items).slice(0, 3);
   // Keep the featured grid in full rows of four, topped up with the newest work.
   const featuredIds = new Set(featured.items.map((p) => p.id));
   const featuredGrid = [...featured.items, ...recent.items.filter((p) => !featuredIds.has(p.id))].slice(0, featured.items.length > 4 ? 8 : 4);
@@ -69,77 +67,29 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section>
-        <Container className="grid items-center gap-8 pt-6 pb-10 md:gap-10 md:py-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16 lg:py-16">
-          <div>
-            <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-700 uppercase">{home.heroEyebrow}</p>
-            <h1 className="mt-4 text-[2.75rem] leading-[1.02] tracking-[-0.035em] text-umber-900 sm:text-6xl xl:text-7xl">{home.heroTitle}</h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-umber-700">{home.heroSubtitle}</p>
-            <div className="mt-7 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
-              <ButtonLink href="/shop" size="lg" className="max-sm:h-12 max-sm:px-4 max-sm:text-[0.95rem]">
-                Shop the collection <ArrowRight className="size-4 max-sm:hidden" aria-hidden />
-              </ButtonLink>
-              <ButtonLink href="/artisans" size="lg" variant="outline" className="max-sm:h-12 max-sm:px-4 max-sm:text-[0.95rem]">
-                Meet the artisans
-              </ButtonLink>
-            </div>
-            <dl className="mt-9 grid max-w-md grid-cols-3 gap-6 border-t border-umber-900/10 pt-6">
-              {[
-                { label: "Verified artisans", value: vendors.length },
-                { label: "Pieces listed", value: pieceCount },
-                { label: "Craft cities", value: cities.size },
-              ].map((s) => (
-                <div key={s.label}>
-                  <dt className="text-xs text-umber-600">{s.label}</dt>
-                  <dd className="mt-1 font-display text-3xl tracking-[-0.03em] text-umber-900 tabular-nums">{s.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {heroPieces.length ? (
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {heroPieces.map((p, i) => (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug}`}
-                  className={cn("group relative overflow-hidden rounded-[var(--radius-panel)] bg-sand-200 shadow-soft", i === 0 ? "row-span-2 aspect-[3/4] sm:aspect-auto" : "aspect-[4/3]")}
-                >
-                  <Image
-                    src={p.imageUrl}
-                    alt={p.imageAlt ?? p.title}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 28vw, 50vw"
-                    unoptimized={isSvg(p.imageUrl)}
-                    className="object-cover transition-transform duration-700 ease-[var(--ease-spring)] group-hover:scale-[1.03]"
-                  />
-                  <div className="glass-dark absolute inset-x-2 bottom-2 rounded-[1.125rem] px-3 py-2 sm:inset-x-3 sm:bottom-3 sm:px-3.5 sm:py-2.5">
-                    <p className="line-clamp-1 text-sm font-semibold text-white">{p.title}</p>
-                    <p className="line-clamp-1 text-xs text-sand-100">
-                      {p.categoryName} · {p.vendorName}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : null}
+      {/* Hero: the wordmark, one line, one action. */}
+      <section className="relative">
+        <Container className="flex flex-col items-center pt-6 pb-14 text-center md:pt-10 md:pb-20">
+          <HeroWordmark />
+          <p className="mt-2 max-w-xl text-xl leading-snug font-medium tracking-[-0.015em] text-umber-800 md:text-2xl">{home.heroTitle}</p>
+          <ButtonLink href="/shop" size="lg" className="mt-7 min-w-40">
+            Shop <ArrowRight className="size-4" aria-hidden />
+          </ButtonLink>
         </Container>
       </section>
 
       {/* Promises strip */}
       <section aria-label="Our promises">
         <Container>
-          <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {PROMISES.map(({ icon: Icon, title, text }) => (
-              <li key={title} className="flex w-[78%] shrink-0 snap-start gap-3.5 rounded-[var(--radius-card)] bg-sand-50 p-5 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] sm:w-auto">
+              <li key={title} className="flex flex-col gap-3 rounded-[var(--radius-card)] bg-sand-50 p-4 shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)] sm:flex-row sm:gap-3.5 sm:p-5">
                 <span className="grid size-10 shrink-0 place-items-center rounded-full bg-terracotta-50 text-terracotta-700">
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <div>
                   <p className="text-[0.95rem] font-semibold text-umber-900">{title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-umber-700">{text}</p>
+                  <p className="mt-0.5 text-sm leading-snug text-umber-700">{text}</p>
                 </div>
               </li>
             ))}
@@ -151,9 +101,7 @@ export default async function HomePage() {
       {crafts.length ? (
         <section className="py-16 md:py-24">
           <Container>
-            <Heading eyebrow="Our collections" title="Shop by craft" action={{ href: "/shop", label: "Shop everything" }}>
-              Each craft is made, photographed and shipped by the people who practise it.
-            </Heading>
+            <Heading eyebrow="Our collections" title="Shop by craft" action={{ href: "/shop", label: "Shop everything" }} />
             <ul className="-mx-4 mt-8 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:mt-10 md:grid md:grid-cols-5 md:gap-5 md:overflow-visible md:px-0 lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none lg:gap-4">
               {crafts.map((c) => (
                 <li key={c.slug} className="w-[7.5rem] shrink-0 snap-start md:w-auto">
@@ -179,9 +127,7 @@ export default async function HomePage() {
       {featured.items.length ? (
         <section className="pb-16 md:pb-24">
           <Container>
-            <Heading eyebrow="Featured" title="Pieces with a maker's name" action={{ href: "/shop?sort=featured", label: "See all pieces" }}>
-              One-of-a-kind and small-batch work, each listed by the artisan who made it.
-            </Heading>
+            <Heading eyebrow="Featured" title="Pieces with a maker's name" action={{ href: "/shop?sort=featured", label: "See all pieces" }} />
             <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
               {featuredGrid.map((p, i) => (
                 <ProductCard key={p.id} product={p} saved={saved.has(p.id)} priority={i < 4} />
@@ -194,9 +140,7 @@ export default async function HomePage() {
       {/* Craft atlas */}
       <section className="py-16 md:py-24">
         <Container>
-          <Heading eyebrow="Where it's made" title="A map of Pakistani craft">
-            Every region keeps its own tradition. These are the cities our artisans work from.
-          </Heading>
+          <Heading eyebrow="Where it's made" title="A map of Pakistani craft" />
           <ul className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
             {ATLAS.map((a) => (
               <li key={a.city}>
@@ -225,7 +169,7 @@ export default async function HomePage() {
           <div>
             <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-700 uppercase">How importing works</p>
             <h2 className="mt-3 font-display text-4xl leading-[1.08] tracking-[-0.03em] text-umber-900 md:text-5xl">Buying from a workshop in Pakistan, made simple.</h2>
-            <p className="mt-4 text-lg text-umber-600">You pay for the piece, the international shipping and your country&apos;s import charges — and you see every line before you pay.</p>
+            <p className="mt-4 text-lg text-umber-700">Every line, before you pay.</p>
             <div className="mt-8 rounded-[var(--radius-panel)] bg-white p-6 shadow-soft">
               <p className="text-xs font-semibold tracking-wide text-umber-500 uppercase">What you see at checkout</p>
               <dl className="mt-4 divide-y divide-umber-100 text-sm">
@@ -237,10 +181,10 @@ export default async function HomePage() {
                 ))}
                 <div className="flex justify-between pt-3 font-semibold text-umber-900">
                   <dt>Landed total</dt>
-                  <dd>In USD, GBP or CAD</dd>
+                  <dd>In your currency</dd>
                 </div>
               </dl>
-              <p className="mt-4 text-xs text-umber-500">If a rate for your country isn&apos;t confirmed yet, we say so — we never show it as zero.</p>
+              <p className="mt-4 text-xs text-umber-600">Unconfirmed rates show as Pending — never zero.</p>
             </div>
             <ButtonLink href="/how-importing-works" variant="outline" className="mt-6">
               Read the full guide <ArrowRight className="size-4" />
@@ -270,9 +214,7 @@ export default async function HomePage() {
       {featuredVendors.length ? (
         <section className="border-t border-umber-200/60 py-16 md:py-24">
           <Container>
-            <Heading eyebrow="Meet the artisans" title="Shop by artisan" action={{ href: "/artisans", label: "All artisans" }}>
-              Families and workshops, each verified by our team before they can sell — identity, workshop and sample work.
-            </Heading>
+            <Heading eyebrow="Meet the artisans" title="Shop by artisan" action={{ href: "/artisans", label: "All artisans" }} />
             <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {featuredVendors.slice(0, 8).map((v) => (
                 <li key={v.id}>
@@ -328,7 +270,7 @@ export default async function HomePage() {
           <div className="rounded-[var(--radius-panel)] bg-terracotta-700 px-6 py-12 text-sand-50 sm:px-10">
             <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-terracotta-100 uppercase">Made for you</p>
             <h2 className="mt-3 max-w-xl font-display text-3xl leading-tight tracking-[-0.03em] md:text-4xl">Your family name in Nastaliq. A rug in your room&apos;s exact size.</h2>
-            <p className="mt-4 max-w-xl text-terracotta-50/85">Describe what you have in mind. An artisan replies with a quote, sketches and a timeline before anything is made — and your deposit is held like any other order.</p>
+            <p className="mt-4 max-w-xl text-terracotta-50">An artisan quotes before anything is made.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/custom" className="bg-sand-50 text-umber-900 hover:bg-white">
                 Commission a piece
@@ -342,7 +284,7 @@ export default async function HomePage() {
             <div>
               <p className="text-[0.8125rem] font-semibold tracking-[0.06em] text-indigo-200 uppercase">Take the long way round</p>
               <h2 className="mt-3 font-display text-3xl leading-tight tracking-[-0.03em] md:text-4xl">Walk through the haveli</h2>
-              <p className="mt-4 text-indigo-100/80">An interactive walk through a courtyard house, with one craft in every room. Best on a laptop or tablet.</p>
+              <p className="mt-4 text-indigo-100">A courtyard house, one craft in every room.</p>
             </div>
             <span className="mt-8 inline-flex items-center gap-2 text-sm font-medium">
               Step inside <ArrowRight className="size-4 transition group-hover:translate-x-1" aria-hidden />
