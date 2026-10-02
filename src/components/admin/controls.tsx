@@ -34,10 +34,20 @@ export function SelectInput({ className, children, ...props }: ComponentProps<"s
 export function FieldRow({ label, hint, children, className, htmlFor }: { label: React.ReactNode; hint?: React.ReactNode; children: React.ReactNode; className?: string; htmlFor?: string }) {
   return (
     <div className={cn("space-y-1", className)}>
-      <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-umber-600">
-        {label}
-      </label>
-      {children}
+      {htmlFor ? (
+        <>
+          <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-umber-600">
+            {label}
+          </label>
+          {children}
+        </>
+      ) : (
+        // Without an explicit id, wrapping the control is what ties the label to it for screen readers.
+        <label className="block space-y-1">
+          <span className="block text-xs font-medium tracking-wide text-umber-600">{label}</span>
+          {children}
+        </label>
+      )}
       {hint ? <p className="text-xs text-umber-500">{hint}</p> : null}
     </div>
   );

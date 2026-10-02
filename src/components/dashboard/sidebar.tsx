@@ -25,7 +25,7 @@ export function DashboardSidebar({ groups, label, footer }: { groups: NavGroup[]
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 py-4 scrollbar-none">
         {groups.map((g) => (
           <div key={g.label}>
-            <p className="px-2.5 pb-1 text-[11px] font-medium tracking-wide text-[#a3a3a3] uppercase">{g.label}</p>
+            <p className="px-2.5 pb-1 text-[11px] font-medium tracking-wide text-[#737373] uppercase">{g.label}</p>
             <ul className="space-y-px">
               {g.items.map((item) => {
                 const active = isActive(item.href, item.exact);

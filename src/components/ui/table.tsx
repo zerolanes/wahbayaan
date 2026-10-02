@@ -1,9 +1,10 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils/cn";
 
-export function Table({ className, ...props }: ComponentProps<"table">) {
+/** `scrollLabel` makes the scroll wrapper keyboard-focusable (for tables likely to scroll sideways). */
+export function Table({ className, scrollLabel, ...props }: ComponentProps<"table"> & { scrollLabel?: string }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" {...(scrollLabel ? { tabIndex: 0, role: "region", "aria-label": scrollLabel } : {})}>
       <table className={cn("w-full border-collapse text-sm", className)} {...props} />
     </div>
   );

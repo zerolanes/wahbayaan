@@ -111,7 +111,7 @@ export default async function ReportsPage(props: PageProps<"/admin/reports">) {
         exportHref={exp("gmv")}
       >
         <BarChart title="GMV per month in PKR" axisDivisor={100} labelEvery={data.months.length > 12 ? 2 : 1} data={data.months.map((m) => ({ key: m.key, label: m.label, value: m.pkr, display: `${formatMoney(m.pkr, "PKR")} · ${m.orders} order${m.orders === 1 ? "" : "s"}` }))} />
-        <div className="mt-5 overflow-x-auto">
+        <div className="mt-5 overflow-x-auto" tabIndex={0} role="region" aria-label="Sales by month table">
           <Table>
             <THead>
               <tr>
@@ -161,7 +161,7 @@ export default async function ReportsPage(props: PageProps<"/admin/reports">) {
       <div className="grid gap-6 xl:grid-cols-2">
         <Section id="destinations" title="Orders by destination" description="Orders placed in the range; value from paid, non-refunded orders." exportHref={exp("destinations")}>
           <ShareBar parts={data.destinations.map((d, i) => ({ key: d.country, label: destinationName(d.country), value: d.pkr, display: destTotal ? percent(d.pkr / destTotal, 0) : "—", color: SERIES_COLORS[i % SERIES_COLORS.length] }))} />
-          <Table className="mt-4">
+          <Table className="mt-4" scrollLabel="Orders by destination">
             <THead>
               <tr>
                 <Th>Destination</Th>
@@ -205,7 +205,7 @@ export default async function ReportsPage(props: PageProps<"/admin/reports">) {
 
       <Section id="artisans" title="Artisan performance" description="Parcels on orders paid in the range, in PKR. Commission shows as pending where no rate was set on the order." exportHref={exp("artisans")}>
         {data.artisans.length ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Report table">
             <Table>
               <THead>
                 <tr>
@@ -262,16 +262,14 @@ export default async function ReportsPage(props: PageProps<"/admin/reports">) {
                 </div>
                 <dl className="mt-3 space-y-2.5 text-sm">
                   {c.components.map((k) => (
-                    <div key={k.key}>
-                      <div className="flex items-center justify-between gap-2">
-                        <dt className="text-umber-600">{k.label}</dt>
-                        <dd className="font-medium">{k.average != null ? orderMoney(k.average, c.currency) : k.notApplicable === c.orders ? <span className="text-umber-400">Not applicable</span> : <PendingBadge />}</dd>
-                      </div>
-                      <p className="text-xs text-umber-500">
+                    <div key={k.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2">
+                      <dt className="text-umber-600">{k.label}</dt>
+                      <dd className="font-medium">{k.average != null ? orderMoney(k.average, c.currency) : k.notApplicable === c.orders ? <span className="text-umber-400">Not applicable</span> : <PendingBadge />}</dd>
+                      <dd className="col-span-2 text-xs text-umber-500">
                         {k.known} known{k.pending ? ` · ${k.pending} pending` : ""}
                         {k.notApplicable ? ` · ${k.notApplicable} n/a` : ""}
                         {k.shareOfItems != null ? ` · ${percent(k.shareOfItems, 0)} of items` : ""}
-                      </p>
+                      </dd>
                     </div>
                   ))}
                 </dl>

@@ -173,7 +173,7 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 }
 
 export function Thumb({ src, alt, kind, size = 40, className }: { src: string | null | undefined; alt: string; kind?: string | null; size?: number; className?: string }) {
-  if (!src) return <div className={cn("shrink-0 rounded-lg bg-umber-100", className)} style={{ width: size, height: size }} aria-label="No image" />;
+  if (!src) return <div className={cn("shrink-0 rounded-lg bg-umber-100", className)} style={{ width: size, height: size }} role="img" aria-label="No image" />;
   return (
     <span className={cn("relative inline-block shrink-0 overflow-hidden rounded-lg bg-umber-100", className)} style={{ width: size, height: size }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}

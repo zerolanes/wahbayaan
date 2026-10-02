@@ -119,7 +119,7 @@ export default async function EscrowPage(props: PageProps<"/admin/escrow">) {
                   orderRow(
                     o,
                     o.disputes.filter((x) => !["resolved", "closed"].includes(x.status)).map((x) => (
-                      <Link key={x.id} href={`/admin/disputes/${x.number}`} className="text-danger-700 hover:underline">
+                      <Link key={x.id} href={`/admin/disputes/${x.number}`} className="text-danger-700 underline underline-offset-2">
                         {x.number}
                       </Link>
                     )),
