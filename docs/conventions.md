@@ -39,19 +39,36 @@ Read this before adding pages. It is short on purpose.
 
 ## UI kit
 
-- `@/components/ui/button` — `Button`, `ButtonLink` (variants: primary, accent, gold, outline, ghost, link, danger, light).
-- `@/components/ui/form` — `Input`, `Textarea`, `Select`, `Field`, `Checkbox`, `Radio`, `Label`.
+- `@/components/ui/button` — `Button`, `ButtonLink`, `buttonClass` (variants: primary, accent, gold, outline, ghost, link, danger, light, **glass**, **tinted**; sizes sm 36px / md 44px / lg 52px). All are pills with press feedback.
+- `@/components/ui/form` — `Input`, `Textarea`, `Select`, `Field`, `Checkbox`, `Radio`, `Label` (16px text on phones so iOS never zooms).
 - `@/components/ui/misc` — `Badge` (tones incl. `pending`), `Card`, `CardHeader`, `EmptyState`, `Notice`, `Stat`, `PageHeader`, `Breadcrumbs`, `Tabs`, `Pagination`, `Container`, `SectionHeading`.
 - `@/components/ui/table` — `Table`, `THead`, `Th`, `TBody`, `Tr`, `Td`.
-- Store: `ProductCard`, `ArtisanStoryCard`, `VerifiedBadge`, `StarRating`, `TrustBadges`, `ReviewCard`, `RatingHistogram`, `LandedCostBreakdown`, `DeliveryEstimateLine`, `DestinationPicker`, `WishlistButton`, `CurrencySwitcher`.
+- `@/components/ui/glass` — `Glass` (material surface: `material="ultrathin" | "thin" | "regular" | "thick" | "dark"`), `SegmentedControl` (link-based, works without JS), `Pill`, `iconButtonClass`.
+- `@/components/ui/sheet` — `Sheet`: modal sheet on native `<dialog>` (top layer, focus trap, Escape, scrim click closes). `side`: `auto` (bottom sheet on phones, right panel from md), `bottom`, `right`, `left`, `top`, `center`. Optional `title`, `description`, sticky `footer`.
+- `@/components/ui/toast` — `Toast`: dark glass toast above the phone tab bar, bottom-right on desktop.
+- Store: `ProductCard`, `ArtisanStoryCard`, `VerifiedBadge`, `StarRating`, `TrustBadges`, `ReviewCard`, `RatingHistogram`, `LandedCostBreakdown`, `DeliveryEstimateLine`, `DestinationPicker`, `WishlistButton`, `CurrencySwitcher`, `MiniCart` (header cart; slide-over from md, opens after "Add to cart" via the `wb:cart-added` event), `MobileTabBar`, `CheckoutSteps` (bag → delivery → payment → confirmation), `HeroWordmark`.
 - Icons: `lucide-react` named imports.
-- Palette tokens: `indigo-*`, `terracotta-*`, `gold-*`, `sand-*`, `umber-*`, `turquoise-*`, `parchment`, `ink`. Surfaces: `.paper` (parchment grain) and `.night` (plain deep indigo). Display font: `font-display` (Fraunces); Urdu: `font-urdu`. The brand palette is for the storefront only.
+- Palette tokens: `indigo-*`, `terracotta-*`, `gold-*`, `sand-*`, `umber-*`, `turquoise-*`, `parchment`, `ink`. Surfaces: `.paper` (plain warm sand) and `.night` (plain deep indigo). The brand palette is for the storefront only.
+- Type: headings and UI are Inter (`font-display` = Inter semibold with tight, size-aware tracking). Fraunces is `font-serif` and is kept for the wordmark, the `.gold-text` italic accents inside headings, and quotes. Urdu: `font-urdu`.
 - Ornament: plain. No stars, hexagons, tile or scallop bands; the brand mark is a mehrab (arch). Artwork motifs are petal rosettes.
-- Dashboards (`/admin`, `/seller`) use the shared neutral theme: the `.admin-theme` class on their layouts remaps the palette to grays/black and headings to sans. Use the normal UI kit inside them; don't add colour.
-- Homepage (`src/app/(store)/page.tsx`) is flat and photography-led. The 3D haveli walk-through lives at `/haveli` (`src/app/(home)/haveli`); there is no 3D on product cards or product pages.
+- Dashboards (`/admin`, `/seller`) use the shared neutral theme: the `.admin-theme` class on their layouts remaps the palette to grays/black and headings to sans, and maps the new button variants, press feedback and empty state back to the neutral look. Use the normal UI kit inside them; don't add colour or glass.
+- Homepage (`src/app/(store)/page.tsx`) is calm and photography-led: the hero is only the 3D wordmark, one line and one button. The 3D haveli walk-through lives at `/haveli` (`src/app/(home)/haveli`); there is no 3D on product cards or product pages.
 - Forms: server actions + `useActionState`, validate with `zod` (v4: `z.email()`), return `{ error }` or `{ ok, message }`.
+- Copy: short. One line beats a paragraph; keep trust notes (landed cost, protected payment) brief and quiet. Buyers are in Pakistan and abroad — don't list countries; currency and shipping follow the chosen destination.
+
+### Glass rules (storefront)
+
+- Tokens live in `globals.css`: `--glass-ultrathin|thin|regular|thick|dark` tints, `--glass-blur-sm|blur|blur-lg`, `--glass-edge` highlights, radii `--radius-control` (14px) / `--radius-card` (22px) / `--radius-panel` (28px) / `--radius-sheet` (32px), shadows `shadow-soft|lift|float|sheet`, motion `ease-spring` (critically damped) and `ease-spring-bounce` (damping 0.8, sheets only), durations `--dur-press|quick|base|sheet`.
+- Glass is for chrome and controls that float over content: header capsule, tab bar, sheets, menu, search, mini-cart, filter sheet, toasts, buy bars, chips/captions over imagery. Product photography, cards, forms and long text sit on solid surfaces.
+- Never stack glass on glass. Text on light glass is `umber-800`/`umber-900` (or `terracotta-700`); on dark glass `sand-50`/`sand-100`. The tint alphas are chosen so that body text stays AA over any content.
+- Use the classes (`.glass`, `.glass-thin`, `.glass-thick`, `.glass-dark`, …) or `<Glass>` — not raw `backdrop-blur-*`. They carry a solid fallback when `backdrop-filter` is unsupported, go solid under `prefers-reduced-transparency`, and solid with an outline under `prefers-contrast: more`.
+- Motion: press feedback via `.pressable` (scale 0.97 on pointer-down). Sheets enter and exit along the same edge; under `prefers-reduced-motion` they cross-fade and the global rule shortens all transitions.
+- Tap targets are at least 40–44px. On phones, primary actions sit at the bottom: the tab bar, the product buy bar and the cart checkout bar dock above it (the tab bar is hidden during checkout).
+- Pages from new sections (e.g. `/brands`) pick the theme up automatically by using `Container`, `PageHero`/`InfoHeader`, the UI kit and `ProductGrid`.
 
 ## Verification
 
 - `npx tsc --noEmit`, `npx vitest run`.
 - Screenshots: `node scripts/shot.mjs http://localhost:3000/path screenshots/name.png 1440 900 true`.
+- Accessibility: run an axe-core WCAG 2 A/AA scan (`runOnly: ["wcag2a", "wcag2aa"]`) on changed storefront pages at 1440px and 390px, and check there's no horizontal scroll at 390px.
+- 3D wordmark glyphs: `python3 scripts/wordmark-typeface.py` regenerates `src/components/store/hero/wordmark-typeface.ts`.
