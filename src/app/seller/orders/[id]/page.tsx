@@ -121,7 +121,7 @@ export default async function SellerOrder(props: PageProps<"/seller/orders/[id]"
           <Card>
             <CardHeader title="Next step" />
             <div className="p-5">
-              <OrderActions vendorOrderId={vo.id} status={vo.status} orderPaid={paid && !["cancelled", "refunded"].includes(order.status)} />
+              <OrderActions vendorOrderId={vo.id} status={vo.status} orderPaid={paid && !["cancelled", "refunded"].includes(order.status)} disputed={order.status === "disputed"} />
             </div>
           </Card>
 

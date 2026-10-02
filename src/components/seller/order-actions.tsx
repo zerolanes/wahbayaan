@@ -7,8 +7,11 @@ import { ActionForm, SubmitButton } from "./action-form";
 const COURIERS = ["DHL Express", "FedEx International", "Aramex", "UPS", "TCS International", "Leopards International", "Other"];
 
 /** The next step an artisan can take on a parcel. */
-export function OrderActions({ vendorOrderId, status, orderPaid }: { vendorOrderId: string; status: string; orderPaid: boolean }) {
+export function OrderActions({ vendorOrderId, status, orderPaid, disputed }: { vendorOrderId: string; status: string; orderPaid: boolean; disputed?: boolean }) {
   if (!orderPaid) return <p className="text-umber-500 text-sm">Waiting for the buyer&apos;s payment — nothing to do yet.</p>;
+  // Fulfilment actions are refused while a case is open (see vendorOrderAction).
+  if (disputed)
+    return <p className="text-umber-600 text-sm">The buyer opened a case. Your payout is on hold until our team resolves it — reply if they message you.</p>;
   if (status === "shipped") return <p className="text-umber-600 text-sm">Shipped — delivery is confirmed by the courier or our team.</p>;
   if (status === "delivered")
     return <p className="text-success-700 text-sm">Delivered. Your payout is released when the buyer confirms or the protection window ends.</p>;
