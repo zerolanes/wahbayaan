@@ -4,8 +4,8 @@
  * Money conventions
  * - Every amount is an integer in minor units (paisa, cents, pence).
  * - Seller-side amounts are PKR and their columns end in `Pkr`.
- * - Buyer-side amounts are in the order's `currency` (USD/GBP/CAD, or PKR when the
- *   buyer explicitly switched to it) and have no suffix.
+ * - Buyer-side amounts are in the order's `currency` (USD/GBP/CAD for overseas
+ *   buyers, PKR for buyers in Pakistan or when explicitly chosen) and have no suffix.
  *
  * Rates that depend on real contracts (duty, courier, handling fee, commission)
  * carry a `status`; `pending` means "no real data yet" and must be shown to the
@@ -144,6 +144,22 @@ export const customRequestStatus = pgEnum("custom_request_status", [
 ]);
 export const ticketStatus = pgEnum("ticket_status", ["new", "open", "resolved"]);
 export const leadStatus = pgEnum("lead_status", ["new", "contacted", "approved", "rejected"]);
+/** `artisan`: the cross-border handmade marketplace. `brand`: Pakistani Brands personal-shopping orders. */
+export const orderKind = pgEnum("order_kind", ["artisan", "brand"]);
+export const brandSourceType = pgEnum("brand_source_type", ["shopify_json", "csv_feed", "manual"]);
+/** Formal relationship with the brand. Only `authorised` may ever be described as official. */
+export const brandPartnership = pgEnum("brand_partnership", ["none", "requested", "authorised"]);
+export const brandAudience = pgEnum("brand_audience", ["women", "men", "kids", "unisex"]);
+export const brandProductStatus = pgEnum("brand_product_status", ["draft", "published", "hidden"]);
+export const brandSyncStatus = pgEnum("brand_sync_status", ["running", "succeeded", "partial", "failed", "refused"]);
+export const brandFulfilmentStatus = pgEnum("brand_fulfilment_status", [
+  "pending", // order placed with Wahbayaan, not yet bought from the brand
+  "ordered_from_brand",
+  "received_at_wahbayaan",
+  "dispatched",
+  "delivered",
+  "cancelled",
+]);
 
 // ── Identity & access ───────────────────────────────────────────────────────
 
@@ -514,6 +530,7 @@ export const orders = pgTable(
   {
     id: id(),
     number: text("number").notNull().unique(),
+    kind: orderKind("kind").notNull().default("artisan"),
     userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
     email: text("email").notNull(),
     customerName: text("customer_name").notNull(),
@@ -535,6 +552,14 @@ export const orders = pgTable(
     handlingAmount: money("handling_amount"),
     handlingStatus: lineStatus("handling_status").notNull().default("pending"),
     giftWrapAmount: money("gift_wrap_amount"),
+    /** Pakistani Brands: Wahbayaan's service fee, shown to the buyer as its own line. */
+    serviceFeeAmount: money("service_fee_amount"),
+    serviceFeeStatus: lineStatus("service_fee_status").notNull().default("not_applicable"),
+    /** Cash-on-delivery fee (domestic brand orders paying COD). */
+    codFeeAmount: money("cod_fee_amount"),
+    codFeeStatus: lineStatus("cod_fee_status").notNull().default("not_applicable"),
+    /** `card` (the active provider), `cod`, or a pending provider id. Null on artisan orders (card). */
+    paymentMethod: text("payment_method"),
     discountAmount: money("discount_amount").notNull().default(0),
     total: money("total").notNull(),
     totalComplete: boolean("total_complete").notNull().default(false),
@@ -715,6 +740,240 @@ export const certificates = pgTable("certificates", {
   status: text("status").notNull().default("issued"), // issued | void
   issuedAt: createdAt(),
 });
+
+// ── Pakistani Brands (personal-shopping service) ───────────────────────────
+//
+// A separate catalogue from the artisan marketplace: brand products never live in
+// `products`, so the artisan visibility guards, vendor payouts and seller
+// dashboard are untouched. Wahbayaan buys from the brand on the buyer's behalf.
+
+/** Size chart shown on brand product pages, as published by the brand (or entered by staff). */
+export type BrandSizeGuide = { unit: "in" | "cm"; columns: string[]; rows: { size: string; values: string[] }[]; note?: string | null };
+
+export const brands = pgTable("brands", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  logoUrl: text("logo_url"),
+  websiteUrl: text("website_url"),
+  description: text("description"),
+  audiences: jsonb("audiences").$type<("women" | "men" | "kids" | "unisex")[]>().notNull().default([]),
+  partnership: brandPartnership("partnership").notNull().default("none"),
+  partnershipNote: text("partnership_note"),
+  /** Permission to list / import this brand's catalogue. Sync cannot be enabled until it is recorded. */
+  permissionGrantedAt: timestamp("permission_granted_at", { withTimezone: true }),
+  permissionGrantedById: uuid("permission_granted_by_id").references(() => users.id, { onDelete: "set null" }),
+  permissionNote: text("permission_note"),
+  permissionEvidenceUrl: text("permission_evidence_url"),
+  /** Shown in the storefront directory (still subject to the visibility guards). */
+  isActive: boolean("is_active").notNull().default(false),
+  sizeGuide: jsonb("size_guide").$type<BrandSizeGuide>(),
+  /** Used for shipping estimates when a product has no weight. */
+  defaultWeightG: integer("default_weight_g"),
+  sort: integer("sort").notNull().default(0),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  isDemo: isDemo(),
+});
+
+export type BrandSourceConfig = {
+  /** shopify_json: the store's products.json URL (or `fixture:<name>` outside production). */
+  url?: string | null;
+  /** Minimum delay between requests to the brand's site. Never below 1000 ms. */
+  rateLimitMs?: number;
+  maxPages?: number;
+  /** Currency the brand prices in. Only PKR is accepted — nothing is converted on import. */
+  currency?: string;
+  /** After a complete feed, mark products that disappeared from it as unavailable. */
+  markMissingUnavailable?: boolean;
+};
+
+export const brandSources = pgTable("brand_sources", {
+  id: id(),
+  brandId: uuid("brand_id")
+    .notNull()
+    .unique()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  type: brandSourceType("type").notNull().default("manual"),
+  config: jsonb("config").$type<BrandSourceConfig>().notNull().default({}),
+  /** Automatic sync (admin button + cron). Refused while no permission is recorded on the brand. */
+  syncEnabled: boolean("sync_enabled").notNull().default(false),
+  lastSyncAt: timestamp("last_sync_at", { withTimezone: true }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+export const brandSyncRuns = pgTable(
+  "brand_sync_runs",
+  {
+    id: id(),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    sourceType: brandSourceType("source_type").notNull(),
+    trigger: text("trigger").notNull(), // admin | cron | upload
+    status: brandSyncStatus("status").notNull().default("running"),
+    added: integer("added").notNull().default(0),
+    updated: integer("updated").notNull().default(0),
+    unchanged: integer("unchanged").notNull().default(0),
+    failed: integer("failed").notNull().default(0),
+    markedUnavailable: integer("marked_unavailable").notNull().default(0),
+    errors: jsonb("errors").$type<string[]>().notNull().default([]),
+    triggeredById: uuid("triggered_by_id").references(() => users.id, { onDelete: "set null" }),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    finishedAt: timestamp("finished_at", { withTimezone: true }),
+  },
+  (t) => [index("brand_sync_runs_brand_idx").on(t.brandId)],
+);
+
+export const brandProducts = pgTable(
+  "brand_products",
+  {
+    id: id(),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    /** Id in the brand's own catalogue (null for manual entries). */
+    externalId: text("external_id"),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    description: text("description"),
+    audience: brandAudience("audience").notNull().default("women"),
+    category: text("category"),
+    collection: text("collection"),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    fabric: text("fabric"),
+    /** The product's page on the brand's website. Always linked from the storefront. */
+    sourceUrl: text("source_url"),
+    /** Brand's retail price (lowest variant), PKR minor units. */
+    pricePkr: money("price_pkr").notNull(),
+    /** Brand's original price when the item is on sale. */
+    compareAtPricePkr: money("compare_at_price_pkr"),
+    /** Staff override of the item price Wahbayaan charges (the service fee is always separate). */
+    priceOverridePkr: money("price_override_pkr"),
+    weightG: integer("weight_g"),
+    hsCode: text("hs_code"),
+    status: brandProductStatus("status").notNull().default("draft"),
+    /** When the brand published it (drives "new arrivals"). */
+    sourcePublishedAt: timestamp("source_published_at", { withTimezone: true }),
+    lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
+    /** Fingerprint of the last imported source data — unchanged products are skipped. */
+    sourceHash: text("source_hash"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    isDemo: isDemo(),
+  },
+  (t) => [index("brand_products_brand_idx").on(t.brandId), uniqueIndex("brand_products_external_idx").on(t.brandId, t.externalId)],
+);
+
+export const brandProductImages = pgTable("brand_product_images", {
+  id: id(),
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => brandProducts.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  alt: text("alt"),
+  kind: imageKind("kind").notNull().default("photo"),
+  sort: integer("sort").notNull().default(0),
+});
+
+export const brandProductVariants = pgTable(
+  "brand_product_variants",
+  {
+    id: id(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => brandProducts.id, { onDelete: "cascade" }),
+    externalId: text("external_id"),
+    sku: text("sku"),
+    size: text("size"),
+    colour: text("colour"),
+    /** Variant price when it differs from the product price. */
+    pricePkr: money("price_pkr"),
+    compareAtPricePkr: money("compare_at_price_pkr"),
+    /** Null = the brand doesn't publish stock counts; availability is confirmed when we order. */
+    stockQty: integer("stock_qty"),
+    available: boolean("available").notNull().default(true),
+    sort: integer("sort").notNull().default(0),
+  },
+  (t) => [index("brand_variants_product_idx").on(t.productId)],
+);
+
+export const brandCarts = pgTable("brand_carts", {
+  id: id(),
+  ownerKey: text("owner_key").notNull().unique(),
+  /** `PK` = deliver inside Pakistan (a domestic buyer, or an overseas buyer's gift); `home` = ship to the buyer's own country. */
+  shipTo: text("ship_to").notNull().default("home"),
+  isGift: boolean("is_gift").notNull().default(false),
+  giftMessage: text("gift_message"),
+  updatedAt: updatedAt(),
+});
+
+export const brandCartItems = pgTable(
+  "brand_cart_items",
+  {
+    id: id(),
+    cartId: uuid("cart_id")
+      .notNull()
+      .references(() => brandCarts.id, { onDelete: "cascade" }),
+    variantId: uuid("variant_id")
+      .notNull()
+      .references(() => brandProductVariants.id, { onDelete: "cascade" }),
+    qty: integer("qty").notNull().default(1),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("brand_cart_variant_idx").on(t.cartId, t.variantId)],
+);
+
+export const brandOrderItems = pgTable("brand_order_items", {
+  id: id(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  brandId: uuid("brand_id")
+    .notNull()
+    .references(() => brands.id, { onDelete: "restrict" }),
+  productId: uuid("product_id").references(() => brandProducts.id, { onDelete: "set null" }),
+  variantId: uuid("variant_id").references(() => brandProductVariants.id, { onDelete: "set null" }),
+  brandName: text("brand_name").notNull(),
+  title: text("title").notNull(),
+  size: text("size"),
+  colour: text("colour"),
+  sku: text("sku"),
+  sourceUrl: text("source_url"),
+  imageUrl: text("image_url"),
+  qty: integer("qty").notNull(),
+  unitPricePkr: money("unit_price_pkr").notNull(),
+  unitPrice: money("unit_price").notNull(),
+});
+
+/** Wahbayaan buys from the brand on the buyer's behalf: one checklist per brand per order. */
+export const brandFulfilments = pgTable(
+  "brand_fulfilments",
+  {
+    id: id(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "restrict" }),
+    status: brandFulfilmentStatus("status").notNull().default("pending"),
+    brandOrderRef: text("brand_order_ref"),
+    /** What Wahbayaan actually paid the brand (PKR). */
+    purchaseCostPkr: money("purchase_cost_pkr"),
+    courier: text("courier"),
+    trackingNumber: text("tracking_number"),
+    notes: text("notes"),
+    orderedAt: timestamp("ordered_at", { withTimezone: true }),
+    receivedAt: timestamp("received_at", { withTimezone: true }),
+    dispatchedAt: timestamp("dispatched_at", { withTimezone: true }),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandId)],
+);
 
 // ── Cross-border rates (business data; pending until supplied) ──────────────
 
@@ -1093,6 +1352,8 @@ export const cartItemsRelations = relations(cartItems, ({ one }) => ({
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(users, { fields: [orders.userId], references: [users.id] }),
   items: many(orderItems),
+  brandItems: many(brandOrderItems),
+  brandFulfilments: many(brandFulfilments),
   vendorOrders: many(vendorOrders),
   events: many(orderEvents),
   payments: many(payments),
@@ -1187,4 +1448,54 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
 
 export const staffRolesRelations = relations(staffRoles, ({ many }) => ({
   users: many(users),
+}));
+
+export const brandsRelations = relations(brands, ({ one, many }) => ({
+  source: one(brandSources, { fields: [brands.id], references: [brandSources.brandId] }),
+  products: many(brandProducts),
+  syncRuns: many(brandSyncRuns),
+  permissionGrantedBy: one(users, { fields: [brands.permissionGrantedById], references: [users.id] }),
+}));
+
+export const brandSourcesRelations = relations(brandSources, ({ one }) => ({
+  brand: one(brands, { fields: [brandSources.brandId], references: [brands.id] }),
+}));
+
+export const brandSyncRunsRelations = relations(brandSyncRuns, ({ one }) => ({
+  brand: one(brands, { fields: [brandSyncRuns.brandId], references: [brands.id] }),
+  triggeredBy: one(users, { fields: [brandSyncRuns.triggeredById], references: [users.id] }),
+}));
+
+export const brandProductsRelations = relations(brandProducts, ({ one, many }) => ({
+  brand: one(brands, { fields: [brandProducts.brandId], references: [brands.id] }),
+  images: many(brandProductImages),
+  variants: many(brandProductVariants),
+}));
+
+export const brandProductImagesRelations = relations(brandProductImages, ({ one }) => ({
+  product: one(brandProducts, { fields: [brandProductImages.productId], references: [brandProducts.id] }),
+}));
+
+export const brandProductVariantsRelations = relations(brandProductVariants, ({ one }) => ({
+  product: one(brandProducts, { fields: [brandProductVariants.productId], references: [brandProducts.id] }),
+}));
+
+export const brandCartsRelations = relations(brandCarts, ({ many }) => ({
+  items: many(brandCartItems),
+}));
+
+export const brandCartItemsRelations = relations(brandCartItems, ({ one }) => ({
+  cart: one(brandCarts, { fields: [brandCartItems.cartId], references: [brandCarts.id] }),
+  variant: one(brandProductVariants, { fields: [brandCartItems.variantId], references: [brandProductVariants.id] }),
+}));
+
+export const brandOrderItemsRelations = relations(brandOrderItems, ({ one }) => ({
+  order: one(orders, { fields: [brandOrderItems.orderId], references: [orders.id] }),
+  brand: one(brands, { fields: [brandOrderItems.brandId], references: [brands.id] }),
+  product: one(brandProducts, { fields: [brandOrderItems.productId], references: [brandProducts.id] }),
+}));
+
+export const brandFulfilmentsRelations = relations(brandFulfilments, ({ one }) => ({
+  order: one(orders, { fields: [brandFulfilments.orderId], references: [orders.id] }),
+  brand: one(brands, { fields: [brandFulfilments.brandId], references: [brands.id] }),
 }));
