@@ -18,6 +18,7 @@ import {
   vendors,
   verificationChecks,
 } from "@/lib/db/schema";
+import { sellerSeesEvent } from "./timeline";
 import { findSharedBanners, vendorIssues } from "@/lib/trust/visibility";
 import { isDemoMode } from "@/lib/settings";
 
@@ -154,11 +155,13 @@ export async function getSellerOrder(vendorId: string, vendorOrderId: string) {
     with: { order: true, items: { with: { product: true } } },
   });
   if (!vo) return null;
-  const events = await d
-    .select()
-    .from(orderEvents)
-    .where(and(eq(orderEvents.orderId, vo.orderId), sql`(${orderEvents.vendorOrderId} is null or ${orderEvents.vendorOrderId} = ${vo.id})`))
-    .orderBy(asc(orderEvents.createdAt));
+  const events = (
+    await d
+      .select()
+      .from(orderEvents)
+      .where(and(eq(orderEvents.orderId, vo.orderId), sql`(${orderEvents.vendorOrderId} is null or ${orderEvents.vendorOrderId} = ${vo.id})`))
+      .orderBy(asc(orderEvents.createdAt))
+  ).filter((e) => sellerSeesEvent(e, vo.id));
   const payout = vo.payoutId ? await d.query.payouts.findFirst({ where: eq(payouts.id, vo.payoutId) }) : null;
   return { vo, events, payout };
 }

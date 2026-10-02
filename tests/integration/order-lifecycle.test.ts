@@ -83,6 +83,10 @@ describe("order lifecycle", () => {
     expect(order.status).toBe("awaiting_quote");
     expect(order.currency).toBe("USD");
     expect(order.totalComplete).toBe(false);
+    // The buyer-facing "confirming costs" note reads as a sentence, brand name intact.
+    const note = await db.query.orderEvents.findFirst({ where: (e, { and, eq: is }) => and(is(e.orderId, order.id), is(e.kind, "awaiting_quote")) });
+    expect(note!.message).not.toMatch(/wahbayaan handling/);
+    expect(note!.message).toMatch(/^Our team is confirming international shipping, .+ and [^,]+\. You'll approve/);
     const reserved = await db.query.products.findFirst({ where: eq(m.t.products.id, product.id) });
     expect(reserved!.stockQty).toBe(Math.max(stockBefore - 1, 0));
     expect((await m.cart.loadCart()).lines).toHaveLength(0);
