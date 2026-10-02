@@ -12,7 +12,7 @@ export async function MaintenanceGate({ children }: { children: React.ReactNode 
   const [maintenance, user] = await Promise.all([getSetting("maintenance"), getCurrentUser()]);
   if (!maintenance.enabled || user?.role === "staff") return <>{children}</>;
   const path = (await headers()).get("x-wb-path") ?? "";
-  if (path === "/login" || path.startsWith("/login/")) return <>{children}</>;
+  if (["/login", "/forgot-password", "/reset-password"].some((p) => path === p || path.startsWith(`${p}/`))) return <>{children}</>;
   return (
     <main className="paper grid min-h-dvh place-items-center px-6 text-center">
       <div className="max-w-md">
