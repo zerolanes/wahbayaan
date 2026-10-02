@@ -30,8 +30,9 @@ export async function confirmDeliveryAction(_prev: AccountState, formData: FormD
     if (e instanceof OrderError) return { error: e.message };
     throw e;
   }
-  refresh();
-  return { ok: true, message: "Thank you — the artisan has been paid. Enjoy your piece." };
+  // The confirm panel disappears once the order is completed, so the thank-you
+  // is shown by the order page itself (?done=confirmed) rather than by this form.
+  redirect(`/account/orders/${number}?done=confirmed`);
 }
 
 const caseSchema = z.object({
@@ -92,8 +93,8 @@ export async function cancelOrderAction(_prev: AccountState, formData: FormData)
     if (e instanceof OrderError) return { error: e.message };
     throw e;
   }
-  refresh();
-  return { ok: true, message: order.paymentStatus === "paid" ? "Cancelled — your refund is on its way to your original payment method." : "Cancelled. Nothing was charged." };
+  // The cancel panel disappears once the order is cancelled; the order page shows the result.
+  redirect(`/account/orders/${number}?done=cancelled`);
 }
 
 // ── Cases (disputes) ────────────────────────────────────────────────────────

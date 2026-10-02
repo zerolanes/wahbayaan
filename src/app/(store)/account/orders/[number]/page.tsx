@@ -33,6 +33,7 @@ const VO_STATUS: Record<string, string> = {
 
 export default async function OrderDetailPage(props: PageProps<"/account/orders/[number]">) {
   const { number } = await props.params;
+  const { done } = await props.searchParams;
   const user = await requireUser(`/account/orders/${number}`);
   const order = await getBuyerOrder(user.id, number);
   if (!order) notFound();
@@ -64,6 +65,18 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
           <OrderStatusBadge status={order.status} />
         </div>
       </div>
+
+      {done === "confirmed" && order.status === "completed" ? (
+        <p className="flex items-center gap-2 rounded-2xl bg-success-50 px-5 py-4 text-sm text-success-700 ring-1 ring-success-600/20" role="status">
+          <PackageCheck className="size-4 shrink-0" aria-hidden /> Thank you — the artisan has been paid. Enjoy your piece.
+        </p>
+      ) : null}
+      {done === "cancelled" && order.status === "cancelled" ? (
+        <p className="flex items-center gap-2 rounded-2xl bg-sand-100 px-5 py-4 text-sm text-umber-800 ring-1 ring-umber-200/60" role="status">
+          <XCircle className="size-4 shrink-0" aria-hidden />
+          {order.paymentStatus === "refunded" ? "Cancelled — your refund is on its way to your original payment method." : "Cancelled. Nothing was charged."}
+        </p>
+      ) : null}
 
       {/* Action panel */}
       {actions.canPay ? (
