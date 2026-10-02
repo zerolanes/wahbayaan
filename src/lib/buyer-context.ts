@@ -6,9 +6,9 @@ import { getFxQuote } from "@/lib/commerce/rates";
 import {
   defaultCurrencyFor,
   isBuyerCurrency,
-  isDestination,
+  isBuyerDestination,
   type BuyerCurrency,
-  type DestinationCode,
+  type BuyerDestinationCode,
   type FxQuote,
 } from "@/lib/money/currency";
 
@@ -17,9 +17,9 @@ export const DESTINATION_COOKIE = "wb_dest";
 export const VISITOR_COOKIE = "wb_visitor";
 
 export type BuyerContext = {
-  destination: DestinationCode;
+  destination: BuyerDestinationCode;
   currency: BuyerCurrency;
-  /** True when the buyer picked the currency themselves (the only way to see PKR). */
+  /** True when the buyer picked the currency themselves (the only way an overseas buyer sees PKR; buyers in Pakistan default to it). */
   currencyChosen: boolean;
   fx: FxQuote | null;
   /** Key for carts and wishlists: `user:<id>` or `visitor:<id>`. Null before the first response sets a visitor cookie. */
@@ -34,10 +34,10 @@ export type BuyerContext = {
 export const getBuyerContext = cache(async (): Promise<BuyerContext> => {
   const [jar, user] = await Promise.all([cookies(), getCurrentUser()]);
   const destCookie = jar.get(DESTINATION_COOKIE)?.value;
-  const destination: DestinationCode = isDestination(destCookie)
+  const destination: BuyerDestinationCode = isBuyerDestination(destCookie)
     ? destCookie
-    : isDestination(user?.country)
-      ? (user!.country as DestinationCode)
+    : isBuyerDestination(user?.country)
+      ? (user!.country as BuyerDestinationCode)
       : "US";
   const currencyCookie = jar.get(CURRENCY_COOKIE)?.value;
   const currencyChosen = isBuyerCurrency(currencyCookie);

@@ -2,6 +2,9 @@ import "server-only";
 import { and, eq, inArray, lt, sql } from "drizzle-orm";
 import { db, type Db } from "@/lib/db/client";
 import {
+  brandFulfilments,
+  brandOrderItems,
+  brandProductVariants,
   cartItems,
   carts,
   certificates,
@@ -26,7 +29,8 @@ import { sendEmail } from "@/lib/email";
 import { reference } from "@/lib/ids";
 import { formatMoney, type Currency } from "@/lib/money/currency";
 import { applyBps } from "@/lib/money/currency";
-import { refundPayment, startCheckout } from "@/lib/payments";
+import { refundPayment, startCheckout, startMethodCheckout } from "@/lib/payments";
+import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/payments/methods";
 import type { CartView } from "./cart";
 
 /**
@@ -267,16 +271,27 @@ export async function beginPayment(orderNumber: string, origin: string) {
   const order = await d.query.orders.findFirst({ where: eq(orders.number, orderNumber) });
   if (!order) throw new OrderError("Order not found");
   if (!order.totalComplete || !["awaiting_payment", "quote_sent"].includes(order.status)) throw new OrderError("This order isn't ready for payment.");
-  const start = await startCheckout({
+  const req = {
     orderId: order.id,
     orderNumber: order.number,
     email: order.email,
     currency: order.currency,
     amount: order.total,
-    description: `Handmade pieces from Pakistan, shipped to ${order.destinationCountry}`,
+    description: order.kind === "brand" ? `Pakistani brands, bought on your behalf and delivered to ${order.destinationCountry}` : `Handmade pieces from Pakistan, shipped to ${order.destinationCountry}`,
     successUrl: `${origin}/checkout/success?order=${order.number}`,
     cancelUrl: `${origin}/account/orders/${order.number}`,
-  });
+  };
+  const method = (PAYMENT_METHODS as readonly string[]).includes(order.paymentMethod ?? "") ? (order.paymentMethod as PaymentMethodId) : "card";
+  let start;
+  if (method === "card") start = await startCheckout(req);
+  else {
+    const { payment_methods } = await getSettings(["payment_methods"]);
+    try {
+      start = await startMethodCheckout(method, payment_methods, order.currency === "PKR" ? "domestic" : "international", req);
+    } catch (e) {
+      throw new OrderError(e instanceof Error ? e.message : "This payment method isn't available.");
+    }
+  }
   await d.insert(payments).values({
     orderId: order.id,
     provider: start.provider,
@@ -558,6 +573,15 @@ export async function cancelOrder(orderId: string, actor: { userId: string; reas
     }
     await tx.update(orders).set({ status: "cancelled", cancelledAt: new Date(), fundsState: order.paymentStatus === "paid" ? "refunded" : "none" }).where(eq(orders.id, orderId));
     await tx.update(vendorOrders).set({ status: "cancelled" }).where(eq(vendorOrders.orderId, orderId));
+    // Pakistani Brands: give back reserved variant stock and close the fulfilment checklist.
+    const brandItems = await tx.select().from(brandOrderItems).where(eq(brandOrderItems.orderId, orderId));
+    for (const it of brandItems)
+      if (it.variantId)
+        await tx
+          .update(brandProductVariants)
+          .set({ stockQty: sql`case when ${brandProductVariants.stockQty} is null then null else ${brandProductVariants.stockQty} + ${it.qty} end` })
+          .where(eq(brandProductVariants.id, it.variantId));
+    await tx.update(brandFulfilments).set({ status: "cancelled" }).where(eq(brandFulfilments.orderId, orderId));
     await event(tx, orderId, "cancelled", `Order cancelled (${actor.reason}).`, { actorUserId: actor.userId });
   });
 }

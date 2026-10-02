@@ -8,7 +8,11 @@
  * - Nothing is imported automatically (sync button, cron, feed upload) until an
  *   admin has recorded that permission is in place: who, when and a note. The
  *   recording is audited.
- * - "Official" wording is only ever used when the partnership is `authorised`.
+ * - A brand's catalogue, logo and photos are shown publicly only when the brand
+ *   is an authorised partner — which itself requires the recorded permission.
+ *   Staff can prepare a brand (draft) before that; it goes live once authorised.
+ * - Brands without permission are reachable only through the wording-neutral
+ *   "shop by link" personal-shopper flow.
  */
 export type Partnership = "none" | "requested" | "authorised";
 export type SourceType = "shopify_json" | "csv_feed" | "manual";
@@ -45,28 +49,34 @@ export function syncGate(b: BrandPermissionState & { sourceType: SourceType; syn
   return { ok: true };
 }
 
+/** Partnership can only be set to `authorised` once the permission is recorded. */
+export function canAuthorise(b: BrandPermissionState): GateResult {
+  return hasRecordedPermission(b) ? { ok: true } : { ok: false, reason: "Record the brand's permission (who, when, note) before marking the partnership as authorised." };
+}
+
+/** Public display of the brand's catalogue, logo and photos. */
+export function catalogueDisplayGate(b: BrandPermissionState & { partnership: Partnership }): GateResult {
+  if (b.partnership !== "authorised") return { ok: false, reason: "Not an authorised partner — the catalogue stays private (shop-by-link only)." };
+  if (!hasRecordedPermission(b)) return { ok: false, reason: "Partnership is marked authorised but no permission is recorded." };
+  return { ok: true };
+}
+
 export const PARTNERSHIP_LABEL: Record<Partnership, string> = {
   none: "No partnership",
   requested: "Partnership requested",
   authorised: "Authorised partner",
 };
 
-/**
- * What the storefront says about who is selling. Shown on every brand page,
- * product page and in the bag.
- */
-export function relationshipDisclosure(brandName: string, partnership: Partnership): { badge: string; short: string; long: string; official: boolean } {
-  if (partnership === "authorised")
-    return {
-      badge: "Official partner",
-      official: true,
-      short: `Sold by Wahbayaan as an authorised partner of ${brandName}.`,
-      long: `Wahbayaan is an authorised partner of ${brandName}. We buy each order from ${brandName} and deliver it to you.`,
-    };
-  return {
-    badge: "Personal-shopping service",
-    official: false,
-    short: `Sold by Wahbayaan as a personal-shopping service. Not affiliated with or endorsed by ${brandName}.`,
-    long: `Wahbayaan is a personal-shopping service: we buy this item from ${brandName} on your behalf and deliver it to you. ${brandName} is a trademark of its owner; Wahbayaan is not affiliated with or endorsed by ${brandName}, and this is not ${brandName}'s official store.`,
-  };
+/** The line shown on public brand pages (only authorised brands have them). */
+export function partnerLine(brandName: string) {
+  return `${brandName}'s collection on Wahbayaan — ordered from ${brandName} for you and delivered to your door.`;
+}
+
+/** Wording for the shop-by-link flow: neutral, no claims about any brand. */
+export const SHOP_BY_LINK_LINE = "We'll buy it for you and deliver.";
+
+/** Fallback tile text when an authorised brand hasn't supplied its logo yet. */
+export function monogram(name: string) {
+  const words = name.replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter(Boolean);
+  return (words.length >= 2 ? words[0][0] + words[1][0] : (words[0] ?? "?").slice(0, 2)).toUpperCase();
 }

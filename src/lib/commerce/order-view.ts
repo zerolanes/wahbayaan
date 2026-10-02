@@ -20,6 +20,10 @@ export type OrderCostSource = {
   discountAmount: number;
   total: number;
   totalComplete: boolean;
+  /** Pakistani Brands orders. */
+  serviceFeeAmount?: number | null;
+  serviceFeeStatus?: LineState;
+  destinationCountry?: string;
 };
 
 export type OrderCostLine = { key: string; label: string; status: LineState; amount: number | null; note?: string };
@@ -32,13 +36,18 @@ export function orderCostLines(o: OrderCostSource): { lines: OrderCostLine[]; to
     amount: status === "known" ? amount : null,
     note: notes?.[status],
   });
+  const domestic = o.destinationCountry === "PK";
+  const brand = o.serviceFeeStatus != null && o.serviceFeeStatus !== "not_applicable";
   const lines: OrderCostLine[] = [
     { key: "items", label: "Items", status: "known", amount: o.itemsSubtotal },
-    line("shipping", "International shipping", o.shippingStatus, o.shippingAmount, { pending: "Being confirmed by our team" }),
-    line("duty", "Import duty", o.dutyStatus, o.dutyAmount, { pending: "Being confirmed by our team" }),
-    line("import_tax", "Import tax", o.importTaxStatus, o.importTaxAmount, { pending: "Confirmed together with duty", not_applicable: "No import tax applies" }),
-    line("handling", "Wahbayaan handling", o.handlingStatus, o.handlingAmount, { pending: "Being confirmed by our team", not_applicable: "No handling fee" }),
+    line("shipping", domestic ? "Delivery within Pakistan" : "International shipping", o.shippingStatus, o.shippingAmount, { pending: "Being confirmed by our team" }),
+    domestic
+      ? { key: "duty", label: "Import duty", status: "not_applicable", amount: null, note: "Delivered within Pakistan — no import duty" }
+      : line("duty", "Import duty", o.dutyStatus, o.dutyAmount, { pending: "Being confirmed by our team" }),
   ];
+  if (!domestic) lines.push(line("import_tax", "Import tax", o.importTaxStatus, o.importTaxAmount, { pending: "Confirmed together with duty", not_applicable: "No import tax applies" }));
+  if (brand) lines.push(line("service_fee", "Wahbayaan service fee", o.serviceFeeStatus!, o.serviceFeeAmount ?? null, { pending: "Being confirmed by our team" }));
+  else lines.push(line("handling", "Wahbayaan handling", o.handlingStatus, o.handlingAmount, { pending: "Being confirmed by our team", not_applicable: "No handling fee" }));
   if (o.giftWrap) lines.push(line("gift_wrap", "Gift wrap", o.giftWrapAmount == null ? "pending" : "known", o.giftWrapAmount));
   if (o.discountAmount > 0) lines.push({ key: "discount", label: "Discount", status: "known", amount: -o.discountAmount });
   const pendingCount = lines.filter((l) => l.status === "pending").length;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convert, convertFromPkr, defaultCurrencyFor, formatMoney, type FxQuote } from "@/lib/money/currency";
+import { BUYER_DESTINATIONS, DESTINATIONS, convert, convertFromPkr, defaultCurrencyFor, destinationName, formatMoney, isBuyerDestination, isDestination, type FxQuote } from "@/lib/money/currency";
 
 const USD: FxQuote = { currency: "USD", pkrPerUnit: 100, source: "test", status: "manual" };
 const GBP: FxQuote = { currency: "GBP", pkrPerUnit: 200, source: "test", status: "manual" };
@@ -17,10 +17,20 @@ describe("currency", () => {
     expect(convert(100_00, GBP, USD)).toBe(200_00);
   });
 
-  it("defaults buyers to their destination's currency, never PKR", () => {
+  it("defaults overseas buyers to their destination's currency and buyers in Pakistan to PKR", () => {
     expect(defaultCurrencyFor("GB")).toBe("GBP");
     expect(defaultCurrencyFor("CA")).toBe("CAD");
-    expect(defaultCurrencyFor("PK")).toBe("USD");
+    expect(defaultCurrencyFor("US")).toBe("USD");
+    expect(defaultCurrencyFor("PK")).toBe("PKR");
+    expect(defaultCurrencyFor("FR")).toBe("USD");
     expect(defaultCurrencyFor(null)).toBe("USD");
+  });
+
+  it("keeps Pakistan out of the import destinations but lets buyers pick it", () => {
+    expect(isDestination("PK")).toBe(false);
+    expect(isBuyerDestination("PK")).toBe(true);
+    expect(DESTINATIONS.map((d) => d.code)).toEqual(["US", "GB", "CA"]);
+    expect(BUYER_DESTINATIONS.map((d) => d.code)).toEqual(["US", "GB", "CA", "PK"]);
+    expect(destinationName("PK")).toBe("Pakistan");
   });
 });

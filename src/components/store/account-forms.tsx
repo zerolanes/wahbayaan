@@ -23,6 +23,8 @@ const COUNTRIES = [
   { code: "US", name: "United States" },
   { code: "GB", name: "United Kingdom" },
   { code: "CA", name: "Canada" },
+  // Buyers in Pakistan (Pakistani Brands) and overseas buyers' gift addresses for family there.
+  { code: "PK", name: "Pakistan" },
 ];
 
 export function AddressForm({ address, onDone }: { address?: Address; onDone?: () => void }) {

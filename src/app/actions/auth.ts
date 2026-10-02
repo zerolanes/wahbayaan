@@ -13,7 +13,7 @@ import { sendEmail } from "@/lib/email";
 import { requestOrigin } from "@/lib/order-access";
 import { VISITOR_COOKIE } from "@/lib/buyer-context";
 import { mergeVisitorIntoUser } from "@/lib/commerce/cart";
-import { isDestination } from "@/lib/money/currency";
+import { isBuyerDestination } from "@/lib/money/currency";
 
 export type AuthState = { error?: string; fields?: Record<string, string> } | null;
 
@@ -66,7 +66,7 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
       email,
       name: parsed.data.name,
       passwordHash: await hashPassword(parsed.data.password),
-      country: isDestination(parsed.data.country) ? parsed.data.country : null,
+      country: isBuyerDestination(parsed.data.country) ? parsed.data.country : null,
       marketingOptIn: parsed.data.marketing === "on",
     })
     .returning();

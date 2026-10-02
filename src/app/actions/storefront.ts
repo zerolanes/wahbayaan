@@ -7,7 +7,7 @@ import { db } from "@/lib/db/client";
 import { cartItems, products, wishlistItems } from "@/lib/db/schema";
 import { CURRENCY_COOKIE, DESTINATION_COOKIE, getBuyerContext } from "@/lib/buyer-context";
 import { getOrCreateCart } from "@/lib/commerce/cart";
-import { isBuyerCurrency, isDestination } from "@/lib/money/currency";
+import { isBuyerCurrency, isBuyerDestination } from "@/lib/money/currency";
 
 const YEAR = 60 * 60 * 24 * 365;
 
@@ -16,7 +16,7 @@ export async function setBuyerPreferences(formData: FormData) {
   const jar = await cookies();
   const dest = formData.get("destination");
   const currency = formData.get("currency");
-  if (isDestination(dest)) jar.set(DESTINATION_COOKIE, dest, { path: "/", maxAge: YEAR, sameSite: "lax" });
+  if (isBuyerDestination(dest)) jar.set(DESTINATION_COOKIE, dest, { path: "/", maxAge: YEAR, sameSite: "lax" });
   if (currency === "auto") jar.delete(CURRENCY_COOKIE);
   else if (isBuyerCurrency(currency)) jar.set(CURRENCY_COOKIE, currency, { path: "/", maxAge: YEAR, sameSite: "lax" });
 }

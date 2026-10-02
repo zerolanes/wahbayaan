@@ -57,6 +57,7 @@ export function RegisterForm({ next }: { next?: string }) {
           <option value="US">United States</option>
           <option value="GB">United Kingdom</option>
           <option value="CA">Canada</option>
+          <option value="PK">Pakistan</option>
         </Select>
       </Field>
       <Checkbox name="marketing" label="Send me stories from the workshops and early access to limited drops." />
