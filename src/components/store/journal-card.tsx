@@ -40,7 +40,7 @@ export function JournalCard({ post, className, tone = "light", size = "md" }: { 
           <ArrowUpRight className={cn("ml-1 inline size-4 opacity-0 transition group-hover:opacity-100", dark ? "text-gold-300" : "text-terracotta-600")} aria-hidden />
         </h3>
         {post.excerpt ? <p className={cn("mt-2 line-clamp-3 text-sm leading-relaxed", dark ? "text-sand-200/75" : "text-umber-600", size === "lg" && "text-base")}>{post.excerpt}</p> : null}
-        <p className={cn("mt-3 text-xs", dark ? "text-sand-200/50" : "text-umber-400")}>{formatDate(post.publishedAt)}</p>
+        <p className={cn("mt-3 text-xs", dark ? "text-sand-200/50" : "text-umber-600")}>{formatDate(post.publishedAt)}</p>
       </div>
     </article>
   );

@@ -31,7 +31,7 @@ export default async function DropsPage() {
             Small editions, <span className="gold-text italic">released on a date</span>
           </>
         }
-        description="Some pieces are made in tiny runs — a dozen salt sculptures, a handful of numbered prints. Join a waitlist and we'll email you the moment it opens; it's first come, first served."
+        description="Tiny runs, released on a date. Join the waitlist to hear first."
       />
 
       <Container className="py-16 md:py-20">

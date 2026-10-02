@@ -23,7 +23,7 @@ export default async function WholesalePage() {
   const [user, ctx] = await Promise.all([getCurrentUser(), getBuyerContext()]);
   return (
     <>
-      <InfoHeader eyebrow="For the trade" title="Trade & wholesale" lead="For interior designers, retailers, galleries, hotels and architects who want to source directly from Pakistan's workshops — with verified makers and every cost shown." crumb="Trade & wholesale" />
+      <InfoHeader eyebrow="For the trade" title="Trade & wholesale" lead="For designers, retailers, galleries and hotels sourcing directly from Pakistan's workshops — with verified makers and every cost shown." crumb="Trade & wholesale" />
       <Container className="grid gap-12 py-12 md:py-16 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-20">
         <div>
           <ul className="space-y-8">

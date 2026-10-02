@@ -221,7 +221,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 <BuyerPrice pkr={product.compareAtPricePkr} strike className="text-lg" />
               ) : null}
             </div>
-            <p className="text-umber-600 mt-1 text-sm">Item price in {ctx.currency}. Shipping, duty and tax for your country are itemised below.</p>
+            <p className="text-umber-600 mt-1 text-sm">Item price in {ctx.currency}. Shipping, duty and tax below.</p>
             <p className="text-umber-700 mt-3 flex items-center gap-2 text-sm">
               <CalendarClock className="text-gold-700 size-4 shrink-0" aria-hidden />
               {product.availability === "made_to_order"
@@ -298,8 +298,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 <DeliveryEstimateLine delivery={estimate.delivery} className="mt-4" />
                 {!estimate.complete ? (
                   <p className="text-umber-600 mt-3 text-sm">
-                    Lines marked <span className="text-pending-600 font-medium">Pending</span> don&apos;t have confirmed rates yet. You can still order: our
-                    team confirms them and you approve the final total before anything is charged.{" "}
+                    <span className="text-pending-600 font-medium">Pending</span> lines are confirmed — and approved by you — before anything is charged.{" "}
                     <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
                       How importing works
                     </Link>

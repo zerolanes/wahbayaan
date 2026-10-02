@@ -44,7 +44,7 @@ export default async function RequestsPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/60 px-6 py-4">
                   <div className="flex items-center gap-3">
                     <span className="relative size-10 overflow-hidden rounded-full bg-sand-200">
-                      {r.vendor?.profilePhotoUrl ? <Image src={r.vendor.profilePhotoUrl} alt="" fill sizes="40px" unoptimized={isSvg(r.vendor.profilePhotoUrl)} className="object-cover" /> : <PenTool className="m-2.5 size-5 text-umber-400" aria-hidden />}
+                      {r.vendor?.profilePhotoUrl ? <Image src={r.vendor.profilePhotoUrl} alt="" fill sizes="40px" unoptimized={isSvg(r.vendor.profilePhotoUrl)} className="object-cover" /> : <PenTool className="m-2.5 size-5 text-umber-600" aria-hidden />}
                     </span>
                     <div>
                       <p className="font-semibold text-umber-900">
@@ -70,25 +70,25 @@ export default async function RequestsPage() {
                     <dl className="flex flex-wrap gap-x-6 gap-y-1 text-umber-600">
                       {r.customText ? (
                         <div>
-                          <dt className="inline text-umber-400">Text: </dt>
+                          <dt className="inline text-umber-600">Text: </dt>
                           <dd className="inline">{r.customText}</dd>
                         </div>
                       ) : null}
                       {r.sizeNotes ? (
                         <div>
-                          <dt className="inline text-umber-400">Size: </dt>
+                          <dt className="inline text-umber-600">Size: </dt>
                           <dd className="inline">{r.sizeNotes}</dd>
                         </div>
                       ) : null}
                       {r.colorNotes ? (
                         <div>
-                          <dt className="inline text-umber-400">Colours: </dt>
+                          <dt className="inline text-umber-600">Colours: </dt>
                           <dd className="inline">{r.colorNotes}</dd>
                         </div>
                       ) : null}
                       {r.budget != null && r.budgetCurrency && isBuyerCurrency(r.budgetCurrency) ? (
                         <div>
-                          <dt className="inline text-umber-400">Your budget: </dt>
+                          <dt className="inline text-umber-600">Your budget: </dt>
                           <dd className="inline">{formatMoney(r.budget, r.budgetCurrency)}</dd>
                         </div>
                       ) : null}

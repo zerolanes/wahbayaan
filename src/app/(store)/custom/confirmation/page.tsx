@@ -42,7 +42,7 @@ export default async function CustomConfirmationPage(props: PageProps<"/custom/c
                 <s.icon className="size-5" aria-hidden />
               </span>
               <span>
-                <span className="text-xs font-semibold tracking-widest text-umber-400">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-xs font-semibold tracking-widest text-umber-600">{String(i + 1).padStart(2, "0")}</span>
                 <span className="block font-display text-xl text-umber-900">{s.title}</span>
                 <span className="mt-1 block text-umber-600">{s.text}</span>
               </span>

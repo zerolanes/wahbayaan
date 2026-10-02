@@ -28,7 +28,7 @@ export default async function AboutPage() {
         eyebrow="About us"
         title={
           <>
-            Wahbayaan <span lang="ur" className="font-urdu text-4xl text-umber-400 md:text-5xl">واہ بیان</span>
+            Wahbayaan <span lang="ur" className="font-urdu text-4xl text-umber-600 md:text-5xl">واہ بیان</span>
           </>
         }
         lead="“Wah” is what you say when something moves you; “bayaan” is how it's expressed. We started Wahbayaan so the work of Pakistan's craftspeople could be bought, trusted and carried home by people anywhere."
@@ -38,7 +38,7 @@ export default async function AboutPage() {
       <Container className="grid gap-12 py-14 md:py-20 lg:grid-cols-2 lg:gap-20">
         <div className="space-y-5 text-lg leading-relaxed text-umber-700">
           <p>Pakistan's crafts are some of the oldest living traditions in South Asia — Nastaliq calligraphy, hand-knotted rugs, Multani blue pottery, Sindhi ajrak, Chiniot carving, Gandhara stonework. Most of it is made in small family workshops that have never sold abroad.</p>
-          <p>Buying from them from the US, UK or Canada has usually meant guessing: guessing who made the piece, guessing what it will cost once shipping and import duty are added, and hoping it arrives. Wahbayaan is built to take the guessing out.</p>
+          <p>Buying from them, especially from abroad, has usually meant guessing: guessing who made the piece, guessing what it will cost once shipping and import duty are added, and hoping it arrives. Wahbayaan is built to take the guessing out.</p>
           <p>We verify the makers, show every cost up front, hold the payment until the piece arrives, and handle the export paperwork — so the artisan can concentrate on the work, and you can buy it with confidence.</p>
         </div>
         <dl className="grid grid-cols-2 gap-px self-start overflow-hidden rounded-[var(--radius-card)] bg-umber-200/70 ring-1 ring-umber-200/70">
@@ -80,7 +80,7 @@ export default async function AboutPage() {
                 <Link href={a.href} className="group">
                   <p className="flex items-baseline justify-between font-display text-2xl text-umber-900">
                     {a.city}
-                    <span lang="ur" className="font-urdu text-base text-umber-400">
+                    <span lang="ur" className="font-urdu text-base text-umber-600">
                       {a.urdu}
                     </span>
                   </p>

@@ -14,7 +14,7 @@ export default async function AddressesPage() {
   const addresses = await getAddresses(user.id);
   return (
     <div className="space-y-10">
-      <PageHeader eyebrow="Your account" title="Addresses" description="Saved delivery addresses in the US, UK and Canada. Use a recipient's address for gifts." />
+      <PageHeader eyebrow="Your account" title="Addresses" description="Saved delivery addresses." />
       {addresses.length ? (
         <ul className="grid gap-4 md:grid-cols-2">
           {addresses.map((a) => (

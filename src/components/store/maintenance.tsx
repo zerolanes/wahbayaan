@@ -19,7 +19,7 @@ export async function MaintenanceGate({ children }: { children: React.ReactNode 
         <StarMark className="mx-auto size-12" />
         <h1 className="mt-6 font-display text-4xl text-umber-900">Back shortly</h1>
         <p className="mt-3 text-umber-600">{maintenance.message}</p>
-        <p lang="ur" className="mt-6 font-urdu text-lg text-umber-400">
+        <p lang="ur" className="mt-6 font-urdu text-lg text-umber-600">
           واہ بیان
         </p>
       </div>

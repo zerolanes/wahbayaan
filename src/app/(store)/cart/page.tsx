@@ -221,8 +221,7 @@ export default async function CartPage() {
                   <div className="rounded-[var(--radius-card)] bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
                     <p className="font-semibold">Some costs are confirmed before you&apos;re charged</p>
                     <p className="mt-1 text-umber-700">
-                      We don&apos;t have confirmed rates for {joinCostLabels(landed.pendingLines.map((l) => l.label))} yet. Place your order and our team sends you the
-                      exact total to approve — nothing is charged until you do.
+                      {joinCostLabels(landed.pendingLines.map((l) => l.label))}: we send the exact total for you to approve first.
                     </p>
                   </div>
                 ) : null}

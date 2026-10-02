@@ -17,8 +17,7 @@ export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean
         <div className="max-w-sm">
           <Logo tone="light" />
           <p className="mt-5 text-sm leading-relaxed text-sand-100/85">
-            Heritage craft from verified Pakistani artisans, delivered to the US, UK and Canada — with the full landed cost shown before you pay and your
-            payment held until your piece arrives.
+            Heritage craft from verified Pakistani artisans. Every cost shown up front; your payment protected until it arrives.
           </p>
           <NewsletterForm />
         </div>

@@ -28,7 +28,7 @@ export function OrderCostSummary({ order, className, title = "Landed cost" }: { 
                 {l.status === "pending" ? (
                   <span className="rounded-full bg-pending-50 px-2 py-0.5 text-xs font-medium text-pending-600 ring-1 ring-pending-600/20 ring-inset">Pending</span>
                 ) : l.status === "not_applicable" ? (
-                  <span className="text-umber-400">—</span>
+                  <span className="text-umber-600">—</span>
                 ) : (
                   <span className={cn("tabular-nums", l.key === "discount" && "text-success-700")}>{formatMoney(l.amount ?? 0, currency, { cents: true })}</span>
                 )}
@@ -45,7 +45,7 @@ export function OrderCostSummary({ order, className, title = "Landed cost" }: { 
         </div>
         <p className="font-display text-2xl whitespace-nowrap text-umber-900 tabular-nums">
           {formatMoney(view.total, currency, { cents: true })}
-          {!view.complete ? <span className="text-base text-umber-400"> +</span> : null}
+          {!view.complete ? <span className="text-base text-umber-600"> +</span> : null}
         </p>
       </div>
     </div>

@@ -55,7 +55,7 @@ export default async function ConversationPage(props: PageProps<"/account/messag
                 <li key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
                   <div className={cn("max-w-[80%] rounded-2xl px-4 py-2.5", mine ? "rounded-br-md bg-indigo-900 text-sand-50" : "rounded-bl-md bg-sand-100 text-umber-900 ring-1 ring-umber-200/60")}>
                     <p className="text-sm whitespace-pre-line">{m.body}</p>
-                    <p className={cn("mt-1 text-[11px]", mine ? "text-sand-200/60" : "text-umber-400")}>{formatDateTime(m.createdAt)}</p>
+                    <p className={cn("mt-1 text-[11px]", mine ? "text-sand-200/60" : "text-umber-600")}>{formatDateTime(m.createdAt)}</p>
                   </div>
                 </li>
               );

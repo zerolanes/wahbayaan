@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils/cn";
 export const metadata: Metadata = {
   title: "How importing works",
   description:
-    "Buying a handmade piece from a workshop in Pakistan: the journey, who pays for what, timelines, customs and duties in the US, UK and Canada, and how your payment is held until delivery.",
+    "Buying a handmade piece from a workshop in Pakistan: the journey, who pays for what, timelines, customs and duties where you live, and how your payment is held until delivery.",
 };
 
 type Money = "with-you" | "held" | "released";
@@ -116,7 +116,7 @@ export default async function HowImportingWorksPage() {
             How importing <span className="gold-text italic">works</span>
           </>
         }
-        description="From a workshop in Lahore, Multan or Peshawar to your door. You see every cost before you pay, we handle export and customs paperwork, and your payment is held until your piece arrives."
+        description="From the workshop to your door — every cost shown before you pay."
         aside={
           <div className="rounded-[var(--radius-card)] bg-sand-50 p-5 text-umber-900 shadow-lift ring-1 ring-white/10 md:p-6">
             <div className="flex items-center justify-between border-b border-umber-200/70 pb-3">
@@ -180,7 +180,7 @@ export default async function HowImportingWorksPage() {
                   <s.icon className="size-5 text-gold-700 md:size-6" aria-hidden />
                 </span>
                 <div className="pt-1">
-                  <p className="text-xs font-semibold tracking-[0.2em] text-umber-400 tabular-nums">STEP {String(i + 1).padStart(2, "0")}</p>
+                  <p className="text-xs font-semibold tracking-[0.2em] text-umber-600 tabular-nums">STEP {String(i + 1).padStart(2, "0")}</p>
                   <h3 className="mt-1 font-display text-2xl text-umber-900">{s.title}</h3>
                   <p className="mt-2 max-w-2xl leading-relaxed text-umber-700">{s.text}</p>
                   <span className={cn("mt-3 inline-flex rounded-full px-3 py-1 text-xs font-medium", MONEY[s.money].tone)}>{MONEY[s.money].label}</span>

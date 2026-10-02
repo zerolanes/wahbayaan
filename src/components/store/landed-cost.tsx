@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils/cn";
 function LineAmount({ line, currency }: { line: LcLine; currency: LandedCost["currency"] }) {
   if (line.status === "pending")
     return <span className="rounded-full bg-pending-50 px-2 py-0.5 text-xs font-medium text-pending-600 ring-1 ring-pending-600/20 ring-inset">Pending</span>;
-  if (line.status === "not_applicable") return <span className="text-umber-400">—</span>;
+  if (line.status === "not_applicable") return <span className="text-umber-600">—</span>;
   if (line.amount === 0) return <span className="font-medium text-success-700">{formatMoney(0, currency, { cents: false })}</span>;
   return <span className={cn("tabular-nums", line.key === "discount" && "text-success-700")}>{formatMoney(line.amount ?? 0, currency, { cents: true })}</span>;
 }

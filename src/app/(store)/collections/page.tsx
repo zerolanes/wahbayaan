@@ -25,7 +25,7 @@ export default async function CollectionsPage() {
             Collections <span className="gold-text italic">&amp; bundles</span>
           </>
         }
-        description="Pieces chosen to live together — a palette, a room, a gift. Bundles gather a whole corner of a home from several workshops, each shipping from its maker."
+        description="Pieces chosen to live together — a room, a palette, a gift."
       />
       <Container className="space-y-20 py-16 md:space-y-28 md:py-24">
         {collections.length ? (

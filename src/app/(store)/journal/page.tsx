@@ -22,7 +22,7 @@ export default async function JournalPage() {
             Stories from <span className="gold-text italic">the workshops</span>
           </>
         }
-        description="The crafts behind the pieces — their history, their tools and the hands that keep them alive."
+        description="The crafts, the tools and the hands behind them."
         size="sm"
       />
       <Container className="py-16 md:py-20">

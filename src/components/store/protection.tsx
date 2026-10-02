@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils/cn";
 import { isSvg } from "./illustration-tag";
 import { StarRating } from "./trust";
 
-/** Buyer protection summary — shown on every listing, in the cart and at checkout. */
-export function BuyerProtectionBox({ className, compact }: { className?: string; compact?: boolean }) {
+/** Buyer protection summary — shown on every listing, in the cart and at checkout. Brief by design (`compact` is kept for callers; both sizes match). */
+export function BuyerProtectionBox({ className }: { className?: string; compact?: boolean }) {
   return (
     <div className={cn("night relative overflow-hidden rounded-[var(--radius-card)] p-5", className)}>
       <div className="flex items-start gap-3">
@@ -17,22 +17,9 @@ export function BuyerProtectionBox({ className, compact }: { className?: string;
         </span>
         <div>
           <p className="font-display text-lg text-sand-50">Wahbayaan Buyer Protection</p>
-          <p className="mt-1 text-sm text-sand-100/85">Your payment is held by us — not sent to the artisan — until your piece arrives as described.</p>
+          <p className="mt-1 text-sm text-sand-100/85">We hold your payment until your piece arrives as described.</p>
         </div>
       </div>
-      {!compact ? (
-        <ul className="mt-4 grid gap-2 text-sm text-sand-100/85">
-          <li className="flex gap-2">
-            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Damaged in transit, not as described or never arrived — open a case and held funds are frozen while we resolve it.
-          </li>
-          <li className="flex gap-2">
-            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Every artisan is identity- and workshop-verified before they can list.
-          </li>
-          <li className="flex gap-2">
-            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-300" aria-hidden /> Shipping and import costs are itemised before you pay.
-          </li>
-        </ul>
-      ) : null}
       <Link href="/buyer-protection" className="mt-4 inline-block text-sm font-medium text-gold-200 underline-offset-4 hover:underline">
         How buyer protection works →
       </Link>

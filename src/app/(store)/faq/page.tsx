@@ -29,7 +29,7 @@ export default async function FaqPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <InfoHeader eyebrow="Help centre" title="Questions, answered" lead="Everything about buying handmade work from Pakistan — what it costs to bring home, how your payment is protected and how long things take." crumb="FAQ" />
+      <InfoHeader eyebrow="Help centre" title="Questions, answered" lead="Costs, payment protection and timings." crumb="FAQ" />
       <Container className="grid gap-12 py-12 md:py-16 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-20">
         <nav aria-label="FAQ topics" className="lg:sticky lg:top-24 lg:self-start">
           <p className="text-xs font-semibold tracking-wide text-umber-500 uppercase">Topics</p>
