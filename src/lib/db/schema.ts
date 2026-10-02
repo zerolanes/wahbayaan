@@ -156,6 +156,7 @@ export const brandFulfilmentStatus = pgEnum("brand_fulfilment_status", [
   "pending", // order placed with Wahbayaan, not yet bought from the brand
   "ordered_from_brand",
   "received_at_wahbayaan",
+  "quality_checked",
   "dispatched",
   "delivered",
   "cancelled",
@@ -555,11 +556,10 @@ export const orders = pgTable(
     /** Pakistani Brands: Wahbayaan's service fee, shown to the buyer as its own line. */
     serviceFeeAmount: money("service_fee_amount"),
     serviceFeeStatus: lineStatus("service_fee_status").notNull().default("not_applicable"),
-    /** Cash-on-delivery fee (domestic brand orders paying COD). */
-    codFeeAmount: money("cod_fee_amount"),
-    codFeeStatus: lineStatus("cod_fee_status").notNull().default("not_applicable"),
-    /** `card` (the active provider), `cod`, or a pending provider id. Null on artisan orders (card). */
+    /** `card`, `jazzcash` or `easypaisa` (see src/lib/payments/methods.ts). Null on older artisan orders (card). */
     paymentMethod: text("payment_method"),
+    /** Brand orders: `catalogue` (from the brand bag) or `link_request` ("shop any brand by link"; staff price each item). */
+    brandFlow: text("brand_flow"),
     discountAmount: money("discount_amount").notNull().default(0),
     total: money("total").notNull(),
     totalComplete: boolean("total_complete").notNull().default(false),
@@ -931,9 +931,8 @@ export const brandOrderItems = pgTable("brand_order_items", {
   orderId: uuid("order_id")
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
-  brandId: uuid("brand_id")
-    .notNull()
-    .references(() => brands.id, { onDelete: "restrict" }),
+  /** Null for link requests from brands we don't list. */
+  brandId: uuid("brand_id").references(() => brands.id, { onDelete: "restrict" }),
   productId: uuid("product_id").references(() => brandProducts.id, { onDelete: "set null" }),
   variantId: uuid("variant_id").references(() => brandProductVariants.id, { onDelete: "set null" }),
   brandName: text("brand_name").notNull(),
@@ -943,10 +942,38 @@ export const brandOrderItems = pgTable("brand_order_items", {
   sku: text("sku"),
   sourceUrl: text("source_url"),
   imageUrl: text("image_url"),
+  /** Link requests: the buyer's product URL (never fetched; only its domain is shown) and notes. */
+  requestedUrl: text("requested_url"),
+  requestedDomain: text("requested_domain"),
+  buyerNote: text("buyer_note"),
+  /** Staff's check of a link-request item. */
+  staffNote: text("staff_note"),
+  unavailable: boolean("unavailable").notNull().default(false),
+  /** Parcel weight used for the shipping quote (staff estimate for link requests). */
+  weightG: integer("weight_g"),
   qty: integer("qty").notNull(),
-  unitPricePkr: money("unit_price_pkr").notNull(),
-  unitPrice: money("unit_price").notNull(),
+  /** Null until staff price a link-request item. */
+  unitPricePkr: money("unit_price_pkr"),
+  unitPrice: money("unit_price"),
 });
+
+/** "Notify me" for brand sale / restock alerts. Sending is queued through the email outbox. */
+export const brandAlerts = pgTable(
+  "brand_alerts",
+  {
+    id: id(),
+    email: text("email").notNull(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    productId: uuid("product_id").references(() => brandProducts.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(), // sale | restock
+    notifiedAt: timestamp("notified_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("brand_alerts_brand_idx").on(t.brandId)],
+);
 
 /** Wahbayaan buys from the brand on the buyer's behalf: one checklist per brand per order. */
 export const brandFulfilments = pgTable(
@@ -956,9 +983,9 @@ export const brandFulfilments = pgTable(
     orderId: uuid("order_id")
       .notNull()
       .references(() => orders.id, { onDelete: "cascade" }),
-    brandId: uuid("brand_id")
-      .notNull()
-      .references(() => brands.id, { onDelete: "restrict" }),
+    brandId: uuid("brand_id").references(() => brands.id, { onDelete: "restrict" }),
+    /** Brand name as shown on the checklist (link requests may name brands we don't list). */
+    brandLabel: text("brand_label").notNull(),
     status: brandFulfilmentStatus("status").notNull().default("pending"),
     brandOrderRef: text("brand_order_ref"),
     /** What Wahbayaan actually paid the brand (PKR). */
@@ -968,11 +995,12 @@ export const brandFulfilments = pgTable(
     notes: text("notes"),
     orderedAt: timestamp("ordered_at", { withTimezone: true }),
     receivedAt: timestamp("received_at", { withTimezone: true }),
+    qualityCheckedAt: timestamp("quality_checked_at", { withTimezone: true }),
     dispatchedAt: timestamp("dispatched_at", { withTimezone: true }),
     deliveredAt: timestamp("delivered_at", { withTimezone: true }),
     updatedAt: updatedAt(),
   },
-  (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandId)],
+  (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandLabel)],
 );
 
 // ── Cross-border rates (business data; pending until supplied) ──────────────
@@ -985,11 +1013,39 @@ export const fxRates = pgTable("fx_rates", {
   updatedAt: updatedAt(),
 });
 
+/** A courier service level, e.g. "Express" 2–4 days. */
+export type CourierService = { key: string; label: string; transitDaysMin: number | null; transitDaysMax: number | null };
+
+/**
+ * Couriers Wahbayaan has (or is negotiating) contracts with. Rate cards are rows
+ * in `shipping_rates` linked by `courierId`: domestic rates use destination `PK`
+ * plus a city `zone`; international rates use the destination country.
+ */
+export const couriers = pgTable("couriers", {
+  id: id(),
+  name: text("name").notNull().unique(),
+  services: jsonb("services").$type<CourierService[]>().notNull().default([]),
+  domestic: boolean("domestic").notNull().default(false),
+  international: boolean("international").notNull().default(false),
+  /** e.g. https://courier.example/track?n={tracking} */
+  trackingUrlTemplate: text("tracking_url_template"),
+  contactNotes: text("contact_notes"),
+  contractNotes: text("contract_notes"),
+  /** Only active couriers' rates are used at checkout. */
+  isActive: boolean("is_active").notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 export const shippingRates = pgTable("shipping_rates", {
   id: id(),
+  courierId: uuid("courier_id").references(() => couriers.id, { onDelete: "cascade" }),
   courier: text("courier").notNull(),
+  /** Service level label (matches one of the courier's services). */
   serviceName: text("service_name"),
   destinationCountry: text("destination_country").notNull(),
+  /** Domestic (`PK`) rates only: the city zone key from the domestic delivery settings. */
+  zone: text("zone"),
   minWeightG: integer("min_weight_g").notNull().default(0),
   maxWeightG: integer("max_weight_g").notNull(),
   amount: money("amount"),
@@ -1498,4 +1554,9 @@ export const brandOrderItemsRelations = relations(brandOrderItems, ({ one }) => 
 export const brandFulfilmentsRelations = relations(brandFulfilments, ({ one }) => ({
   order: one(orders, { fields: [brandFulfilments.orderId], references: [orders.id] }),
   brand: one(brands, { fields: [brandFulfilments.brandId], references: [brands.id] }),
+}));
+
+export const brandAlertsRelations = relations(brandAlerts, ({ one }) => ({
+  brand: one(brands, { fields: [brandAlerts.brandId], references: [brands.id] }),
+  product: one(brandProducts, { fields: [brandAlerts.productId], references: [brandProducts.id] }),
 }));

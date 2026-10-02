@@ -1,5 +1,5 @@
 {
-  "id": "7f8f71c0-c243-4ace-9c24-92f1e80ecc78",
+  "id": "b74df8bf-5d83-4818-b4c1-4191a330f40e",
   "prevId": "97e7fb7a-dc9b-4f91-b352-10e755eb8677",
   "version": "7",
   "dialect": "postgresql",
@@ -334,6 +334,125 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.brand_alerts": {
+      "name": "brand_alerts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "brand_id": {
+          "name": "brand_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notified_at": {
+          "name": "notified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "brand_alerts_brand_idx": {
+          "name": "brand_alerts_brand_idx",
+          "columns": [
+            {
+              "expression": "brand_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "brand_alerts_user_id_users_id_fk": {
+          "name": "brand_alerts_user_id_users_id_fk",
+          "tableFrom": "brand_alerts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "brand_alerts_brand_id_brands_id_fk": {
+          "name": "brand_alerts_brand_id_brands_id_fk",
+          "tableFrom": "brand_alerts",
+          "tableTo": "brands",
+          "columnsFrom": [
+            "brand_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "brand_alerts_product_id_brand_products_id_fk": {
+          "name": "brand_alerts_product_id_brand_products_id_fk",
+          "tableFrom": "brand_alerts",
+          "tableTo": "brand_products",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.brand_cart_items": {
       "name": "brand_cart_items",
       "schema": "",
@@ -511,6 +630,12 @@
           "name": "brand_id",
           "type": "uuid",
           "primaryKey": false,
+          "notNull": false
+        },
+        "brand_label": {
+          "name": "brand_label",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true
         },
         "status": {
@@ -563,6 +688,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "quality_checked_at": {
+          "name": "quality_checked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "dispatched_at": {
           "name": "dispatched_at",
           "type": "timestamp with time zone",
@@ -594,7 +725,7 @@
               "nulls": "last"
             },
             {
-              "expression": "brand_id",
+              "expression": "brand_label",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -661,7 +792,7 @@
           "name": "brand_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "product_id": {
           "name": "product_id",
@@ -717,6 +848,43 @@
           "primaryKey": false,
           "notNull": false
         },
+        "requested_url": {
+          "name": "requested_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "requested_domain": {
+          "name": "requested_domain",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "buyer_note": {
+          "name": "buyer_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "staff_note": {
+          "name": "staff_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unavailable": {
+          "name": "unavailable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "weight_g": {
+          "name": "weight_g",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "qty": {
           "name": "qty",
           "type": "integer",
@@ -727,13 +895,13 @@
           "name": "unit_price_pkr",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "unit_price": {
           "name": "unit_price",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -2454,6 +2622,100 @@
           "nullsNotDistinct": false,
           "columns": [
             "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.couriers": {
+      "name": "couriers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "services": {
+          "name": "services",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "domestic": {
+          "name": "domestic",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "international": {
+          "name": "international",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "tracking_url_template": {
+          "name": "tracking_url_template",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contact_notes": {
+          "name": "contact_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contract_notes": {
+          "name": "contract_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "couriers_name_unique": {
+          "name": "couriers_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
           ]
         }
       },
@@ -4230,22 +4492,14 @@
           "notNull": true,
           "default": "'not_applicable'"
         },
-        "cod_fee_amount": {
-          "name": "cod_fee_amount",
-          "type": "bigint",
+        "payment_method": {
+          "name": "payment_method",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "cod_fee_status": {
-          "name": "cod_fee_status",
-          "type": "line_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'not_applicable'"
-        },
-        "payment_method": {
-          "name": "payment_method",
+        "brand_flow": {
+          "name": "brand_flow",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5697,6 +5951,12 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
+        "courier_id": {
+          "name": "courier_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "courier": {
           "name": "courier",
           "type": "text",
@@ -5714,6 +5974,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "zone": {
+          "name": "zone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "min_weight_g": {
           "name": "min_weight_g",
@@ -5782,7 +6048,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "shipping_rates_courier_id_couriers_id_fk": {
+          "name": "shipping_rates_courier_id_couriers_id_fk",
+          "tableFrom": "shipping_rates",
+          "tableTo": "couriers",
+          "columnsFrom": [
+            "courier_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -7035,6 +7315,7 @@
         "pending",
         "ordered_from_brand",
         "received_at_wahbayaan",
+        "quality_checked",
         "dispatched",
         "delivered",
         "cancelled"
