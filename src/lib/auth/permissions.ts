@@ -33,6 +33,11 @@ export const PERMISSIONS = {
   "staff.manage": "Staff accounts and roles",
   "audit.view": "Audit log",
   "media.manage": "Media library",
+  "brands.view": "View Pakistani Brands, brand products and sync history",
+  "brands.manage": "Edit brands, sources, brand products and run catalogue syncs",
+  "brands.permission": "Record or revoke a brand's permission and set the partnership status",
+  "couriers.manage": "Couriers, service levels, domestic zones and rate cards",
+  "payments.manage": "Payment methods (card, JazzCash, Easypaisa) — non-secret settings only",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -56,6 +61,8 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "requests.manage",
       "support.manage",
       "reports.view",
+      "brands.view",
+      "couriers.manage",
     ],
   },
   {
@@ -73,6 +80,8 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "reviews.moderate",
       "requests.manage",
       "media.manage",
+      "brands.view",
+      "brands.manage",
     ],
   },
   {
@@ -89,6 +98,7 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "rates.manage",
       "reports.view",
       "audit.view",
+      "payments.manage",
     ],
   },
   {

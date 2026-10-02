@@ -6,6 +6,7 @@ import {
   brandOrderItems,
   brandProductVariants,
   cartItems,
+  couriers,
   carts,
   certificates,
   coupons,
@@ -31,6 +32,7 @@ import { formatMoney, type Currency } from "@/lib/money/currency";
 import { applyBps } from "@/lib/money/currency";
 import { refundPayment, startCheckout, startMethodCheckout } from "@/lib/payments";
 import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/payments/methods";
+import { buildTrackingUrl } from "@/lib/brands/domestic";
 import type { CartView } from "./cart";
 
 /**
@@ -358,6 +360,11 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
       break;
     case "ship":
       if (!action.courier || !action.trackingNumber) throw new OrderError("Courier and tracking number are required.");
+      {
+        // No link typed: build it from the courier's tracking URL template (Admin → Couriers).
+        const template = (await d.query.couriers.findFirst({ where: eq(couriers.name, action.courier) }))?.trackingUrlTemplate;
+        action = { ...action, trackingUrl: action.trackingUrl || buildTrackingUrl(template, action.trackingNumber) };
+      }
       Object.assign(patch, {
         status: "shipped",
         courier: action.courier,

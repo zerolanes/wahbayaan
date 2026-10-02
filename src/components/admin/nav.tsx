@@ -1,5 +1,5 @@
 import {
-  Activity, BadgePercent, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, FileText, Flag, Gauge, Gift, Globe2,
+  Activity, BadgePercent, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
   HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Mail, Megaphone, MessagesSquare, Package,
   PackageSearch, Palette, Receipt, Scale, ScrollText, Settings, Shield, ShieldAlert, Ship, Sparkles, Star, Store, Tags,
   Truck, UserCheck, Users, Wallet, Waypoints, Wrench,
@@ -14,6 +14,7 @@ export type AdminCounts = {
   pendingReviews: number;
   newMessages: number;
   newRequests: number;
+  brandQueue: number;
 };
 
 /** Company admin navigation. Items are hidden when the staff role lacks the permission. */
@@ -49,6 +50,23 @@ export function adminNav(c: AdminCounts): NavGroup[] {
         { href: "/admin/reviews", label: "Reviews", icon: <Star />, permission: "reviews.moderate", badge: c.pendingReviews },
         { href: "/admin/collections", label: "Collections & bundles", icon: <Sparkles />, permission: "content.manage" },
         { href: "/admin/certificates", label: "Certificates", icon: <ScrollText />, permission: "products.view" },
+      ],
+    },
+    {
+      label: "Pakistani Brands",
+      items: [
+        { href: "/admin/brands", label: "Brands", icon: <Tags />, permission: "brands.view" },
+        { href: "/admin/brand-products", label: "Brand products", icon: <Boxes />, permission: "brands.view" },
+        { href: "/admin/brand-requests", label: "Brand orders & requests", icon: <PackageSearch />, permission: "orders.view", badge: c.brandQueue },
+        { href: "/admin/rates/service-fee", label: "Service fee", icon: <BadgePercent />, permission: "rates.view" },
+      ],
+    },
+    {
+      label: "Delivery & payments",
+      items: [
+        { href: "/admin/couriers", label: "Couriers & rate cards", icon: <Truck />, permission: "couriers.manage" },
+        { href: "/admin/rates/domestic", label: "Domestic zones", icon: <MapPinned />, permission: "couriers.manage" },
+        { href: "/admin/payment-methods", label: "Payment methods", icon: <CreditCard />, permission: "payments.manage" },
       ],
     },
     {

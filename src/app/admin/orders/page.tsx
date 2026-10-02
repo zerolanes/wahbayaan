@@ -12,7 +12,7 @@ import { vendors } from "@/lib/db/schema";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_TONE } from "@/lib/commerce/orders";
 import { listOrders, ORDER_SORTS, ORDER_TABS, orderStatusCounts } from "@/lib/admin/orders";
 import { hrefWith, pageCount, pageOf, str, PAGE_SIZE } from "@/lib/admin/params";
-import { DESTINATIONS, destinationName } from "@/lib/money/currency";
+import { BUYER_DESTINATIONS, destinationName } from "@/lib/money/currency";
 import { formatDate } from "@/lib/utils/format";
 
 export const metadata = { title: "Orders" };
@@ -37,7 +37,7 @@ export default async function OrdersPage(props: PageProps<"/admin/orders">) {
       <Tabs items={ORDER_TABS.map((t) => ({ label: t.label, href: hrefWith("/admin/orders", params, { status: t.value || null }), active: status === t.value, count: counts[t.value] ?? 0 }))} />
       <FilterBar action="/admin/orders" q={str(params, "q")} placeholder="Order number, email or name" extra={user.permissions.has("reports.view") || user.permissions.has("orders.view") ? <ExportLink href={exportHref} /> : null}>
         {status ? <input type="hidden" name="status" value={status} /> : null}
-        <FilterSelect name="destination" label="Destination" value={str(params, "destination")} options={DESTINATIONS.map((x) => ({ value: x.code, label: x.name }))} />
+        <FilterSelect name="destination" label="Destination" value={str(params, "destination")} options={BUYER_DESTINATIONS.map((x) => ({ value: x.code, label: x.name }))} />
         <FilterSelect name="currency" label="Currency" value={str(params, "currency")} options={["USD", "GBP", "CAD", "PKR"].map((c) => ({ value: c, label: c }))} />
         <FilterSelect name="funds" label="Funds" value={str(params, "funds")} options={["none", "held", "frozen", "released", "refunded"].map((c) => ({ value: c, label: c }))} />
         <FilterSelect name="artisan" label="Artisan" value={str(params, "artisan")} options={artisans.map((a) => ({ value: a.id, label: a.name }))} />
@@ -97,6 +97,7 @@ export default async function OrdersPage(props: PageProps<"/admin/orders">) {
                         {o.number}
                       </Link>
                       {o.isGift ? <Gift className="size-3.5 text-terracotta-500" aria-label="Gift" /> : null}
+                      {o.kind === "brand" ? <Badge tone="gold">Brand</Badge> : null}
                       <DemoBadge show={o.isDemo} />
                     </div>
                   </Td>
