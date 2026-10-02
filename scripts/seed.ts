@@ -252,6 +252,8 @@ async function topUpDemo(db: Db) {
   }
   const [{ n: announcementCount }] = await db.select({ n: sql<number>`count(*)::int` }).from(t.announcements);
   if (!announcementCount) await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
+  const usBuyer = await db.query.users.findFirst({ where: eq(t.users.email, "buyer@wahbayaan.test") });
+  if (usBuyer) await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
   console.log(`Demo top-up: ${addedVendors} new artisans, ${addedProducts} new listings.`);
 }
 
