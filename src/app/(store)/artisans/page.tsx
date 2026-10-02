@@ -60,7 +60,7 @@ export default async function ArtisansPage(props: PageProps<"/artisans">) {
             Meet the artisans <span className="gold-text italic">behind every piece</span>
           </>
         }
-        description="Calligraphers in Lahore, weavers near Peshawar, carvers in Taxila, potters in Multan. Every artisan here has passed our identity, workshop and sample checks — and every piece carries their name."
+        description="Every artisan is verified, and every piece carries their name."
         aside={
           collage.length ? (
             <div className="grid grid-cols-2 gap-3">
@@ -171,7 +171,7 @@ export default async function ArtisansPage(props: PageProps<"/artisans">) {
                 <li key={s.title} className={cn("rounded-2xl bg-sand-50 p-6 ring-1 ring-umber-200/60", i === STEPS.length - 1 && "sm:col-span-2")}>
                   <div className="flex items-center justify-between">
                     <s.icon className="size-6 text-gold-600" aria-hidden />
-                    <span aria-hidden className="font-display text-3xl text-umber-400 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                    <span aria-hidden className="font-display text-3xl text-umber-600 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                   </div>
                   <p className="mt-4 font-display text-xl text-umber-900">{s.title}</p>
                   <p className="mt-1.5 text-sm leading-relaxed text-umber-600">{s.text}</p>
@@ -189,7 +189,7 @@ export default async function ArtisansPage(props: PageProps<"/artisans">) {
             <Camera className="mx-auto size-8 text-gold-300" aria-hidden />
             <h2 className="mx-auto mt-4 max-w-2xl font-display text-4xl text-sand-50 md:text-5xl">Are you an artisan in Pakistan?</h2>
             <p className="mx-auto mt-4 max-w-xl text-sand-200/80">
-              Sell to buyers in the US, UK and Canada. You&apos;re paid in rupees; we handle international payment, export paperwork and courier booking.
+              Sell at home and abroad. You&apos;re paid in rupees; we handle payment, paperwork and shipping.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <ButtonLink href="/become-a-seller" variant="gold" size="lg">

@@ -39,7 +39,7 @@ export function ProductGallery({
   return (
     <div>
       {tabs.length > 1 ? (
-        <div role="tablist" aria-label="Product media" className="mb-4 inline-flex rounded-full bg-umber-100/80 p-1">
+        <div role="tablist" aria-label="Product media" className="mb-4 inline-flex rounded-full bg-umber-900/[0.06] p-1">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -49,8 +49,8 @@ export function ProductGallery({
               aria-controls="product-stage"
               onClick={() => setMode(t.id)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition",
-                mode === t.id ? "bg-sand-50 text-umber-900 shadow-soft" : "text-umber-600 hover:text-umber-900",
+                "pressable inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-medium",
+                mode === t.id ? "bg-white text-umber-900 shadow-[0_1px_2px_rgb(34_26_19/0.1),0_2px_8px_-2px_rgb(34_26_19/0.12)]" : "text-umber-700 hover:text-umber-900",
               )}
             >
               <t.icon className="size-4" aria-hidden />
@@ -60,7 +60,7 @@ export function ProductGallery({
         </div>
       ) : null}
 
-      <div id="product-stage" role="tabpanel" className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] bg-sand-200 shadow-soft">
+      <div id="product-stage" role="tabpanel" className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-panel)] bg-sand-200 shadow-soft">
         {mode === "photos" && current ? (
           <>
             <button
@@ -92,7 +92,7 @@ export function ProductGallery({
                 />
               ))}
             </button>
-            <span className="pointer-events-none absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-sand-50/85 px-2.5 py-1 text-xs font-medium text-umber-800 shadow-soft backdrop-blur">
+            <span className="glass-thin pointer-events-none absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-umber-900 max-sm:hidden">
               <ZoomIn className="size-3.5" aria-hidden /> Hover to zoom · click to enlarge
             </span>
             {SHOW_QA_LABELS && current.kind === "illustration" ? (
@@ -102,10 +102,10 @@ export function ProductGallery({
             ) : null}
             {images.length > 1 ? (
               <>
-                <button type="button" onClick={() => go(-1)} aria-label="Previous image" className="absolute top-1/2 left-3 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-sand-50/85 text-umber-900 shadow-soft backdrop-blur transition hover:bg-sand-50">
+                <button type="button" onClick={() => go(-1)} aria-label="Previous image" className="glass-thin pressable absolute top-1/2 left-3 grid size-11 -translate-y-1/2 place-items-center rounded-full text-umber-900">
                   <ChevronLeft className="size-5" />
                 </button>
-                <button type="button" onClick={() => go(1)} aria-label="Next image" className="absolute top-1/2 right-3 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-sand-50/85 text-umber-900 shadow-soft backdrop-blur transition hover:bg-sand-50">
+                <button type="button" onClick={() => go(1)} aria-label="Next image" className="glass-thin pressable absolute top-1/2 right-3 grid size-11 -translate-y-1/2 place-items-center rounded-full text-umber-900">
                   <ChevronRight className="size-5" />
                 </button>
               </>
@@ -121,7 +121,7 @@ export function ProductGallery({
       </div>
 
       {images.length > 1 || videoUrl ? (
-        <div className="mt-4 flex gap-3 overflow-x-auto pb-1 scrollbar-none">
+        <div className="-mx-1 mt-3 flex gap-2.5 overflow-x-auto p-1 scrollbar-none">
           {images.map((img, i) => (
             <button
               key={img.url}
@@ -133,8 +133,8 @@ export function ProductGallery({
               aria-label={`Show image ${i + 1}`}
               aria-current={mode === "photos" && i === index ? "true" : undefined}
               className={cn(
-                "relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand-200 transition md:size-24",
-                mode === "photos" && i === index ? "ring-2 ring-indigo-900 ring-offset-2 ring-offset-parchment" : "opacity-75 ring-1 ring-umber-200 hover:opacity-100",
+                "pressable relative size-18 shrink-0 overflow-hidden rounded-[var(--radius-control)] bg-sand-200 md:size-22",
+                mode === "photos" && i === index ? "ring-2 ring-indigo-900 ring-offset-2 ring-offset-parchment" : "opacity-80 ring-1 ring-umber-900/10 hover:opacity-100",
               )}
             >
               <Image src={img.url} alt="" fill sizes="96px" unoptimized={isSvg(img.url)} className="object-cover" />
@@ -145,7 +145,7 @@ export function ProductGallery({
               type="button"
               onClick={() => setMode("video")}
               className={cn(
-                "grid size-20 shrink-0 place-items-center rounded-xl bg-umber-900 text-xs font-medium text-sand-50 transition md:size-24",
+                "pressable grid size-18 shrink-0 place-items-center rounded-[var(--radius-control)] bg-umber-900 text-xs font-medium text-sand-50 md:size-22",
                 mode === "video" ? "ring-2 ring-indigo-900 ring-offset-2 ring-offset-parchment" : "opacity-90 hover:opacity-100",
               )}
             >
@@ -186,7 +186,7 @@ function Lightbox({ images, index, setIndex, title, onClose }: { images: Gallery
   }, [images.length, onClose, setIndex]);
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={`${title} — image ${index + 1} of ${images.length}`} className="fixed inset-0 z-[100] flex flex-col bg-indigo-950/95 backdrop-blur-sm">
+    <div role="dialog" aria-modal="true" aria-label={`${title} — image ${index + 1} of ${images.length}`} className="fixed inset-0 z-[100] flex flex-col bg-indigo-950/95 backdrop-blur-xl">
       <div className="flex items-center justify-between px-4 py-3 text-sand-100 sm:px-6">
         <p className="truncate text-sm">
           <span className="tabular-nums">
@@ -195,7 +195,7 @@ function Lightbox({ images, index, setIndex, title, onClose }: { images: Gallery
           · {title}
           {SHOW_QA_LABELS && img.kind === "illustration" ? <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[11px]">Illustration</span> : null}
         </p>
-        <button ref={closeRef} type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm transition hover:bg-white/10">
+        <button ref={closeRef} type="button" onClick={onClose} className="pressable inline-flex h-10 items-center gap-2 rounded-full bg-white/10 px-4 text-sm hover:bg-white/20">
           <X className="size-4" aria-hidden /> Close
         </button>
       </div>

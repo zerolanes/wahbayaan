@@ -47,8 +47,8 @@ export function CardHeader({ title, description, action, className }: { title: R
 
 export function EmptyState({ icon, title, children, action, className }: { icon?: ReactNode; title: ReactNode; children?: ReactNode; action?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center rounded-[var(--radius-card)] border border-dashed border-umber-300/70 px-6 py-14 text-center", className)}>
-      {icon ? <div className="mb-4 text-gold-500">{icon}</div> : null}
+    <div data-slot="empty-state" className={cn("flex flex-col items-center justify-center rounded-[var(--radius-panel)] bg-sand-50 px-6 py-14 text-center shadow-[0_0_0_0.5px_rgb(34_26_19/0.08)]", className)}>
+      {icon ? <div className="mb-4 grid size-16 place-items-center rounded-full bg-umber-900/[0.05] text-gold-700">{icon}</div> : null}
       <h3 className="font-display text-xl text-umber-900">{title}</h3>
       {children ? <div className="mt-2 max-w-md text-sm text-umber-600">{children}</div> : null}
       {action ? <div className="mt-5">{action}</div> : null}
@@ -186,7 +186,7 @@ export function SectionHeading({ eyebrow, title, description, action, align = "l
     <div className={cn("flex flex-wrap items-end justify-between gap-6", align === "center" && "flex-col items-center text-center", className)}>
       <div className={cn("max-w-2xl", align === "center" && "mx-auto")}>
         {eyebrow ? <p className={cn("mb-3 text-xs font-semibold tracking-[0.22em] uppercase", dark ? "text-gold-300" : "text-gold-600")}>{eyebrow}</p> : null}
-        <h2 className={cn("font-display text-3xl leading-[1.08] md:text-5xl", dark ? "text-sand-50" : "text-umber-900")}>{title}</h2>
+        <h2 className={cn("font-display text-3xl leading-[1.08] tracking-[-0.03em] md:text-5xl", dark ? "text-sand-50" : "text-umber-900")}>{title}</h2>
         {description ? <p className={cn("mt-4 text-lg", dark ? "text-sand-200/80" : "text-umber-600")}>{description}</p> : null}
       </div>
       {action}

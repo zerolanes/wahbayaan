@@ -6,7 +6,7 @@ import { addCaseMessageAction, cancelOrderAction, confirmDeliveryAction, openCas
 import { cn } from "@/lib/utils/cn";
 
 const field =
-  "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none";
+  "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-500 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none";
 
 function Result({ state }: { state: { ok?: boolean; error?: string; message?: string } | null }) {
   if (state?.error)
@@ -94,7 +94,7 @@ export function OpenCaseForm({ orderNumber, parcels }: { orderNumber: string; pa
       </div>
       <div className="space-y-1.5">
         <label htmlFor="desiredOutcome" className="text-sm font-medium text-umber-800">
-          What would put it right? <span className="font-normal text-umber-400">(optional)</span>
+          What would put it right? <span className="font-normal text-umber-600">(optional)</span>
         </label>
         <input id="desiredOutcome" name="desiredOutcome" maxLength={200} className={cn(field, "h-11")} placeholder="A repair, a replacement, a refund…" />
       </div>
@@ -123,7 +123,7 @@ export function CancelOrderForm({ orderNumber, paid }: { orderNumber: string; pa
     <form action={action} className="space-y-3">
       <input type="hidden" name="order" value={orderNumber} />
       <label htmlFor="cancel-reason" className="text-sm font-medium text-umber-800">
-        Reason <span className="font-normal text-umber-400">(optional)</span>
+        Reason <span className="font-normal text-umber-600">(optional)</span>
       </label>
       <input id="cancel-reason" name="reason" maxLength={300} className={cn(field, "h-11")} placeholder="Changed my mind, ordered by mistake…" />
       <Result state={state} />

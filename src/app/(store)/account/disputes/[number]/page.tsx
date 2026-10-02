@@ -62,7 +62,7 @@ export default async function DisputePage(props: PageProps<"/account/disputes/[n
         {DISPUTE_STEPS.map((s, i) => (
           <li key={s.key}>
             <span className={cn("block h-1.5 rounded-full", i <= step ? "bg-gold-500" : "bg-umber-200")} />
-            <span className={cn("mt-2 flex items-center gap-1.5 text-xs font-medium sm:text-sm", i <= step ? "text-umber-900" : "text-umber-400")}>
+            <span className={cn("mt-2 flex items-center gap-1.5 text-xs font-medium sm:text-sm", i <= step ? "text-umber-900" : "text-umber-600")}>
               {i < step || closed ? <Check className="size-3.5 text-gold-600" aria-hidden /> : null}
               {s.label}
               {i === step && !closed ? <span className="sr-only">(current)</span> : null}

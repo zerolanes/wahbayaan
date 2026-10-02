@@ -32,7 +32,7 @@ export default async function MessagesPage() {
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-3">
                       <span className={cn("truncate text-umber-900", c.unread ? "font-semibold" : "font-medium")}>{c.vendor.displayName}</span>
-                      <span className="shrink-0 text-xs text-umber-400">{timeAgo(c.lastMessageAt)}</span>
+                      <span className="shrink-0 text-xs text-umber-600">{timeAgo(c.lastMessageAt)}</span>
                     </span>
                     <span className="block truncate text-sm text-umber-600">{c.subject}</span>
                     {last ? (

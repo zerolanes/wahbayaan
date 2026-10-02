@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, ArrowRight, Hammer, Heart, Lock, Minus, Package, Plus, ShoppingBag, Truck } from "lucide-react";
 import { CouponForm, GiftForm } from "@/components/store/cart-forms";
+import { CheckoutSteps } from "@/components/store/checkout-steps";
 import { DestinationPicker } from "@/components/store/destination-picker";
 import { isSvg } from "@/components/store/illustration-tag";
 import { DeliveryEstimateLine, LandedCostBreakdown } from "@/components/store/landed-cost";
@@ -31,7 +32,7 @@ export default async function CartPage() {
     return (
       <Container className="py-12 md:py-16">
         <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cart" }]} />
-        <h1 className="mt-6 font-display text-5xl text-umber-900 md:text-6xl">Your cart</h1>
+        <h1 className="mt-6 font-display text-4xl tracking-[-0.035em] text-umber-900 md:text-6xl">Your cart</h1>
         <EmptyState
           className="mt-10"
           icon={<ShoppingBag className="size-10" aria-hidden />}
@@ -74,23 +75,23 @@ export default async function CartPage() {
         : "Gift wrap isn't available right now";
 
   return (
-    <Container className="py-10 md:py-14">
-      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cart" }]} />
+    <Container className="pt-6 pb-24 md:py-12">
+      <CheckoutSteps current="bag" />
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-5xl text-umber-900 md:text-6xl">Your cart</h1>
-          <p className="mt-2 text-umber-600">
+          <h1 className="font-display text-4xl tracking-[-0.035em] text-umber-900 md:text-6xl">Your cart</h1>
+          <p className="mt-2 text-umber-700">
             {count} {count === 1 ? "piece" : "pieces"} from {groups.size} {groups.size === 1 ? "workshop" : "workshops"}
             {groups.size > 1 ? " — each ships separately from its workshop" : ""}
           </p>
         </div>
-        <Link href="/shop" className="text-sm font-medium text-terracotta-600 hover:underline">
+        <Link href="/shop" className="pressable inline-flex h-10 items-center rounded-full bg-umber-900/[0.06] px-4 text-sm font-medium text-umber-900 hover:bg-umber-900/[0.1]">
           Continue shopping
         </Link>
       </div>
 
       {unavailable.length ? (
-        <div className="mt-6 flex gap-3 rounded-2xl bg-danger-50 px-5 py-4 text-sm text-danger-700 ring-1 ring-danger-600/20" role="alert">
+        <div className="mt-6 flex gap-3 rounded-[var(--radius-card)] bg-danger-50 px-5 py-4 text-sm text-danger-700 ring-1 ring-danger-600/20" role="alert">
           <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
           <p>
             {unavailable.length === 1 ? "One piece" : `${unavailable.length} pieces`} can&apos;t be ordered as they are. Adjust or remove {unavailable.length === 1 ? "it" : "them"} to
@@ -99,41 +100,41 @@ export default async function CartPage() {
         </div>
       ) : null}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
-        <div className="space-y-6">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
+        <div className="space-y-5">
           {[...groups].map(([vendorId, lines]) => {
             const v = vendors.find((x) => x.id === vendorId);
             const shipment = landed?.shipments.find((s) => s.vendorId === vendorId);
             return (
-              <section key={vendorId} className="overflow-hidden rounded-[var(--radius-card)] bg-sand-50 shadow-soft ring-1 ring-umber-200/60" aria-label={`From ${lines[0].vendorName}`}>
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/60 bg-sand-100/60 px-5 py-3.5">
+              <section key={vendorId} className="overflow-hidden rounded-[var(--radius-panel)] bg-white shadow-[0_0_0_0.5px_rgb(34_26_19/0.1),0_8px_24px_-16px_rgb(34_26_19/0.25)]" aria-label={`From ${lines[0].vendorName}`}>
+                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-900/[0.07] px-5 py-3.5">
                   <Link href={`/artisans/${lines[0].vendorSlug}`} className="group flex items-center gap-3">
                     <span className="relative size-9 overflow-hidden rounded-full bg-sand-200">
                       {v?.profilePhotoUrl ? <Image src={v.profilePhotoUrl} alt="" fill sizes="36px" unoptimized={isSvg(v.profilePhotoUrl)} className="object-cover" /> : null}
                     </span>
                     <span>
                       <span className="block text-sm font-semibold text-umber-900 group-hover:text-terracotta-700">From {lines[0].vendorName}</span>
-                      <span className="text-xs text-umber-500">{v?.workshopCity ? `${v.workshopCity}, Pakistan` : "Pakistan"}</span>
+                      <span className="text-xs text-umber-600">{v?.workshopCity ? `${v.workshopCity}, Pakistan` : "Pakistan"}</span>
                     </span>
                   </Link>
-                  <p className="flex items-center gap-1.5 text-xs text-umber-600">
-                    <Truck className="size-3.5 text-gold-600" aria-hidden />
+                  <p className="flex items-center gap-1.5 text-xs text-umber-700">
+                    <Truck className="size-3.5 text-gold-700" aria-hidden />
                     {shipment?.status === "known"
                       ? `${shipment.courier}${shipment.transitDaysMax ? ` · ${shipment.transitDaysMin && shipment.transitDaysMin !== shipment.transitDaysMax ? `${shipment.transitDaysMin}–` : ""}${shipment.transitDaysMax} days in transit` : ""}`
                       : "Ships separately · courier rate pending"}
                   </p>
                 </header>
-                <ul className="divide-y divide-umber-200/60">
+                <ul className="divide-y divide-umber-900/[0.07]">
                   {lines.map((l) => (
                     <li key={l.id} className="flex gap-4 p-5 sm:gap-5">
-                      <Link href={`/product/${l.slug}`} className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-sand-200 sm:size-32">
+                      <Link href={`/product/${l.slug}`} className="relative size-24 shrink-0 overflow-hidden rounded-[var(--radius-card)] bg-sand-200 sm:size-32">
                         {l.imageUrl ? <Image src={l.imageUrl} alt={l.title} fill sizes="128px" unoptimized={isSvg(l.imageUrl)} className="object-cover" /> : null}
                       </Link>
                       <div className="flex min-w-0 flex-1 flex-col">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <p className="text-xs tracking-wide text-umber-500 uppercase">{l.categoryName}</p>
-                            <h2 className="mt-0.5 font-display text-lg leading-snug text-umber-900">
+                            <p className="text-xs text-umber-600">{l.categoryName}</p>
+                            <h2 className="mt-0.5 text-[1.0625rem] leading-snug font-semibold tracking-[-0.01em] text-umber-900">
                               <Link href={`/product/${l.slug}`} className="hover:text-terracotta-700">
                                 {l.title}
                               </Link>
@@ -141,20 +142,20 @@ export default async function CartPage() {
                           </div>
                           <div className="text-right">
                             <p className="font-semibold text-umber-900 tabular-nums">{money(l.lineTotal)}</p>
-                            {l.qty > 1 ? <p className="text-xs text-umber-500 tabular-nums">{money(l.unitPrice)} each</p> : null}
+                            {l.qty > 1 ? <p className="text-xs text-umber-600 tabular-nums">{money(l.unitPrice)} each</p> : null}
                           </div>
                         </div>
                         {l.customizationLabels.length ? (
-                          <dl className="mt-2 space-y-0.5 rounded-lg bg-sand-100/80 px-3 py-2 text-xs">
+                          <dl className="mt-2 space-y-0.5 rounded-[0.75rem] bg-sand-100 px-3 py-2 text-xs">
                             {l.customizationLabels.map((c) => (
                               <div key={c.label} className="flex gap-2">
-                                <dt className="text-umber-500">{c.label}:</dt>
+                                <dt className="text-umber-600">{c.label}:</dt>
                                 <dd className="font-medium text-umber-800">{c.value}</dd>
                               </div>
                             ))}
                           </dl>
                         ) : null}
-                        <p className="mt-2 flex items-center gap-1.5 text-xs text-umber-600">
+                        <p className="mt-2 flex items-center gap-1.5 text-xs text-umber-700">
                           {l.availability === "made_to_order" ? (
                             <>
                               <Hammer className="size-3.5 text-indigo-600" aria-hidden /> Made to order{l.timeToMakeDays ? ` · about ${l.timeToMakeDays} days to make` : ""}
@@ -172,28 +173,28 @@ export default async function CartPage() {
                         ) : null}
                         <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-3">
                           {l.maxQty > 1 ? (
-                            <form action={updateCartQty} className="flex h-9 items-center rounded-full border border-umber-300/70 bg-white/70">
+                            <form action={updateCartQty} className="flex h-10 items-center rounded-full bg-umber-900/[0.05]">
                               <input type="hidden" name="lineId" value={l.id} />
-                              <button name="qty" value={l.qty - 1} disabled={l.qty <= 1} className="grid size-9 place-items-center rounded-full text-umber-700 hover:text-umber-900 disabled:opacity-30" aria-label={`Decrease quantity of ${l.title}`}>
+                              <button name="qty" value={l.qty - 1} disabled={l.qty <= 1} className="pressable grid size-10 place-items-center rounded-full text-umber-800 hover:bg-umber-900/[0.06] disabled:opacity-30" aria-label={`Decrease quantity of ${l.title}`}>
                                 <Minus className="size-3.5" />
                               </button>
                               <span className="w-6 text-center text-sm font-semibold tabular-nums" aria-label="Quantity">
                                 {l.qty}
                               </span>
-                              <button name="qty" value={l.qty + 1} disabled={l.qty >= l.maxQty} className="grid size-9 place-items-center rounded-full text-umber-700 hover:text-umber-900 disabled:opacity-30" aria-label={`Increase quantity of ${l.title}`}>
+                              <button name="qty" value={l.qty + 1} disabled={l.qty >= l.maxQty} className="pressable grid size-10 place-items-center rounded-full text-umber-800 hover:bg-umber-900/[0.06] disabled:opacity-30" aria-label={`Increase quantity of ${l.title}`}>
                                 <Plus className="size-3.5" />
                               </button>
                             </form>
                           ) : (
-                            <span className="text-xs text-umber-500">Qty 1{l.maxQty === 1 && l.availability === "ready_to_ship" ? " · only one exists" : ""}</span>
+                            <span className="text-xs text-umber-600">Qty 1{l.maxQty === 1 && l.availability === "ready_to_ship" ? " · only one exists" : ""}</span>
                           )}
                           <form action={saveLineForLater}>
                             <input type="hidden" name="lineId" value={l.id} />
-                            <button className="text-sm text-umber-600 underline-offset-4 hover:text-umber-900 hover:underline">Save for later</button>
+                            <button className="pressable inline-flex h-10 items-center rounded-full px-3 text-sm text-umber-800 hover:bg-umber-900/[0.06]">Save for later</button>
                           </form>
                           <form action={removeCartLine}>
                             <input type="hidden" name="lineId" value={l.id} />
-                            <button className="text-sm text-umber-600 underline-offset-4 hover:text-danger-700 hover:underline">Remove</button>
+                            <button className="pressable inline-flex h-10 items-center rounded-full px-3 text-sm text-umber-800 hover:bg-danger-50 hover:text-danger-700">Remove</button>
                           </form>
                         </div>
                       </div>
@@ -206,8 +207,8 @@ export default async function CartPage() {
           <BuyerProtectionBox className="hidden lg:block" />
         </div>
 
-        <aside className="lg:sticky lg:top-20 lg:self-start">
-          <div className="space-y-5 rounded-[var(--radius-card)] bg-sand-50/60 p-5 ring-1 ring-umber-200/60 md:p-6">
+        <aside id="summary" className="scroll-mt-24 lg:sticky lg:top-24 lg:self-start">
+          <div className="space-y-5 rounded-[var(--radius-panel)] bg-sand-50 p-5 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)] md:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-sans text-base font-semibold tracking-normal text-umber-900">Order summary</h2>
               <DestinationPicker destination={ctx.destination} />
@@ -217,24 +218,23 @@ export default async function CartPage() {
                 <LandedCostBreakdown landed={landed} title="Landed cost" />
                 <DeliveryEstimateLine delivery={landed.delivery} />
                 {!landed.complete ? (
-                  <div className="rounded-2xl bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
+                  <div className="rounded-[var(--radius-card)] bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
                     <p className="font-semibold">Some costs are confirmed before you&apos;re charged</p>
                     <p className="mt-1 text-umber-700">
-                      We don&apos;t have confirmed rates for {joinCostLabels(landed.pendingLines.map((l) => l.label))} yet. Place your order and our team sends you the
-                      exact total to approve — nothing is charged until you do.
+                      {joinCostLabels(landed.pendingLines.map((l) => l.label))}: we send the exact total for you to approve first.
                     </p>
                   </div>
                 ) : null}
               </>
             ) : (
-              <p className="rounded-xl bg-pending-50 px-4 py-3 text-sm text-umber-800">
+              <p className="rounded-[var(--radius-control)] bg-pending-50 px-4 py-3 text-sm text-umber-800">
                 {ctx.fx ? "Remove unavailable pieces to see your landed cost." : `Exchange rates aren't set yet, so we can't price your cart in ${ctx.currency}.`}
               </p>
             )}
             <CouponForm code={cart.couponCode} error={cart.couponError} />
             {flags.gifting ? <GiftForm isGift={cart.isGift} giftWrap={cart.giftWrap} message={cart.giftMessage} wrapNote={wrapNote} /> : null}
             {unavailable.length || !landed ? (
-              <p className="flex h-13 w-full items-center justify-center rounded-full bg-umber-200 text-sm font-medium text-umber-600">Resolve the items above to check out</p>
+              <p className="flex h-13 w-full items-center justify-center rounded-full bg-umber-100 text-sm font-medium text-umber-800">Resolve the items above to check out</p>
             ) : (
               <ButtonLink href="/checkout" variant="accent" size="lg" className="w-full">
                 <Lock className="size-4" aria-hidden />
@@ -242,7 +242,7 @@ export default async function CartPage() {
                 <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
             )}
-            <p className="text-center text-xs text-umber-500">
+            <p className="text-center text-xs text-umber-600">
               {provider.id === "test" ? (
                 <span className="font-medium text-pending-600">Payments are in test mode — no money moves.</span>
               ) : (
@@ -254,6 +254,24 @@ export default async function CartPage() {
           <BuyerProtectionBox className="mt-5 lg:hidden" compact />
         </aside>
       </div>
+
+      {/* Phones: total and checkout stay within thumb reach, above the tab bar. */}
+      {landed && !unavailable.length ? (
+        <div className="fixed inset-x-3 bottom-[calc(4.875rem+max(0.5rem,env(safe-area-inset-bottom)))] z-40 md:hidden">
+          <div className="glass-thick mx-auto flex max-w-md items-center gap-3 rounded-full p-1.5 pl-5 [--glass-shadow:var(--shadow-lift)]">
+            <a href="#summary" className="min-w-0 flex-1 leading-tight">
+              <span className="block text-xs text-umber-700">{landed.complete ? "Total" : "Known so far"}</span>
+              <span className="block truncate text-base font-semibold text-umber-900 tabular-nums">
+                {formatMoney(landed.knownTotal, landed.currency, { cents: true })}
+                {!landed.complete ? <span className="text-umber-600"> +</span> : null}
+              </span>
+            </a>
+            <ButtonLink href="/checkout" variant="accent" className="shrink-0">
+              <Lock className="size-4" aria-hidden /> Checkout
+            </ButtonLink>
+          </div>
+        </div>
+      ) : null}
     </Container>
   );
 }

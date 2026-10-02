@@ -22,10 +22,10 @@ const FLAG: Record<string, string> = { US: "🇺🇸", GB: "🇬🇧", CA: "🇨
 /** A buyer review with photos — the strongest trust signal for a piece bought from afar. */
 export function ReviewCard({ review, vendorName }: { review: ReviewView; vendorName?: string }) {
   return (
-    <article className="bg-sand-50 ring-umber-200/60 rounded-2xl p-5 ring-1">
+    <article className="rounded-[var(--radius-card)] bg-white p-5 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <StarRating average={review.rating} count={1} showCount={false} />
-        <p className="text-umber-500 text-xs">{formatDate(review.createdAt)}</p>
+        <p className="text-umber-600 text-xs">{formatDate(review.createdAt)}</p>
       </div>
       {review.title ? <h4 className="font-display text-umber-900 mt-2 text-lg">{review.title}</h4> : null}
       <p className="text-umber-700 mt-1.5 text-sm leading-relaxed">{review.body}</p>
@@ -45,7 +45,7 @@ export function ReviewCard({ review, vendorName }: { review: ReviewView; vendorN
           ))}
         </div>
       ) : null}
-      <p className="text-umber-500 mt-3 flex flex-wrap items-center gap-2 text-xs">
+      <p className="text-umber-600 mt-3 flex flex-wrap items-center gap-2 text-xs">
         <span className="text-umber-700 font-medium">{review.authorName}</span>
         {review.buyerCountry ? (
           <span>

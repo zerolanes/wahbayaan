@@ -10,11 +10,11 @@ import { REGION_LABELS } from "@/lib/utils/format";
 
 export const metadata: Metadata = {
   title: "Sell on Wahbayaan",
-  description: "Sell your handmade work to buyers in the US, UK and Canada. Price in rupees, get paid in rupees — we handle the buyer, the payment and the export paperwork.",
+  description: "Sell your handmade work to buyers in Pakistan and abroad. Price in rupees, get paid in rupees — we handle the buyer, the payment and the export paperwork.",
 };
 
 const WHY = [
-  { icon: Globe2, title: "Buyers in the US, UK and Canada", text: "Your work is shown in dollars, pounds and Canadian dollars, with shipping and import costs worked out for each buyer." },
+  { icon: Globe2, title: "Buyers at home and abroad", text: "Your work is shown in dollars, pounds and Canadian dollars, with shipping and import costs worked out for each buyer." },
   { icon: Banknote, title: "Price and get paid in rupees", text: "You set your price in PKR. Payouts go to your Pakistani bank account — no foreign currency, no card disputes." },
   { icon: ShieldCheck, title: "Payment secured before you start", text: "The buyer pays Wahbayaan up front. You start making knowing the money is already held." },
   { icon: PackageCheck, title: "Export made simple", text: "We book the courier or freight and prepare the customs invoice. You pack, using our export packing guide." },
@@ -34,7 +34,7 @@ export default async function BecomeASellerPage() {
       <InfoHeader
         eyebrow="For artisans · کاریگروں کے لیے"
         title="Sell your work to the world, get paid in rupees"
-        lead="Wahbayaan finds the buyers abroad, takes their payment, and handles export and customs. You make the work, pack it well, and get paid to your bank in Pakistan."
+        lead="You make the work. We find buyers, take payment and handle shipping — you're paid in rupees."
         crumb="Sell on Wahbayaan"
       />
 

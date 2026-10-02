@@ -4,7 +4,6 @@ import { isDemoMode } from "@/lib/settings";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Award, CalendarClock, Hammer, Layers, MapPin, MessageCircle, Package, Ruler, Scale, Sparkles, Truck } from "lucide-react";
-import { ScallopDivider } from "@/components/brand/logo";
 import { BuyerPrice } from "@/components/money/buyer-price";
 import { ArtisanStats, responseTimeLabel } from "@/components/store/artisan-feature";
 import { CompareToggle } from "@/components/store/compare-toggle";
@@ -150,14 +149,14 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
 
-      <Container className="pt-6 md:pt-10">
+      <Container className="pt-4 md:pt-8">
         <Breadcrumbs
           items={[{ label: "Shop", href: "/shop" }, { label: product.category.name, href: `/category/${product.category.slug}` }, { label: product.title }]}
         />
       </Container>
 
-      <Container className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14 xl:gap-20">
-        <div className="lg:sticky lg:top-20 lg:self-start">
+      <Container className="mt-4 grid gap-8 md:mt-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14 xl:gap-20">
+        <div className="lg:sticky lg:top-24 lg:self-start">
           <ProductGallery images={product.images.map((i) => ({ url: i.url, alt: i.alt, kind: i.kind }))} title={product.title} videoUrl={product.videoUrl} />
         </div>
 
@@ -177,20 +176,20 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             </span>
             <span>
               <span className="text-umber-900 group-hover:text-terracotta-700 block text-sm font-semibold">{product.vendor.displayName}</span>
-              <span className="text-umber-500 flex items-center gap-2 text-xs">
+              <span className="text-umber-600 flex items-center gap-2 text-xs">
                 {product.vendor.craft} · {product.vendor.workshopCity}
               </span>
             </span>
             {product.vendor.status === "verified" ? <VerifiedBadge size="xs" /> : null}
           </Link>
 
-          <h1 className="font-display text-umber-900 mt-5 text-4xl leading-[1.08] text-balance md:text-5xl">{product.title}</h1>
+          <h1 className="font-display text-umber-900 mt-4 text-[2rem] leading-[1.08] tracking-[-0.03em] text-balance md:text-5xl">{product.title}</h1>
           <a href="#reviews" className="mt-3 inline-flex">
             <StarRating average={product.rating.average} count={product.rating.count} size="md" emptyLabel="New piece — no reviews yet" />
           </a>
-          {product.summary ? <p className="text-umber-700 mt-4 text-lg leading-relaxed text-pretty">{product.summary}</p> : null}
+          {product.summary ? <p className="text-umber-700 mt-3 text-lg leading-relaxed text-pretty">{product.summary}</p> : null}
 
-          <div className="mt-6 flex flex-wrap items-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             {product.isOneOfAKind ? (
               <span className="bg-gold-100 text-gold-800 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
                 <Sparkles className="size-3.5" aria-hidden /> One of a kind
@@ -215,16 +214,16 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             ) : null}
           </div>
 
-          <div className="border-umber-200/70 mt-6 border-t pt-6">
+          <div className="mt-6 border-t border-umber-900/10 pt-6">
             <div className="flex flex-wrap items-baseline gap-3">
-              <BuyerPrice pkr={product.pricePkr} className="font-display text-umber-900 text-4xl" />
+              <BuyerPrice pkr={product.pricePkr} className="font-display text-umber-900 text-4xl tracking-[-0.03em]" />
               {product.compareAtPricePkr && product.compareAtPricePkr > product.pricePkr ? (
                 <BuyerPrice pkr={product.compareAtPricePkr} strike className="text-lg" />
               ) : null}
             </div>
-            <p className="text-umber-500 mt-1 text-sm">Item price in {ctx.currency}. Shipping, duty and tax for your country are itemised below.</p>
+            <p className="text-umber-600 mt-1 text-sm">Item price in {ctx.currency}. Shipping, duty and tax below.</p>
             <p className="text-umber-700 mt-3 flex items-center gap-2 text-sm">
-              <CalendarClock className="text-gold-600 size-4" aria-hidden />
+              <CalendarClock className="text-gold-700 size-4 shrink-0" aria-hidden />
               {product.availability === "made_to_order"
                 ? `Made for you — about ${product.timeToMakeDays ?? "—"} days to make, then shipped.`
                 : soldOut
@@ -234,7 +233,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
 
           {product.vendor.vacationMode ? (
-            <p className="bg-pending-50 text-umber-800 ring-pending-600/20 mt-5 rounded-xl px-4 py-3 text-sm ring-1">
+            <p className="bg-pending-50 text-umber-800 ring-pending-600/20 mt-5 rounded-[var(--radius-control)] px-4 py-3 text-sm ring-1">
               {product.vendor.displayName} is away from the workshop at the moment. Orders are held safely and started when they return — message them for
               dates.
             </p>
@@ -242,7 +241,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
           <div className="mt-6">
             {upcoming ? (
-              <div className="night rounded-2xl p-6">
+              <div className="night rounded-[var(--radius-card)] p-6">
                 <p className="text-gold-300 text-xs font-semibold tracking-[0.22em] uppercase">Limited drop · opens {formatDate(product.dropStartsAt)}</p>
                 <p className="font-display text-sand-50 mt-2 text-2xl">Not released yet</p>
                 <Countdown target={product.dropStartsAt!.toISOString()} tone="dark" className="mt-4" />
@@ -261,6 +260,8 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 maxQty={maxQty}
                 showQty={!product.isOneOfAKind && maxQty > 1}
                 disabledReason={soldOut ? "Sold out" : !ctx.fx ? "Price on request" : null}
+                title={product.title}
+                priceSlot={<BuyerPrice pkr={product.pricePkr} />}
               />
             )}
           </div>
@@ -276,11 +277,11 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             <input type="hidden" name="back" value={here} />
             <button
               type="submit"
-              className="text-umber-800 hover:bg-umber-900/5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition"
+              className="pressable text-umber-800 hover:bg-umber-900/[0.06] inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium"
             >
               <MessageCircle className="size-4" aria-hidden />
               Message {product.vendor.displayName.split(" ")[0]}
-              <span className="text-umber-500 hidden sm:inline">· usually replies {responseTimeLabel(product.vendor.responseTimeHours).toLowerCase()}</span>
+              <span className="text-umber-600 hidden sm:inline">· usually replies {responseTimeLabel(product.vendor.responseTimeHours).toLowerCase()}</span>
             </button>
           </form>
 
@@ -297,8 +298,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 <DeliveryEstimateLine delivery={estimate.delivery} className="mt-4" />
                 {!estimate.complete ? (
                   <p className="text-umber-600 mt-3 text-sm">
-                    Lines marked <span className="text-pending-600 font-medium">Pending</span> don&apos;t have confirmed rates yet. You can still order: our
-                    team confirms them and you approve the final total before anything is charged.{" "}
+                    <span className="text-pending-600 font-medium">Pending</span> lines are confirmed — and approved by you — before anything is charged.{" "}
                     <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
                       How importing works
                     </Link>
@@ -306,7 +306,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 ) : null}
               </>
             ) : (
-              <p className="bg-pending-50 text-umber-800 mt-3 rounded-xl px-4 py-3 text-sm">
+              <p className="bg-pending-50 text-umber-800 mt-3 rounded-[var(--radius-control)] px-4 py-3 text-sm">
                 Exchange rates aren&apos;t set yet, so we can&apos;t estimate costs in {ctx.currency}.
               </p>
             )}
@@ -316,7 +316,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           <BuyerProtectionBox className="mt-6" />
 
           {product.isOneOfAKind ? (
-            <div className="bg-gold-50 ring-gold-300/60 mt-4 flex gap-3 rounded-2xl p-4 ring-1">
+            <div className="bg-gold-50 ring-gold-300/60 mt-4 flex gap-3 rounded-[var(--radius-card)] p-4 ring-1">
               <Award className="text-gold-700 mt-0.5 size-5 shrink-0" aria-hidden />
               <p className="text-gold-900 text-sm">
                 <strong className="font-semibold">Certificate of authenticity included.</strong> A signed record of the artisan, materials and the date it was
@@ -328,22 +328,22 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       </Container>
 
       {/* The piece: description, story, specifications */}
-      <section className="border-umber-200/60 mt-24 border-t pt-16 md:mt-32 md:pt-24">
+      <section className="mt-20 pt-4 md:mt-28">
         <Container className="grid gap-14 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-20">
           <div>
             <Eyebrow>About this piece</Eyebrow>
             {product.description ? (
-              <p className="font-display text-umber-900 mt-5 text-2xl leading-[1.45] text-pretty md:text-[1.75rem]">{product.description}</p>
+              <p className="text-umber-900 mt-4 text-xl leading-[1.55] font-medium tracking-[-0.012em] text-pretty md:text-2xl">{product.description}</p>
             ) : null}
             {product.story ? (
               <blockquote className="border-gold-400 mt-10 border-l-2 pl-6">
                 <p className="text-gold-700 text-xs font-semibold tracking-[0.2em] uppercase">The story, in the artisan&apos;s words</p>
-                <p className="font-display text-umber-800 mt-3 text-xl italic">“{product.story}”</p>
-                <footer className="text-umber-500 mt-3 text-sm">— {product.vendor.displayName}</footer>
+                <p className="font-serif text-umber-800 mt-3 text-xl italic">“{product.story}”</p>
+                <footer className="text-umber-600 mt-3 text-sm">— {product.vendor.displayName}</footer>
               </blockquote>
             ) : null}
             {product.careInstructions ? (
-              <div className="bg-sand-50 ring-umber-200/60 mt-10 rounded-2xl p-6 ring-1">
+              <div className="mt-10 rounded-[var(--radius-card)] bg-white p-6 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
                 <p className="text-umber-900 text-sm font-semibold">Care</p>
                 <p className="text-umber-700 mt-1">{product.careInstructions}</p>
               </div>
@@ -351,22 +351,22 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           </div>
           <div>
             <h2 className="text-umber-900 font-sans text-base font-semibold tracking-normal">Specifications</h2>
-            <dl className="divide-umber-200/60 border-umber-200/60 mt-4 divide-y border-y">
+            <dl className="mt-4 divide-y divide-umber-900/[0.07] rounded-[var(--radius-card)] bg-white px-5 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
               {specs.map((s) => (
                 <div key={s.label} className="relative py-4 pl-9">
-                  <dt className="text-umber-500 text-xs tracking-wider uppercase">
-                    <s.icon className="text-gold-600 absolute top-4.5 left-0 size-5" aria-hidden />
+                  <dt className="text-umber-600 text-xs tracking-[0.04em] uppercase">
+                    <s.icon className="text-gold-700 absolute top-4.5 left-0 size-5" aria-hidden />
                     {s.label}
                   </dt>
                   <dd className="text-umber-900 mt-0.5">
                     {s.value}
-                    {"sub" in s && s.sub ? <span className="text-umber-500"> · {s.sub}</span> : null}
+                    {"sub" in s && s.sub ? <span className="text-umber-600"> · {s.sub}</span> : null}
                   </dd>
                 </div>
               ))}
               <div className="relative py-4 pl-9">
-                <dt className="text-umber-500 text-xs tracking-wider uppercase">
-                  <Truck className="text-gold-600 absolute top-4.5 left-0 size-5" aria-hidden />
+                <dt className="text-umber-600 text-xs tracking-[0.04em] uppercase">
+                  <Truck className="text-gold-700 absolute top-4.5 left-0 size-5" aria-hidden />
                   Ships from
                 </dt>
                 <dd className="text-umber-900 mt-0.5">The artisan&apos;s workshop in Pakistan, by international courier</dd>
@@ -379,11 +379,11 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       {/* The artisan */}
       {vendor ? (
         <>
-          <section className="night relative mt-24 md:mt-32">
-            <ScallopDivider />
-            <Container className="grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
+          <div className="mt-20 px-2 sm:px-4 md:mt-28">
+          <section className="night relative mx-auto max-w-[1400px] overflow-hidden rounded-[var(--radius-sheet)]">
+            <Container className="grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
               <div className="relative">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] ring-1 ring-white/10">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-panel)] ring-1 ring-white/10">
                   {vendor.bannerUrl ? (
                     <Image
                       src={vendor.bannerUrl}
@@ -411,8 +411,8 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               </div>
               <div>
                 <Eyebrow dark>Made by</Eyebrow>
-                <h2 className="font-display text-sand-50 mt-3 text-4xl md:text-5xl">{vendor.displayName}</h2>
-                <p className="text-sand-200/80 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <h2 className="font-display text-sand-50 mt-3 text-4xl tracking-[-0.03em] md:text-5xl">{vendor.displayName}</h2>
+                <p className="text-sand-100/90 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="text-gold-300">{vendor.craft}</span>
                   <span className="flex items-center gap-1">
                     <MapPin className="size-4" aria-hidden /> {vendor.workshopCity}
@@ -420,7 +420,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                   </span>
                   <StarRating average={vendor.rating.average} count={vendor.rating.count} tone="light" emptyLabel="New artisan — no reviews yet" />
                 </p>
-                {vendor.story ? <p className="text-sand-100/85 mt-6 line-clamp-5 text-lg leading-relaxed">{vendor.story}</p> : null}
+                {vendor.story ? <p className="text-sand-100/90 mt-6 line-clamp-5 text-lg leading-relaxed">{vendor.story}</p> : null}
                 <ArtisanStats vendor={vendor} tone="dark" className="mt-8" />
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ButtonLink href={`/artisans/${vendor.slug}`} variant="gold">
@@ -435,19 +435,19 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               </div>
             </Container>
           </section>
-          <ScallopDivider className="rotate-180" />
+          </div>
         </>
       ) : null}
 
       {/* Reviews */}
-      <section id="reviews" className="scroll-mt-20 py-20 md:py-28">
+      <section id="reviews" className="scroll-mt-24 py-20 md:py-28">
         <Container>
           <SectionHeading eyebrow="Reviews" title={product.rating.count ? "What buyers say" : "No reviews yet"} />
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-20">
             <div className="lg:sticky lg:top-24 lg:self-start">
               {product.rating.count && product.rating.average ? (
-                <div className="bg-sand-50 ring-umber-200/60 rounded-2xl p-6 ring-1">
-                  <p className="font-display text-umber-900 text-6xl tabular-nums">{product.rating.average.toFixed(1)}</p>
+                <div className="rounded-[var(--radius-panel)] bg-white p-6 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
+                  <p className="font-display text-umber-900 text-6xl tracking-[-0.04em] tabular-nums">{product.rating.average.toFixed(1)}</p>
                   <StarRating average={product.rating.average} count={product.rating.count} size="lg" className="mt-2" />
                   <div className="mt-5">
                     <RatingHistogram histogram={product.histogram} total={product.rating.count} />
@@ -461,7 +461,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                     : "no reviews yet."}
                 </p>
               )}
-              <div id="write-review" className="bg-sand-50 ring-umber-200/60 mt-6 scroll-mt-24 rounded-2xl p-6 ring-1">
+              <div id="write-review" className="mt-6 scroll-mt-24 rounded-[var(--radius-panel)] bg-white p-6 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
                 <p className="font-display text-umber-900 text-xl">Bought this piece?</p>
                 {eligibility.eligible ? (
                   <div className="mt-4">
@@ -505,7 +505,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       </section>
 
       {related.items.length ? (
-        <section className="border-umber-200/60 border-t py-20 md:py-24">
+        <section className="py-16 md:py-20">
           <Container>
             <SectionHeading
               eyebrow={`More ${product.category.name.toLowerCase()}`}

@@ -23,13 +23,13 @@ export default async function AccountLayout({ children }: { children: React.Reac
       .where(and(eq(conversations.buyerId, user.id), sql`${messages.readAt} is null`, sql`${messages.senderUserId} is distinct from ${user.id}`)),
   ]);
   return (
-    <Container className="py-10 md:py-14">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14">
+    <Container className="py-6 md:py-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-12">
         <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-          <div className="mb-5 hidden lg:block">
-            <p className="text-xs font-semibold tracking-[0.2em] text-gold-600 uppercase">Your account</p>
+          <div className="mb-4 hidden px-2 lg:block">
+            <p className="text-xs font-semibold tracking-[0.06em] text-gold-700 uppercase">Your account</p>
             <p className="mt-1 truncate font-display text-xl text-umber-900">{user.name}</p>
-            <p className="truncate text-xs text-umber-500">{user.email}</p>
+            <p className="truncate text-xs text-umber-600">{user.email}</p>
           </div>
           <AccountNav
             badges={{
@@ -40,7 +40,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             }}
           />
           <form action={logout} className="mt-4 hidden lg:block">
-            <button className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-umber-500 transition hover:bg-umber-900/5 hover:text-umber-900">
+            <button className="pressable flex min-h-10 items-center gap-2.5 rounded-full px-4 text-sm text-umber-700 hover:bg-umber-900/[0.05] hover:text-umber-900">
               <LogOut className="size-4" aria-hidden /> Sign out
             </button>
           </form>

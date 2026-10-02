@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
 import { CheckCircle2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { addToCartForm } from "@/app/actions/product";
+import { Toast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils/cn";
+import { CART_ADDED_EVENT } from "../mini-cart";
 
 export type PurchaseOption = {
   id: string;
@@ -18,36 +20,71 @@ export type PurchaseOption = {
 };
 
 const control =
-  "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none";
+  "w-full rounded-[var(--radius-control)] border border-umber-200 bg-white px-3.5 text-base text-umber-900 placeholder:text-umber-500 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none sm:text-[0.95rem]";
 
-/** Customisation, quantity and Add to cart — works as a plain form before hydration. */
-export function PurchaseForm({ productId, options, maxQty, showQty, disabledReason }: { productId: string; options: PurchaseOption[]; maxQty: number; showQty: boolean; disabledReason?: string | null }) {
+/**
+ * Customisation, quantity and Add to cart — works as a plain form before hydration.
+ * On phones a compact glass buy bar (price + Add to cart) docks above the tab bar
+ * once the main button scrolls out of view; it submits this same form, so
+ * required options are still validated. After adding, desktops open the
+ * mini-cart and phones show a toast.
+ */
+export function PurchaseForm({
+  productId,
+  options,
+  maxQty,
+  showQty,
+  disabledReason,
+  priceSlot,
+  title,
+}: {
+  productId: string;
+  options: PurchaseOption[];
+  maxQty: number;
+  showQty: boolean;
+  disabledReason?: string | null;
+  /** Server-rendered price shown in the phone buy bar. */
+  priceSlot?: ReactNode;
+  title?: string;
+}) {
   const [state, action, pending] = useActionState(addToCartForm, null);
   const [qty, setQty] = useState(1);
   const [toast, setToast] = useState(false);
+  const [bar, setBar] = useState(false);
+  const mainButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!state?.ok) return;
+    window.dispatchEvent(new CustomEvent(CART_ADDED_EVENT));
+    if (window.matchMedia("(min-width: 768px)").matches) return;
     setToast(true);
     const t = setTimeout(() => setToast(false), 6000);
     return () => clearTimeout(t);
   }, [state]);
 
+  useEffect(() => {
+    const el = mainButton.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setBar(!e.isIntersecting && e.boundingClientRect.top < 0));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="productId" value={productId} />
       {options.length ? (
-        <fieldset className="space-y-4 rounded-2xl bg-sand-50 p-4 ring-1 ring-umber-200/60">
+        <fieldset className="space-y-4 rounded-[var(--radius-card)] bg-white p-4 shadow-[0_0_0_0.5px_rgb(34_26_19/0.1)]">
           <legend className="sr-only">Make it yours</legend>
-          <p className="text-xs font-semibold tracking-[0.18em] text-gold-700 uppercase">Make it yours</p>
+          <p className="text-xs font-semibold tracking-[0.06em] text-gold-700 uppercase">Make it yours</p>
           {options.map((o) => (
             <div key={o.id} className="space-y-1.5">
               <label htmlFor={`opt_${o.id}`} className="flex items-baseline justify-between gap-2 text-sm font-medium text-umber-800">
                 <span>
                   {o.label}
-                  {o.required ? <span className="text-terracotta-600"> *</span> : <span className="font-normal text-umber-400"> (optional)</span>}
+                  {o.required ? <span className="text-terracotta-600"> *</span> : <span className="font-normal text-umber-600"> (optional)</span>}
                 </span>
-                {o.extraLabel ? <span className="text-xs font-normal text-umber-500">{o.extraLabel}</span> : null}
+                {o.extraLabel ? <span className="text-xs font-normal text-umber-600">{o.extraLabel}</span> : null}
               </label>
               {o.kind === "select" ? (
                 <select id={`opt_${o.id}`} name={`opt_${o.id}`} required={o.required} defaultValue="" className={cn(control, "h-11")}>
@@ -63,7 +100,7 @@ export function PurchaseForm({ productId, options, maxQty, showQty, disabledReas
               ) : (
                 <input id={`opt_${o.id}`} name={`opt_${o.id}`} required={o.required} maxLength={o.maxLength} className={cn(control, "h-11")} autoComplete="off" />
               )}
-              {o.kind === "text" && o.maxLength ? <p className="text-xs text-umber-400">Up to {o.maxLength} characters. The artisan confirms spelling with you before starting.</p> : null}
+              {o.kind === "text" && o.maxLength ? <p className="text-xs text-umber-600">Up to {o.maxLength} characters. The artisan confirms spelling with you before starting.</p> : null}
             </div>
           ))}
         </fieldset>
@@ -71,7 +108,7 @@ export function PurchaseForm({ productId, options, maxQty, showQty, disabledReas
 
       <div className="flex gap-3">
         {showQty ? (
-          <div className="flex h-13 items-center rounded-full border border-umber-300/70 bg-sand-50/70">
+          <div className="flex h-13 items-center rounded-full bg-white shadow-[inset_0_0_0_1px_rgb(34_26_19/0.16)]">
             <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid size-11 place-items-center rounded-full text-umber-700 hover:text-umber-900 disabled:opacity-40" disabled={qty <= 1} aria-label="Decrease quantity">
               <Minus className="size-4" />
             </button>
@@ -87,9 +124,10 @@ export function PurchaseForm({ productId, options, maxQty, showQty, disabledReas
           <input type="hidden" name="qty" value="1" />
         )}
         <button
+          ref={mainButton}
           type="submit"
           disabled={pending || !!disabledReason}
-          className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-full bg-terracotta-600 px-6 text-base font-medium text-white shadow-soft transition hover:bg-terracotta-700 hover:shadow-lift disabled:pointer-events-none disabled:opacity-50"
+          className="pressable inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-full bg-terracotta-600 px-6 text-base font-medium text-white shadow-soft hover:bg-terracotta-700 disabled:pointer-events-none disabled:opacity-50"
         >
           <ShoppingBag className="size-5" aria-hidden />
           {disabledReason ? disabledReason : pending ? "Adding…" : "Add to cart"}
@@ -97,9 +135,9 @@ export function PurchaseForm({ productId, options, maxQty, showQty, disabledReas
       </div>
 
       <div aria-live="polite">
-        {state?.error ? <p className="rounded-xl bg-danger-50 px-4 py-2.5 text-sm text-danger-700">{state.error}</p> : null}
+        {state?.error ? <p className="rounded-[var(--radius-control)] bg-danger-50 px-4 py-2.5 text-sm text-danger-700">{state.error}</p> : null}
         {state?.ok ? (
-          <p className="flex items-center justify-between gap-3 rounded-xl bg-success-50 px-4 py-2.5 text-sm text-success-700">
+          <p className="flex items-center justify-between gap-3 rounded-[var(--radius-control)] bg-success-50 px-4 py-2.5 text-sm text-success-700">
             <span className="flex items-center gap-2">
               <CheckCircle2 className="size-4" aria-hidden /> {state.message}
             </span>
@@ -110,17 +148,42 @@ export function PurchaseForm({ productId, options, maxQty, showQty, disabledReas
         ) : null}
       </div>
 
-      {toast ? (
-        <div role="status" className="fixed inset-x-4 bottom-4 z-[70] mx-auto flex max-w-md animate-fade-up items-center gap-3 rounded-2xl bg-indigo-950 p-4 text-sand-50 shadow-lift sm:right-6 sm:left-auto sm:mx-0">
-          <CheckCircle2 className="size-5 shrink-0 text-gold-300" aria-hidden />
-          <p className="flex-1 text-sm">Added to your cart. Shipping and import costs are itemised there.</p>
-          <Link href="/cart" className="rounded-full bg-gold-400 px-3.5 py-1.5 text-sm font-medium text-ink hover:bg-gold-300">
-            View cart
-          </Link>
-          <button type="button" onClick={() => setToast(false)} className="text-sand-200/60 hover:text-sand-50" aria-label="Dismiss">
-            ✕
+      {/* Phone buy bar: docks above the tab bar once the main button has scrolled away. */}
+      <div
+        className={cn(
+          "fixed inset-x-3 bottom-[calc(4.875rem+max(0.5rem,env(safe-area-inset-bottom)))] z-40 transition-[translate,opacity] duration-[var(--dur-base)] ease-[var(--ease-spring)] md:hidden",
+          bar && !toast ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0",
+        )}
+        inert={!bar || toast}
+      >
+        <div className="glass-thick mx-auto flex max-w-md items-center gap-3 rounded-full p-1.5 pl-5 [--glass-shadow:var(--shadow-lift)]">
+          <div className="min-w-0 flex-1 leading-tight">
+            {title ? <p className="truncate text-xs text-umber-700">{title}</p> : null}
+            <div className="text-base font-semibold text-umber-900">{priceSlot}</div>
+          </div>
+          <button
+            type="submit"
+            disabled={pending || !!disabledReason}
+            className="pressable inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-terracotta-600 px-5 text-[0.95rem] font-medium text-white hover:bg-terracotta-700 disabled:opacity-50"
+          >
+            <ShoppingBag className="size-[18px]" aria-hidden />
+            {disabledReason ? disabledReason : pending ? "Adding…" : "Add to cart"}
           </button>
         </div>
+      </div>
+
+      {toast ? (
+        <Toast
+          icon={<CheckCircle2 className="size-5 text-gold-300" aria-hidden />}
+          onDismiss={() => setToast(false)}
+          action={
+            <Link href="/cart" className="pressable inline-flex h-9 shrink-0 items-center rounded-full bg-gold-300 px-4 text-sm font-semibold text-ink hover:bg-gold-200">
+              View cart
+            </Link>
+          }
+        >
+          Added to your cart. Shipping and import costs are itemised there.
+        </Toast>
       ) : null}
     </form>
   );

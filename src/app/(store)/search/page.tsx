@@ -44,7 +44,7 @@ export default async function SearchPage(props: PageProps<"/search">) {
           <p className="text-xs font-semibold tracking-[0.25em] text-gold-300 uppercase">Search</p>
           <h1 className="mt-3 font-display text-4xl text-sand-50 md:text-6xl">{q ? <>Results for “{q}”</> : "Find a piece, a craft or a maker"}</h1>
           <Form action="/search" className="mt-8 flex max-w-3xl items-center gap-2 rounded-full bg-sand-50 p-1.5 pl-5 shadow-lift focus-within:ring-4 focus-within:ring-gold-300/40" role="search">
-            <Search className="size-5 shrink-0 text-umber-400" aria-hidden />
+            <Search className="size-5 shrink-0 text-umber-600" aria-hidden />
             <label htmlFor="q" className="sr-only">
               Search Wahbayaan
             </label>
@@ -55,7 +55,7 @@ export default async function SearchPage(props: PageProps<"/search">) {
               defaultValue={q}
               autoFocus={!q}
               placeholder="Try “gold calligraphy”, “wool rug” or “Multan”"
-              className="h-12 min-w-0 flex-1 bg-transparent text-lg text-umber-900 placeholder:text-umber-400 focus:outline-none"
+              className="h-12 min-w-0 flex-1 bg-transparent text-lg text-umber-900 placeholder:text-umber-500 focus:outline-none"
             />
             <button type="submit" className="h-12 rounded-full bg-indigo-900 px-6 text-sm font-medium text-sand-50 transition hover:bg-indigo-800">
               Search

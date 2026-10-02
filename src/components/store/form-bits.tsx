@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils/cn";
 /** Presentational pieces shared by the storefront's client forms. */
 export const fieldClass = (error?: string, extra?: string) =>
   cn(
-    "w-full rounded-xl border bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none",
+    "w-full rounded-xl border bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-500 transition focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none",
     error ? "border-danger-600" : "border-umber-200",
     extra,
   );
@@ -15,7 +15,7 @@ export function FormRow({ id, label, error, hint, optional, children, className 
     <div className={cn("space-y-1.5", className)}>
       <label htmlFor={id} className="block text-sm font-medium text-umber-800">
         {label}
-        {optional ? <span className="font-normal text-umber-400"> (optional)</span> : null}
+        {optional ? <span className="font-normal text-umber-600"> (optional)</span> : null}
       </label>
       {children}
       {error ? (

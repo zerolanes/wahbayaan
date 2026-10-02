@@ -10,9 +10,9 @@ import { WishlistButton } from "./wishlist-button";
 
 export function AvailabilityBadge({ availability, timeToMakeDays, className }: { availability: "ready_to_ship" | "made_to_order"; timeToMakeDays: number | null; className?: string }) {
   return availability === "ready_to_ship" ? (
-    <span className={cn("rounded-full bg-success-50 px-2 py-0.5 text-[11px] font-medium text-success-700", className)}>Ready to ship</span>
+    <span className={cn("rounded-full bg-success-50 px-2 py-0.5 text-[11px] font-semibold text-success-700", className)}>Ready to ship</span>
   ) : (
-    <span className={cn("rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700", className)}>
+    <span className={cn("rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700", className)}>
       Made to order{timeToMakeDays ? ` · ${timeToMakeDays} days` : ""}
     </span>
   );
@@ -24,7 +24,7 @@ export async function ProductCard({ product, saved, priority, className, compare
   return (
     <article className={cn("group relative", className)}>
       <Link href={`/product/${product.slug}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] bg-sand-200">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] bg-sand-200 shadow-[0_0_0_0.5px_rgb(34_26_19/0.06)]">
           <Image
             src={product.imageUrl}
             alt={product.imageAlt ?? product.title}
@@ -32,7 +32,7 @@ export async function ProductCard({ product, saved, priority, className, compare
             sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 50vw"
             priority={priority}
             unoptimized={product.imageUrl.endsWith(".svg")}
-            className="object-cover transition duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-700 ease-[var(--ease-spring)] group-hover:scale-[1.03]"
           />
           {product.secondImageUrl ? (
             <Image
@@ -45,8 +45,8 @@ export async function ProductCard({ product, saved, priority, className, compare
             />
           ) : null}
           <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
-            {upcoming ? <span className="rounded-full bg-indigo-950/85 px-2 py-0.5 text-[11px] font-medium text-gold-200 backdrop-blur">Limited drop · soon</span> : null}
-            {product.isOneOfAKind ? <span className="rounded-full bg-sand-50/90 px-2 py-0.5 text-[11px] font-medium text-umber-800 backdrop-blur">One of a kind</span> : null}
+            {upcoming ? <span className="glass-dark rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold text-gold-200">Limited drop · soon</span> : null}
+            {product.isOneOfAKind ? <span className="glass-thin rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold text-umber-900">One of a kind</span> : null}
           </div>
           {SHOW_QA_LABELS && product.imageKind === "illustration" ? (
             <span className="absolute right-3 bottom-3 rounded-full bg-black/35 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur">Illustration</span>
@@ -54,14 +54,14 @@ export async function ProductCard({ product, saved, priority, className, compare
         </div>
       </Link>
       <WishlistButton productId={product.id} saved={saved} className="absolute top-3 right-3" />
-      <div className="mt-3.5 space-y-1">
+      <div className="mt-3 space-y-1 px-0.5">
         <div className="flex items-center justify-between gap-2">
-          <Link href={`/artisans/${product.vendorSlug}`} className="truncate text-xs tracking-wide text-umber-500 uppercase hover:text-umber-900">
+          <Link href={`/artisans/${product.vendorSlug}`} className="truncate text-[0.8125rem] text-umber-600 hover:text-umber-900">
             {product.vendorName}
           </Link>
           {product.vendorVerified ? <VerifiedBadge size="xs" label={false} /> : null}
         </div>
-        <h3 className="line-clamp-2 font-display text-[1.08rem] leading-snug text-umber-900">
+        <h3 className="line-clamp-2 text-[0.98rem] leading-snug font-semibold tracking-[-0.01em] text-umber-900">
           <Link href={`/product/${product.slug}`} className="hover:text-terracotta-700">
             {product.title}
           </Link>

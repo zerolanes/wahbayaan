@@ -18,7 +18,7 @@ export default async function ContactPage(props: PageProps<"/contact">) {
   const order = typeof sp.order === "string" ? sp.order : undefined;
   return (
     <>
-      <InfoHeader eyebrow="We're here to help" title="Contact us" lead="Write to us about an order, what it will cost to bring a piece home, a commission, or selling your work on Wahbayaan." crumb="Contact" />
+      <InfoHeader eyebrow="We're here to help" title="Contact us" lead="Orders, costs, commissions or selling — we're happy to help." crumb="Contact" />
       <Container className="grid gap-12 py-12 md:py-16 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-20">
         <div className="rounded-[var(--radius-card)] bg-white p-6 ring-1 ring-umber-200/70 sm:p-8">
           <ContactForm defaults={{ name: user?.name ?? "", email: user?.email ?? "", topic, orderNumber: order }} />

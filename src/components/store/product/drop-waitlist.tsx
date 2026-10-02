@@ -67,7 +67,7 @@ export function WaitlistForm({ productId, defaultEmail, tone = "light" }: { prod
           required
           defaultValue={defaultEmail ?? ""}
           placeholder="you@example.com"
-          className={cn("min-w-0 flex-1 bg-transparent px-4 py-3 text-sm focus:outline-none", dark ? "text-sand-50 placeholder:text-sand-200/40" : "text-umber-900 placeholder:text-umber-400")}
+          className={cn("min-w-0 flex-1 bg-transparent px-4 py-3 text-sm focus:outline-none", dark ? "text-sand-50 placeholder:text-sand-200/40" : "text-umber-900 placeholder:text-umber-500")}
         />
         <button disabled={pending} className="bg-gold-400 px-5 text-sm font-medium text-ink transition hover:bg-gold-300 disabled:opacity-60">
           {pending ? "…" : "Join waitlist"}

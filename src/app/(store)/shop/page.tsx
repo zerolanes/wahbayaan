@@ -31,8 +31,7 @@ export default async function ShopPage(props: PageProps<"/shop">) {
               <Eyebrow>The collection</Eyebrow>
               <h1 className="mt-3 font-display text-5xl leading-[1.02] text-umber-900 md:text-7xl">Shop every craft</h1>
               <p className="mt-5 max-w-2xl text-lg text-pretty text-umber-600">
-                Every piece is handmade by a verified artisan in Pakistan and priced in your currency — with shipping and import costs itemised before you
-                pay.
+                Handmade by verified artisans, priced in your currency.
               </p>
             </div>
             <dl className="flex gap-8 text-sm md:text-right">

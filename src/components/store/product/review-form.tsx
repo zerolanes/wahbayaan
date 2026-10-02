@@ -20,7 +20,7 @@ export function ReviewForm({ productId }: { productId: string }) {
       </div>
     );
 
-  const field = "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-400 focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none";
+  const field = "w-full rounded-xl border border-umber-200 bg-white/90 px-3.5 py-2.5 text-[0.95rem] text-umber-900 placeholder:text-umber-500 focus:border-gold-500 focus:ring-4 focus:ring-gold-200/50 focus:outline-none";
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="productId" value={productId} />
@@ -44,7 +44,7 @@ export function ReviewForm({ productId }: { productId: string }) {
       </fieldset>
       <div className="space-y-1.5">
         <label htmlFor="rv-title" className="text-sm font-medium text-umber-800">
-          Headline <span className="font-normal text-umber-400">(optional)</span>
+          Headline <span className="font-normal text-umber-600">(optional)</span>
         </label>
         <input id="rv-title" name="title" maxLength={120} className={cn(field, "h-11")} />
       </div>

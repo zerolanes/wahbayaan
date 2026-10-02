@@ -3,27 +3,25 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { ArrowRight, Search, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Search, X } from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
 
 const SUGGESTIONS = ["Nastaliq calligraphy", "Bukhara rug", "Salt lamp", "Blue pottery", "Truck art", "Carved sideboard", "Snooker table", "Ajrak"];
 
 /**
- * Header search: a search box with a craft selector (like the original site's
- * "Select category"), opened from the header icon, "/" or ⌘K / Ctrl+K.
- * With a craft chosen it searches within that craft on /shop; otherwise it runs
- * the full-site search (pieces, crafts and artisans).
+ * Header search: a glass dialog with a search field and a craft selector,
+ * opened from the header icon, "/" or ⌘K / Ctrl+K. With a craft chosen it
+ * searches within that craft on /shop; otherwise it runs the full-site search
+ * (pieces, crafts and artisans).
  */
 export function SearchDialog({ categories, className }: { categories: { slug: string; name: string }[]; className?: string }) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => setMounted(true), []);
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -31,13 +29,12 @@ export function SearchDialog({ categories, className }: { categories: { slug: st
       if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) {
         e.preventDefault();
         setOpen(true);
-      } else if (e.key === "Escape") setOpen(false);
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
   useEffect(() => {
-    document.documentElement.style.overflow = open ? "hidden" : "";
     if (open) requestAnimationFrame(() => input.current?.focus());
   }, [open]);
 
@@ -50,74 +47,85 @@ export function SearchDialog({ categories, className }: { categories: { slug: st
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={className} aria-label="Search (press /)">
-        <Search className="size-[18px]" />
+      <button type="button" onClick={() => setOpen(true)} className={className} aria-label="Search (press /)" aria-haspopup="dialog">
+        <Search className="size-[18px]" aria-hidden />
       </button>
-      {mounted && open
-        ? createPortal(
-            <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Search Wahbayaan">
-              <div className="absolute inset-0 bg-indigo-950/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
-              <div className="relative mx-auto mt-0 w-full max-w-2xl bg-parchment p-4 shadow-lift sm:mt-20 sm:rounded-[var(--radius-card)] sm:p-6">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    go(q);
-                  }}
-                  className="flex flex-col gap-2 sm:flex-row"
-                >
-                  <div className="flex flex-1 items-center gap-2 rounded-full border border-umber-300/70 bg-white px-4 focus-within:border-umber-900">
-                    <Search className="size-4 shrink-0 text-umber-500" aria-hidden />
-                    <input
-                      ref={input}
-                      value={q}
-                      onChange={(e) => setQ(e.target.value)}
-                      placeholder="Search pieces, crafts and artisans"
-                      aria-label="Search"
-                      className="h-12 min-w-0 flex-1 bg-transparent text-umber-900 placeholder:text-umber-400 focus:outline-none"
-                    />
-                  </div>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Craft" className="h-12 rounded-full border border-umber-300/70 bg-white px-4 text-sm text-umber-900 focus:border-umber-900 focus:outline-none">
-                    <option value="">All crafts</option>
-                    {categories.map((c) => (
-                      <option key={c.slug} value={c.slug}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="h-12 rounded-full bg-indigo-900 px-6 text-sm font-medium text-sand-50 transition hover:bg-indigo-800">
-                    Search
-                  </button>
-                </form>
-                <div className="mt-5">
-                  <p className="text-xs font-semibold tracking-wide text-umber-500 uppercase">Popular searches</p>
-                  <ul className="mt-2 flex flex-wrap gap-2">
-                    {SUGGESTIONS.map((s) => (
-                      <li key={s}>
-                        <button type="button" onClick={() => go(s)} className="rounded-full bg-white px-3 py-1.5 text-sm text-umber-800 ring-1 ring-umber-200 transition hover:ring-umber-500">
-                          {s}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-5 text-xs font-semibold tracking-wide text-umber-500 uppercase">Browse by craft</p>
-                  <ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3">
-                    {categories.map((c) => (
-                      <li key={c.slug}>
-                        <Link href={`/category/${c.slug}`} className="group inline-flex items-center gap-1 text-sm text-umber-700 hover:text-umber-900">
-                          {c.name} <ArrowRight className="size-3 opacity-0 transition group-hover:opacity-100" aria-hidden />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <button type="button" onClick={() => setOpen(false)} className="absolute top-2 right-2 grid size-8 place-items-center rounded-full text-umber-500 hover:bg-umber-900/5 sm:-top-11 sm:right-0 sm:text-sand-50 sm:hover:bg-white/10" aria-label="Close search">
-                  <X className="size-4" />
+      <Sheet open={open} onClose={() => setOpen(false)} side="center" label="Search Wahbayaan" hideClose>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            go(q);
+          }}
+          className="pt-4"
+          role="search"
+        >
+          <div className="flex items-center gap-2">
+            <div className="flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-full bg-white px-4 shadow-[0_0_0_0.5px_rgb(34_26_19/0.14),0_1px_3px_rgb(34_26_19/0.06)] focus-within:shadow-[0_0_0_2px_var(--color-gold-500)]">
+              <Search className="size-[18px] shrink-0 text-umber-600" aria-hidden />
+              <input
+                ref={input}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search pieces, crafts and artisans"
+                aria-label="Search"
+                enterKeyHint="search"
+                className="h-full min-w-0 flex-1 bg-transparent text-base text-umber-900 placeholder:text-umber-600 focus:outline-none"
+              />
+              {q ? (
+                <button type="button" onClick={() => setQ("")} className="grid size-6 place-items-center rounded-full bg-umber-900/10 text-umber-700" aria-label="Clear search">
+                  <X className="size-3.5" aria-hidden />
                 </button>
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+              ) : null}
+            </div>
+            <button type="button" onClick={() => setOpen(false)} className="pressable h-11 shrink-0 rounded-full px-3 text-sm font-medium text-umber-900 hover:bg-umber-900/[0.06]">
+              Cancel
+            </button>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="relative inline-flex">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                aria-label="Craft"
+                className="h-10 appearance-none rounded-full bg-umber-900/[0.06] pr-9 pl-4 text-sm font-medium text-umber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500"
+              >
+                <option value="">All crafts</option>
+                {categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-umber-700" aria-hidden />
+            </span>
+            <button type="submit" className="pressable ml-auto h-10 rounded-full bg-indigo-900 px-5 text-sm font-medium text-sand-50 hover:bg-indigo-800">
+              Search
+            </button>
+          </div>
+        </form>
+        <div className="mt-6">
+          <p className="text-xs font-semibold tracking-[0.08em] text-umber-700 uppercase">Popular searches</p>
+          <ul className="mt-2.5 flex flex-wrap gap-2">
+            {SUGGESTIONS.map((s) => (
+              <li key={s}>
+                <button type="button" onClick={() => go(s)} className="pressable inline-flex h-9 items-center rounded-full bg-white px-3.5 text-sm text-umber-900 shadow-[0_0_0_0.5px_rgb(34_26_19/0.14)] hover:bg-sand-50">
+                  {s}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-xs font-semibold tracking-[0.08em] text-umber-700 uppercase">Browse by craft</p>
+          <ul className="mt-2 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+            {categories.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/category/${c.slug}`} className="pressable group flex min-h-10 items-center justify-between rounded-[var(--radius-control)] px-3 text-sm text-umber-900 hover:bg-umber-900/[0.06]">
+                  {c.name} <ArrowRight className="size-3.5 text-umber-500 transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Sheet>
     </>
   );
 }

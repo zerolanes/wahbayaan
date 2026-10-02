@@ -47,7 +47,7 @@ export default async function CustomPage(props: PageProps<"/custom">) {
             Commission a piece <span className="gold-text italic">made for you</span>
           </>
         }
-        description="Some of the most meaningful pieces don't exist yet. Describe yours and a verified artisan will quote a price and a making time — free, and with nothing charged until you say yes."
+        description="Describe it; an artisan quotes. Nothing is charged until you say yes."
         aside={
           <ol className="space-y-3">
             {STEPS.map((s, i) => (

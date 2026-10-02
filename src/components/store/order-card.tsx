@@ -58,7 +58,7 @@ export function OrderCard({ order }: { order: OrderCardData }) {
       <span className="hidden text-right sm:block">
         <span className="block font-display text-xl text-umber-900 tabular-nums">
           {formatMoney(order.total, order.currency as Currency, { cents: true })}
-          {!order.totalComplete ? <span className="text-sm text-umber-400"> +</span> : null}
+          {!order.totalComplete ? <span className="text-sm text-umber-600"> +</span> : null}
         </span>
         <span className="text-xs text-umber-500">{order.totalComplete ? order.currency : "pending lines"}</span>
       </span>

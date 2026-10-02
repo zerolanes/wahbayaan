@@ -15,7 +15,7 @@ export default async function TrackPage() {
   const user = await getCurrentUser();
   return (
     <>
-      <InfoHeader eyebrow="Orders" title="Track an order" lead="See where your piece is — being made, packed for export, in transit or delivered." crumb="Track an order" />
+      <InfoHeader eyebrow="Orders" title="Track an order" lead="See where your piece is." crumb="Track an order" />
       <Container className="grid gap-12 py-12 md:py-16 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-20">
         <div className="rounded-[var(--radius-card)] bg-white p-6 ring-1 ring-umber-200/70 sm:p-8">
           <TrackForm defaultEmail={user?.email ?? ""} />
