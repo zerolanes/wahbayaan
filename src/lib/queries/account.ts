@@ -22,12 +22,14 @@ import {
 
 export async function getBuyerOrders(userId: string, limit = 50) {
   const d = await db();
-  return d.query.orders.findMany({
+  const rows = await d.query.orders.findMany({
     where: eq(orders.userId, userId),
-    with: { items: { columns: { id: true, title: true, imageUrl: true, qty: true } } },
+    with: { items: { columns: { id: true, title: true, imageUrl: true, qty: true } }, brandItems: { columns: { id: true, title: true, imageUrl: true, qty: true, brandName: true } } },
     orderBy: desc(orders.createdAt),
     limit,
   });
+  // Pakistani Brands orders list their brand items in the same card.
+  return rows.map((o) => (o.kind === "brand" ? { ...o, items: o.brandItems.map((i) => ({ id: i.id, title: `${i.title} · ${i.brandName}`, imageUrl: i.imageUrl, qty: i.qty })) } : o));
 }
 
 export async function getBuyerOrder(userId: string, number: string) {
@@ -41,6 +43,8 @@ export async function getBuyerOrder(userId: string, number: string) {
       payments: true,
       refunds: true,
       disputes: true,
+      brandItems: true,
+      brandFulfilments: true,
     },
   });
   if (!order) return null;

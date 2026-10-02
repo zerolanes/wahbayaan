@@ -19,6 +19,8 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
     !flags.journal && "/journal",
     !flags.compare && "/compare",
     !flags.wholesale && "/wholesale",
+    !flags.pakistaniBrands && "/brands",
+    !flags.brandRequests && "/brands/request",
   ].filter((h): h is string => !!h);
   const [cartCount, wishlist] = await Promise.all([getCartCount(ctx.ownerKey), getWishlistIds(ctx.ownerKey)]);
 
@@ -47,6 +49,11 @@ export async function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           <Link href="/artisans" className="opacity-80 transition hover:opacity-100">
             Artisans
           </Link>
+          {flags.pakistaniBrands ? (
+            <Link href="/brands" className="opacity-80 transition hover:opacity-100">
+              Pakistani Brands
+            </Link>
+          ) : null}
           <Link href="/how-importing-works" className="opacity-80 transition hover:opacity-100">
             How importing works
           </Link>

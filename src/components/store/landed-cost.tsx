@@ -16,7 +16,7 @@ function LineAmount({ line, currency }: { line: LcLine; currency: LandedCost["cu
  * wrap − discount). Lines without real rate data are labelled "Pending"; the
  * total is then presented as "known so far" rather than as a final figure.
  */
-export function LandedCostBreakdown({ landed, className, title = "Landed cost", compact }: { landed: LandedCost; className?: string; title?: string; compact?: boolean }) {
+export function LandedCostBreakdown({ landed, className, title = "Landed cost", compact, pricedBy = "the artisan" }: { landed: LandedCost; className?: string; title?: string; compact?: boolean; pricedBy?: string }) {
   const { currency } = landed;
   return (
     <div className={cn("rounded-2xl bg-sand-50 ring-1 ring-umber-200/70", className)}>
@@ -56,7 +56,7 @@ export function LandedCostBreakdown({ landed, className, title = "Landed cost", 
         </p>
       ) : currency !== "PKR" ? (
         <p className="px-4 pt-2 pb-3 text-xs text-umber-500">
-          Listed by the artisan in Pakistani rupees; shown in {currency} at today&apos;s rate.
+          Priced by {pricedBy} in Pakistani rupees; shown in {currency} at today&apos;s rate.
         </p>
       ) : null}
     </div>

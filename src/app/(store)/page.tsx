@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { and, desc, eq } from "drizzle-orm";
 import { ArrowRight, ArrowUpRight, BadgeCheck, Calculator, MapPin, PackageCheck, ShieldCheck, Truck } from "lucide-react";
+import { HomeBrandsSection } from "@/components/store/brands/home-brands";
 import { ProductCard } from "@/components/store/product-card";
 import { VerifiedBadge } from "@/components/store/trust";
 import { ButtonLink } from "@/components/ui/button";
@@ -188,6 +189,8 @@ export default async function HomePage() {
           </Container>
         </section>
       ) : null}
+
+      <HomeBrandsSection />
 
       {/* Craft atlas */}
       <section className="border-y border-umber-200/60 bg-sand-50/70 py-16 md:py-24">

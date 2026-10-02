@@ -75,7 +75,7 @@ export async function getOrderByNumber(number: string) {
   const d = await db();
   return d.query.orders.findFirst({
     where: eq(orders.number, number),
-    with: { items: true, vendorOrders: { with: { vendor: true } }, events: true, payments: true, refunds: true, disputes: true },
+    with: { items: true, vendorOrders: { with: { vendor: true } }, events: true, payments: true, refunds: true, disputes: true, brandItems: true, brandFulfilments: true },
   });
 }
 
