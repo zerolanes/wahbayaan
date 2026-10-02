@@ -56,7 +56,8 @@ export default async function HomePage() {
 
   const crafts = categories.filter((c) => c.showOnHome && (c.productCount > 0 || isDemoMode()));
   const featuredVendors = home.featuredVendorIds.length
-    ? vendors.filter((v) => home.featuredVendorIds.includes(v.id))
+    ? // In the order picked in Admin → Content → Homepage; hidden artisans drop out.
+      home.featuredVendorIds.map((id) => vendors.find((v) => v.id === id)).filter((v) => v !== undefined)
     : [...vendors.filter((v) => v.isFeatured), ...vendors.filter((v) => !v.isFeatured)];
   const pieceCount = categories.reduce((n, c) => n + c.productCount, 0);
   const cities = new Set(vendors.map((v) => v.workshopCity).filter(Boolean));
