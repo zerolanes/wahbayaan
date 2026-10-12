@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FulfilmentPanel } from "@/components/admin/fulfilment-panel";
 import { asc, eq, inArray } from "drizzle-orm";
 import { ExternalLink } from "lucide-react";
 import { brandFulfilmentAction, priceBrandItemsAction, sendBrandQuoteAction } from "@/app/actions/admin/brand-orders";
@@ -159,6 +160,7 @@ export async function BrandOrderAdmin({ number, user }: { number: string; user: 
         </Panel>
       ) : null}
 
+      <FulfilmentPanel orderId={order.id} orderNumber={order.number} currency={order.currency} canOperate={user.permissions.has("hub.operate")} />
       <Panel title="Fulfilment checklist" description="One row per brand. Buyers are notified at each step; dispatching builds the tracking link from the courier's template.">
         {order.paymentStatus !== "paid" ? <Notice tone="pending" className="mb-4">Waiting for payment — don&apos;t buy from the brand yet.</Notice> : null}
         <div className="space-y-4">

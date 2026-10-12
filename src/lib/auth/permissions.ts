@@ -38,6 +38,8 @@ export const PERMISSIONS = {
   "brands.permission": "Record or revoke a brand's permission and set the partnership status",
   "couriers.manage": "Couriers, service levels, domestic zones and rate cards",
   "payments.manage": "Payment methods (card, JazzCash, Easypaisa) — non-secret settings only",
+  "hub.operate": "Hub operations: receive and QC parcels, storage, consolidation decisions, pack & ship",
+  "hubs.manage": "Hubs, consolidation settings and courier booking adapters",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -63,6 +65,7 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "reports.view",
       "brands.view",
       "couriers.manage",
+      "hub.operate",
     ],
   },
   {

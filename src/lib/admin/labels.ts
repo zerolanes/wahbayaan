@@ -32,6 +32,10 @@ const TONES: Record<string, Record<string, Tone>> = {
   certificate: { issued: "success", void: "neutral" },
   sync: { running: "indigo", succeeded: "success", partial: "warning", failed: "danger", refused: "danger" },
   brandProduct: { draft: "neutral", published: "success", hidden: "neutral" },
+  hubParcel: { expected: "gold", in_transit: "indigo", received: "pending", qc_passed: "success", qc_failed: "danger", packed: "turquoise", shipped: "turquoise", returned_to_seller: "warning", cancelled: "neutral" },
+  shipment: { draft: "neutral", booked: "gold", shipped: "turquoise", delivered: "success", cancelled: "neutral" },
+  returnRequest: { requested: "gold", approved: "indigo", rejected: "neutral", in_transit: "indigo", received: "turquoise", refunded: "success", closed: "neutral" },
+  fulfilmentQuote: { pending: "pending", approved: "gold", declined: "neutral", paid: "success", withdrawn: "neutral" },
   brandFulfilment: { pending: "gold", ordered_from_brand: "indigo", received_at_wahbayaan: "indigo", quality_checked: "turquoise", dispatched: "turquoise", delivered: "success", cancelled: "neutral" },
 };
 
