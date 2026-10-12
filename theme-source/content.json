@@ -1,0 +1,2766 @@
+{
+  "_meta": {
+    "source": "theme-source/wahbayaan.WordPress.2026-10-12.xml (WordPress 7.1.3 WXR export of the old wahbayaan.com; not committed)",
+    "generated": "2026-10-12",
+    "rules": "Text is cleaned of HTML/shortcodes. Every block carries demo:true/false. demo:true = WoodMart/Basel theme demo or placeholder text: NEVER ship. Contact details are as shown publicly on the old site and must be verified before reuse. No personal data (user accounts, emails, customers) is included."
+  },
+  "site": {
+    "name": "wahbayaan",
+    "display_name": "Wahbayaan",
+    "tagline": "Crafted Heritage.",
+    "old_domain": "https://wahbayaan.com",
+    "staging_domain_found_in_links": "lex.hgp.mybluehost.me/website_6d13e79b (old Bluehost staging URL hard-coded in many links)",
+    "currency_on_old_site": "PKR (₨) — product prices rendered as \"₨ 320\" etc.",
+    "currency_switcher_labels": [
+      "PAK",
+      "Canada",
+      "USA",
+      "Pakistan"
+    ]
+  },
+  "contact_public": [
+    {
+      "type": "email",
+      "value": "support@wahbayaan.com",
+      "where": "Contact us page",
+      "verify": true
+    },
+    {
+      "type": "instagram",
+      "value": "@wahbayaan.store (instagram.com/wahbayaan.store)",
+      "where": "Contact us page",
+      "verify": true
+    },
+    {
+      "type": "instagram",
+      "value": "instagram.com/wahbayaan.shop",
+      "where": "Footer social buttons",
+      "verify": true,
+      "note": "Differs from the Contact page handle (.store vs .shop) — confirm which is correct"
+    },
+    {
+      "type": "facebook",
+      "value": "facebook.com/wahbayaan",
+      "where": "Footer social buttons",
+      "verify": true
+    },
+    {
+      "type": "pinterest",
+      "value": "pinterest.com/wahbayaan",
+      "where": "Footer social buttons",
+      "verify": true
+    },
+    {
+      "type": "response_time",
+      "value": "We usually respond within 24 hours.",
+      "where": "Contact us page",
+      "verify": true
+    }
+  ],
+  "pages": [
+    {
+      "id": 15,
+      "title": "Home",
+      "slug": "home",
+      "old_url": "/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Our Collections",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Browse a wide range of handcrafted pieces across all our categories.\nNew collections are added regularly — discover something made just for you.",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "title",
+          "text": "Bestsellers",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "All",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "Calligraphy Art",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "Salt Art",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "Stone Sculptures",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "Wall decor",
+          "demo": false
+        },
+        {
+          "widget": "wd_products_tabs",
+          "field": "tab",
+          "text": "Customized",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Shop by Artists",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Paintings rooted in heritage, crafted by artists across Pakistan.",
+          "demo": false
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "title",
+          "text": "Elitis",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "content",
+          "text": "Talosa / France",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "title",
+          "text": "Hay",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "content",
+          "text": "Barcelona / Spain",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "title",
+          "text": "Kettal",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "content",
+          "text": "Barcelona / Spain",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "title",
+          "text": "Llardo",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "content",
+          "text": "Valencia / Spain",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "title",
+          "text": "Poliform",
+          "demo": true
+        },
+        {
+          "widget": "wd_infobox",
+          "field": "content",
+          "text": "Como / Italy",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Crafted Heritage",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Moments, textures, and details that carry the spirit of Pakistani craftsmanship.",
+          "demo": false
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "title",
+          "text": "GLADØM",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "content",
+          "text": "The new common language will be more simple and regular than the existing languages",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "title",
+          "text": "HÄLLAN",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "content",
+          "text": "The new common language will be more simple and regular than the existing languages",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Furniture collection of the week",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "The most popular products from the collection",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_image_hotspot",
+          "field": "hotspot",
+          "text": "Title, click to edit. — Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Rules for choosing furniture",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Whether living on your own or with a family, your living room is an important space.\nThis room is where your family spends time together, and it is the room most of your guests will spend the majority of their time in. Choosing furniture that creates a pleasant, welcoming appearance while holding up against the wear and tear of everyday life is the key in getting this space to work for your needs.",
+          "demo": true
+        },
+        {
+          "widget": "wd_list",
+          "field": "list",
+          "text": "Choose items in a single color scheme and style",
+          "demo": true
+        },
+        {
+          "widget": "wd_list",
+          "field": "list",
+          "text": "Consider the area of the room",
+          "demo": true
+        },
+        {
+          "widget": "wd_list",
+          "field": "list",
+          "text": "Do not buy unnecessary pieces of furniture",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "subtitle",
+          "text": "How choose furniture",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "SØLREM furniture collection",
+          "demo": true
+        },
+        {
+          "widget": "wd_video",
+          "field": "text",
+          "text": "Play video",
+          "demo": true,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_video",
+          "field": "video",
+          "text": "https://www.youtube.com/watch?v=XHOmBV4js_E",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Latest articles",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Visit the Blog",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Online store with a wide selection of furniture and decor\nFurniture is an invariable attribute of any room. It is they who give it the right atmosphere, making the space cozy and comfortable, creating favorable conditions for productive work or helping to relax after a hard day. More and more often, customers want to place an order in an online store, when you can sit down at the computer in your free time, arrange the furniture in the photo and calmly buy the furniture you like. The online store has a large catalog of furniture: both home and office furniture are available.\nFurniture production is a modern form of art\nFurniture manufacturers, as well as manufacturers of other home goods, are full of amazing offers: we often come across both standard mass-produced products and unique creations - furniture from professional craftsmen, which will be appreciated by true connoisseurs of beauty. We have selected for you the best models from modern craftsmen who managed to ingeniously combine elegance, quality and practicality in each product unit. Our assortment includes products from proven companies. Who for many years of continuous joint work did not give reason to doubt their reliability and honesty. All of them guarantee the high quality of their products, excellent operational characteristics, attractive appearance of the products, a long period of use of the furniture, as well as safety.",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Read More",
+          "demo": false,
+          "generic_ui_label": true
+        }
+      ],
+      "has_real_content": true,
+      "demo": false
+    },
+    {
+      "id": 32201,
+      "title": "Refund and Returns Policy",
+      "slug": "refund_returns",
+      "old_url": null,
+      "status": "draft",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "post_content",
+          "field": "content",
+          "text": "This is a sample page.\nOverview\nOur refund and returns policy lasts 30 days. If 30 days have passed since your purchase, we can’t offer you a full refund or exchange.\nTo be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging.\nSeveral types of goods are exempt from being returned. Perishable goods such as food, flowers, newspapers or magazines cannot be returned. We also do not accept products that are intimate or sanitary goods, hazardous materials, or flammable liquids or gases.\nAdditional non-returnable items:\nGift cards\nDownloadable software products\nSome health and personal care items\nTo complete your return, we require a receipt or proof of purchase.\nPlease do not send your purchase back to the manufacturer.\nThere are certain situations where only partial refunds are granted:\nBook with obvious signs of use\nCD, DVD, VHS tape, software, video game, cassette tape, or vinyl record that has been opened.\nAny item not in its original condition, is damaged or missing parts for reasons not due to our error.\nAny item that is returned more than 30 days after delivery\nRefunds\nOnce your return is received and inspected, we will send you an email to notify you that we have received your returned item. We will also notify you of the approval or rejection of your refund.\nIf you are approved, then your refund will be processed, and a credit will automatically be applied to your credit card or original method of payment, within a certain amount of days.\nLate or missing refunds\nIf you haven’t received a refund yet, first check your bank account again.\nThen contact your credit card company, it may take some time before your refund is officially posted.\nNext contact your bank. There is often some processing time before a refund is posted.\nIf you’ve done all of this and you still have not received your refund yet, please contact us at {email address}.\nSale items\nOnly regular priced items may be refunded. Sale items cannot be refunded.\nExchanges\nWe only replace items if they are defective or damaged. If you need to exchange it for the same item, send us an email at {email address} and send your item to: {physical address}.\nGifts\nIf the item was marked as a gift when purchased and shipped directly to you, you’ll receive a gift credit for the value of your return. Once the returned item is received, a gift certificate will be mailed to you.\nIf the item wasn’t marked as a gift when purchased, or the gift giver had the order shipped to themselves to give to you later, we will send a refund to the gift giver and they will find out about your return.\nShipping returns\nTo return your product, you should mail your product to: {physical address}.\nYou will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable. If you receive a refund, the cost of return shipping will be deducted from your refund.\nDepending on where you live, the time it may take for your exchanged product to reach you may vary.\nIf you are returning more expensive items, you may consider using a trackable shipping service or purchasing shipping insurance. We don’t guarantee that we will receive your returned item.\nNeed help?\nContact us at {email} for questions related to refunds and returns.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true
+    },
+    {
+      "id": 18,
+      "title": "Blog",
+      "slug": "blog",
+      "old_url": "/blog/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 21,
+      "title": "Wishlist",
+      "slug": "wishlist",
+      "old_url": "/wishlist/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 23,
+      "title": "Compare",
+      "slug": "compare",
+      "old_url": "/compare/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 25,
+      "title": "Showrooms",
+      "slug": "showrooms",
+      "old_url": "/showrooms/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Milano showroom",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Furniture is an invariable attribute of any room. It is they who give it the right atmosphere, making the space cozy and comfortable. More and more often, customers want to place an order in an online store, when you can sit down at the computer in your free time, arrange the furniture in the photo and calmly buy the furniture you like.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Milano Piazzale\nFerrara\nVia Mincio, 4, 20139\nMonday - Friday 09:00 - 17:00\ninfo@mail.com\n(686) 492-1044",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Make a route",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Torino showroom",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Furniture is an invariable attribute of any room. It is they who give it the right atmosphere, making the space cozy and comfortable. More and more often, customers want to place an order in an online store, when you can sit down at the computer in your free time, arrange the furniture in the photo and calmly buy the furniture you like.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Torino\nShopville Le Gru\nVia Chisola, 5, 10126\nMonday - Friday 09:00 - 17:00\ninfo@mail.com\n(686) 492-1044",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Make a route",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Online store with a wide selection of furniture and decor\nFurniture is an invariable attribute of any room. It is they who give it the right atmosphere, making the space cozy and comfortable, creating favorable conditions for productive work or helping to relax after a hard day. More and more often, customers want to place an order in an online store, when you can sit down at the computer in your free time, arrange the furniture in the photo and calmly buy the furniture you like. The online store has a large catalog of furniture: both home and office furniture are available.\nFurniture production is a modern form of art\nFurniture manufacturers, as well as manufacturers of other home goods, are full of amazing offers: we often come across both standard mass-produced products and unique creations - furniture from professional craftsmen, which will be appreciated by true connoisseurs of beauty. We have selected for you the best models from modern craftsmen who managed to ingeniously combine elegance, quality and practicality in each product unit. Our assortment includes products from proven companies. Who for many years of continuous joint work did not give reason to doubt their reliability and honesty. All of them guarantee the high quality of their products, excellent operational characteristics, attractive appearance of the products, a long period of use of the furniture, as well as safety.",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Read More",
+          "demo": false,
+          "generic_ui_label": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true
+    },
+    {
+      "id": 27,
+      "title": "Gift cards",
+      "slug": "gift-cards",
+      "old_url": "/gift-cards/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "wd_banner",
+          "field": "subtitle",
+          "text": "WOODMART",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "title",
+          "text": "e-Gift card",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Purchase online and the e-Gift Card is sent straight to their inbox!\nPurchase e-Gift Cards up to €1 000 in value.",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Buy now",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "subtitle",
+          "text": "WOODMART",
+          "demo": true
+        },
+        {
+          "widget": "wd_banner",
+          "field": "title",
+          "text": "Gift card",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Purchase in-store and it’s ready for gifting! Just pick the value of the card.\nPurchase Gift Cards up to €500 in value.",
+          "demo": true
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Buy now",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "If you can't decide on the perfect gift, let them choose with the WoodMart Gift Card.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "The WoodMart Gift Card is easy! Just pick the value of the card and your friends or family are free to get exactly what they want! It's perfect for graduations, holidays, back to college shopping, baby showers, weddings and house warming gifts. Available in increments of €5 - €1 000.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Frequently asked questions",
+          "demo": false
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "What is the difference between an e-Gift Card and physical Gift Card? — A seemingly elegant design can quickly begin to bloat with unexpected content or break under the weight of actual activity. Fake data can ensure a nice looking layout but it doesn’t reflect what a living, breathing application must endure. Real data does.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Do I have to use my Gift Card all at once? — Websites in professional use templating systems. Commercial publishing platforms and content management systems ensure that you can show different text, different data using the same template. When it's about controlling hundreds of articles, product pages for web shops.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "When will I receive my e-Gift Card? — If the copy becomes distracting in the design then you are doing something wrong or they are discussing copy changes. It might be a bit annoying but you could tell them that that discussion would be best suited for another time. At worst the discussion is at least working towards the final goal of your site where questions about lorem ipsum don’t.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Can I also find these gift cards at retailers? — A seemingly elegant design can quickly begin to bloat with unexpected content or break under the weight of actual activity. Fake data can ensure a nice looking layout but it doesn’t reflect what a living, breathing application must endure. Real data does.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "How many gift cards can I purchase at once? — Websites in professional use templating systems. Commercial publishing platforms and content management systems ensure that you can show different text, different data using the same template. When it's about controlling hundreds of articles, product pages for web shops.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "If you want more information about Gift Cards Contact us",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true
+    },
+    {
+      "id": 29,
+      "title": "Contact us",
+      "slug": "contact-us",
+      "old_url": "/contact-us/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Drop us a Message",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "We're easy to reach",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Whether it’s a question, a custom request, or just a kind word — we’re always happy to hear from you. Fill out the form and we’ll get back to you soon as possible.\nOr directly email us at support@wahbayaan.com\nOr message us on Instagram @wahbayaan.store\nWe usually respond within 24 hours.\nIf you're an artist, a collaborator, or just curious — you're welcome here too.",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Frequently asked questions",
+          "demo": false
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "My order hasn't arrived yet. Where is it? — A seemingly elegant design can quickly begin to bloat with unexpected content or break under the weight of actual activity. Fake data can ensure a nice looking layout but it doesn’t reflect what a living, breathing application must endure. Real data does.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Do you deliver on public holidays? — Websites in professional use templating systems. Commercial publishing platforms and content management systems ensure that you can show different text, different data using the same template. When it's about controlling hundreds of articles, product pages for web shops.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Do you deliver to my postcode? — If the copy becomes distracting in the design then you are doing something wrong or they are discussing copy changes. It might be a bit annoying but you could tell them that that discussion would be best suited for another time. At worst the discussion is at least working towards the final goal of your site where questions about lorem ipsum don’t.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Is next-day delivery available on all orders? — A seemingly elegant design can quickly begin to bloat with unexpected content or break under the weight of actual activity. Fake data can ensure a nice looking layout but it doesn’t reflect what a living, breathing application must endure. Real data does.",
+          "demo": true
+        },
+        {
+          "widget": "wd_accordion",
+          "field": "faq",
+          "text": "Do I need to be there to sign for delivery? — Websites in professional use templating systems. Commercial publishing platforms and content management systems ensure that you can show different text, different data using the same template. When it's about controlling hundreds of articles, product pages for web shops.",
+          "demo": true
+        }
+      ],
+      "has_real_content": true,
+      "demo": false
+    },
+    {
+      "id": 31,
+      "title": "About us",
+      "slug": "about-us",
+      "old_url": "/about-us/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Crafted Heritage",
+          "demo": false
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Hey — we’re Wahbayaan. This little space started with one simple idea: Pakistan has soul — and that soul deserves to be seen, felt, and shared. So we created Crafted Heritage — a collection of artworks that carry the stories, culture, and creativity of our home. Every piece you see here is made by a local artist. Some draw from tradition, some from their own lives, but all of them pour something real into their work. It’s not mass-produced. It’s not rushed. It’s made with intention.\nWe're not just running a shop. We're building a home for expression — for artists, for art lovers, and for anyone who feels something when they see a painting that just clicks. Thanks for being here. This is just the start.",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Crafted Across Pakistan",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "after_title",
+          "text": "Our art doesn’t come from one place — it comes from everywhere. From the calm of Hunza to the chaos of Karachi.\nEvery city brings its own mood, its own magic. These pieces aren’t just made — they’re lived.",
+          "demo": false
+        },
+        {
+          "widget": "heading",
+          "field": "title",
+          "text": "The South",
+          "demo": false
+        },
+        {
+          "widget": "text-editor",
+          "field": "editor",
+          "text": "From the coastal buzz of Karachi to the calm strength of Quetta, the South is full of makers who know their craft. In Karachi, you’ll find artists working on bold calligraphy pieces, hand-painted wall plates, and unique home decor that reflects the energy of the city itself. Travel a little inland and you get to Hyderabad and Bahawalpur — places where textile traditions still live in the hands of families who’ve been weaving and stitching for generations.\nWhat we’re doing at Wahbayaan is simple: we’re giving this craft a space to be seen. The work coming out of these regions isn’t factory-made or imported — it’s local, thoughtful, and built to last. And now, through our marketplace, it’s finally within reach.",
+          "demo": false
+        },
+        {
+          "widget": "heading",
+          "field": "title",
+          "text": "The North",
+          "demo": false
+        },
+        {
+          "widget": "text-editor",
+          "field": "editor",
+          "text": "The northern side of Pakistan carries a different kind of rhythm — steady, focused, and deeply skilled. In cities like Lahore, you’ll find everything from handmade carpets to painted furniture, created by craftspeople who’ve honed their work over years, not just weekends. Move toward Islamabad, Peshawar, and Taxila, and the materials shift — from canvas to stone, from color to form.\nHere, we feature stone sculptures carved in Taxila, salt lamps and décor pieces from the mines nearby, and even pool tables made by one of Pakistan’s oldest snooker factories. It’s all part of the same story: people working with what they have, where they are, to create something real.",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "subtitle",
+          "text": "Dive into Diversity",
+          "demo": false
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Explore the rich cultures of Pakistan",
+          "demo": false
+        },
+        {
+          "widget": "wd_video",
+          "field": "text",
+          "text": "Play video",
+          "demo": false,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_video",
+          "field": "video",
+          "text": "https://www.youtube.com/watch?v=0fJBbSTfZ7Q",
+          "demo": false
+        },
+        {
+          "widget": "wd_button",
+          "field": "text",
+          "text": "Read More",
+          "demo": false,
+          "generic_ui_label": true
+        }
+      ],
+      "has_real_content": true,
+      "demo": false
+    },
+    {
+      "id": 32053,
+      "title": "Shop",
+      "slug": "shop",
+      "old_url": "/shop/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32198,
+      "title": "Cart",
+      "slug": "cart",
+      "old_url": "/cart/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32199,
+      "title": "Checkout",
+      "slug": "checkout",
+      "old_url": "/checkout/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32200,
+      "title": "My account",
+      "slug": "my-account",
+      "old_url": "/my-account/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32243,
+      "title": "Dashboard",
+      "slug": "dashboard",
+      "old_url": "/dashboard/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "heading",
+          "field": "title",
+          "text": "Store Dashboard",
+          "demo": false
+        }
+      ],
+      "has_real_content": true,
+      "demo": false
+    },
+    {
+      "id": 32244,
+      "title": "Marketplace",
+      "slug": "marketplace",
+      "old_url": "/marketplace/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [
+        {
+          "widget": "shortcode",
+          "field": "shortcode",
+          "text": "[wcfm_stores]",
+          "demo": false
+        }
+      ],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32245,
+      "title": "My Orders",
+      "slug": "my-orders",
+      "old_url": "/my-orders/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32387,
+      "title": "Store Manager",
+      "slug": "store-manager",
+      "old_url": "/store-manager/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32389,
+      "title": "Seller Membership",
+      "slug": "seller-membership",
+      "old_url": "/seller-membership/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32390,
+      "title": "Seller Registration",
+      "slug": "seller-register",
+      "old_url": "/seller-register/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32571,
+      "title": "Shipment Tracking",
+      "slug": "tracking",
+      "old_url": "/tracking/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32573,
+      "title": "Track Your Order",
+      "slug": "track-your-order",
+      "old_url": "/track-your-order/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    },
+    {
+      "id": 32574,
+      "title": "Orders Tracking",
+      "slug": "orders-tracking",
+      "old_url": "/orders-tracking/",
+      "status": "publish",
+      "kind": "page",
+      "blocks": [],
+      "has_real_content": false,
+      "demo": false
+    }
+  ],
+  "homepage_slider": [
+    {
+      "id": 151,
+      "internal_title": "Furniture 2 slide 1",
+      "background": "2023/04/pexels-wasifmehmood997-19442078-scaled.jpg",
+      "headline": [],
+      "buttons": [
+        {
+          "label": "Shop Now",
+          "target": "/shop/"
+        }
+      ],
+      "overlay_images": [
+        "2023/04/Wahbayaan-1-1.png"
+      ]
+    },
+    {
+      "id": 217,
+      "internal_title": "Furniture 2 slide 2",
+      "background": "2023/04/pexels-yunustug-23638659-scaled.jpg",
+      "headline": [
+        "SHOP BY OUR SELLERS"
+      ],
+      "buttons": [
+        {
+          "label": "Marketplace",
+          "target": "/marketplace/"
+        }
+      ],
+      "overlay_images": [
+        "2023/04/image-5-1-modified.png"
+      ]
+    },
+    {
+      "id": 226,
+      "internal_title": "Furniture 2 slide 3",
+      "background": "2023/04/10-6.jpg",
+      "headline": [
+        "OUR STORIES"
+      ],
+      "buttons": [
+        {
+          "label": "About us",
+          "target": "/about-us/"
+        }
+      ],
+      "overlay_images": []
+    }
+  ],
+  "product_categories": [
+    {
+      "term_id": 51,
+      "name": "-",
+      "slug": "accessories",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": null,
+      "old_url": "/product-category/accessories/",
+      "demo": true,
+      "note": "WooCommerce default \"Uncategorized\" renamed to \"-\"; holds only demo/system products"
+    },
+    {
+      "term_id": 91,
+      "name": "Calligraphy Art",
+      "slug": "calligraphy-art",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": "2025/06/maxresdefault.jpg",
+      "old_url": "/product-category/calligraphy-art/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 98,
+      "name": "Customize",
+      "slug": "customize",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": null,
+      "old_url": "/product-category/customize/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 93,
+      "name": "Handmade Carpets & Rugs",
+      "slug": "handmade-carpets",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": "2023/04/pexels-damla-karaagacli-42037640-18624121-scaled.jpg",
+      "old_url": "/product-category/handmade-carpets/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 92,
+      "name": "Paintings",
+      "slug": "paintings",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": "2025/06/10-6.jpg",
+      "old_url": "/product-category/paintings/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 94,
+      "name": "Posters & Prints",
+      "slug": "posters-prints",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": null,
+      "old_url": "/product-category/posters-prints/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 96,
+      "name": "Salt Art & Decor",
+      "slug": "salt-art-decor",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": null,
+      "old_url": "/product-category/salt-art-decor/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 97,
+      "name": "Stone sculptures [Taxila]",
+      "slug": "stone-sculptures-taxila",
+      "parent": null,
+      "product_count_in_export": 2,
+      "image": null,
+      "old_url": "/product-category/stone-sculptures-taxila/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 95,
+      "name": "Wall Decor & Accessories",
+      "slug": "wall-decor-accessories",
+      "parent": null,
+      "product_count_in_export": 1,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 105,
+      "name": "Islamic",
+      "slug": "islamic",
+      "parent": "calligraphy-art",
+      "product_count_in_export": 0,
+      "image": "2025/06/71R15ghdF8L.jpg",
+      "old_url": "/product-category/calligraphy-art/islamic/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 106,
+      "name": "Modern/Abstract",
+      "slug": "modern-abstract",
+      "parent": "calligraphy-art",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/calligraphy-art/modern-abstract/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 107,
+      "name": "Quranic Verses & Ayats",
+      "slug": "quranic-verses-ayats",
+      "parent": "calligraphy-art",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/calligraphy-art/quranic-verses-ayats/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 108,
+      "name": "Urdu Poetry",
+      "slug": "urdu-poetry",
+      "parent": "calligraphy-art",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/calligraphy-art/urdu-poetry/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 109,
+      "name": "Abstract Modern Rugs",
+      "slug": "abstract-modern-rugs",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/handmade-carpets/abstract-modern-rugs/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 110,
+      "name": "Custom Size Rugs",
+      "slug": "custom-size-rugs",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/handmade-carpets/custom-size-rugs/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 111,
+      "name": "Kashmiri Handmade Carpets",
+      "slug": "kashmiri-handmade-carpets",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": "2025/06/91oCPOSYF3L._UF8941000_QL80_.jpg",
+      "old_url": "/product-category/handmade-carpets/kashmiri-handmade-carpets/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 112,
+      "name": "Persian Carpets",
+      "slug": "persian-carpets",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/handmade-carpets/persian-carpets/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 113,
+      "name": "Prayer Mats",
+      "slug": "prayer-mats",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": "2025/06/luxurious-quality-haramain-prayer-mat-light-blue-color-768974.webp",
+      "old_url": "/product-category/handmade-carpets/prayer-mats/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 114,
+      "name": "Tribal & Balochi Rugs",
+      "slug": "tribal-balochi-rugs",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/handmade-carpets/tribal-balochi-rugs/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 115,
+      "name": "Wool Carpets",
+      "slug": "wool-carpets",
+      "parent": "handmade-carpets",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/handmade-carpets/wool-carpets/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 99,
+      "name": "Abstract",
+      "slug": "abstract",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/abstract/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 100,
+      "name": "Cultural & Traditional",
+      "slug": "cultural-traditional",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/cultural-traditional/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 101,
+      "name": "Figurative & Potraits",
+      "slug": "figurative-potraits",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/figurative-potraits/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 102,
+      "name": "Islamic & Sufi Art",
+      "slug": "islamic-sufi-art",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/islamic-sufi-art/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 103,
+      "name": "Miniature Art",
+      "slug": "miniature-art",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/miniature-art/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 104,
+      "name": "Nature & Landscapes",
+      "slug": "nature-landscapes",
+      "parent": "paintings",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/paintings/nature-landscapes/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 116,
+      "name": "Cultural",
+      "slug": "cultural",
+      "parent": "posters-prints",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/posters-prints/cultural/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 117,
+      "name": "Famous Personalities",
+      "slug": "famous-personalities",
+      "parent": "posters-prints",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/posters-prints/famous-personalities/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 118,
+      "name": "Motivational Quotes",
+      "slug": "motivational-quotes",
+      "parent": "posters-prints",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/posters-prints/motivational-quotes/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 119,
+      "name": "Pop Art",
+      "slug": "pop-art",
+      "parent": "posters-prints",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/posters-prints/pop-art/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 120,
+      "name": "Vintage",
+      "slug": "vintage",
+      "parent": "posters-prints",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/posters-prints/vintage/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 121,
+      "name": "Islamic Wall Clocks",
+      "slug": "islamic-wall-clocks",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/islamic-wall-clocks/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 123,
+      "name": "Metal Art Pieces",
+      "slug": "metal-art-pieces",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/metal-art-pieces/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 122,
+      "name": "Mirrors",
+      "slug": "mirrors",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/mirrors/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 124,
+      "name": "Tapestry/Wall Fabric",
+      "slug": "tapestry-wall-fabric",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/tapestry-wall-fabric/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 125,
+      "name": "Wall Plates",
+      "slug": "wall-plates",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/wall-plates/",
+      "demo": false,
+      "note": null
+    },
+    {
+      "term_id": 126,
+      "name": "Wooden Wall Hangings",
+      "slug": "wooden-wall-hangings",
+      "parent": "wall-decor-accessories",
+      "product_count_in_export": 0,
+      "image": null,
+      "old_url": "/product-category/wall-decor-accessories/wooden-wall-hangings/",
+      "demo": false,
+      "note": null
+    }
+  ],
+  "products": [
+    {
+      "id": 22,
+      "name": "Variable product example",
+      "slug": "variable-product-example",
+      "old_url": "/product/variable-product-example/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "15",
+      "regular_price": null,
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "-"
+      ],
+      "brand": [],
+      "short_description": "Lacinia porta aenean conubia a ut integer ultrices cras a laoreet erat iaculis mollis cursus ante consectetur consectetur quisque vel rutrum elementum dis a class tempus a. Adipiscing a condimentum condimentum.",
+      "description": "Blandit parturient adipiscing faucibus fringilla vestibulum ultrices integer dolor parturient parturient at porta platea inceptos. Habitant dui ut fringilla eleifend tincidunt scelerisque porta a tortor adipiscing ullamcorper etiam imperdiet pulvinar vel facilisis potenti facilisis mi parturient sed per egestas vivamus a auctor eu curae. Id dui bibendum non enim accumsan leo habitant diam eu.\nEtia",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 44,
+      "name": "Basic contrast sneakers",
+      "slug": "basic-contrast-sneakers",
+      "old_url": "/product/basic-contrast-sneakers/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "10",
+      "regular_price": "10",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Salt Art & Decor"
+      ],
+      "brand": [],
+      "short_description": "Inceptos etiam vestibulum volutpat a vel dictum eu parturient neque dictumst viverra justo fusce natoque condimentum a netus facilisis justo bibendum suspendisse lobortis netus nulla suspendisse porttitor condimentum vestibulum.Mi.",
+      "description": "Ac dis vestibulum ut primis eleifend at neque at ornare mus nostra non senectus magna natoque porta scelerisque molestie taciti lobortis torquent ullamcorper a ullamcorper. Hac suspendisse varius ut et consectetur eu in nisi vestibulum consectetur ultricies in dictum consectetur eu hendrerit ante tortor sagittis etiam porta scelerisque molestie ostra non senectus magna natoque .\nVestibulum volutpa",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 49,
+      "name": "Basic Korean-style coat",
+      "slug": "basic-korean-style-coat",
+      "old_url": "/product/basic-korean-style-coat/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "219",
+      "regular_price": "219",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Stone sculptures [Taxila]"
+      ],
+      "brand": [],
+      "short_description": "A sodales montes venenatis et lobortis sociosqu libero adipiscing a parturient vestibulum eget habitant a etiam donec.Sem cubilia natoque velit a sed ultrices ipsum adipiscing vel sed tellus a.",
+      "description": "Viverra a consectetur\nEnim in malesuada fusce dolor mi massa leo taciti nulla vestibulum dignissim senectus vitae elit ullamcorper primis.\nFacilisis scelerisque mi\nAmet quisque adipiscing scelerisque vestibulum a parturient aptent et pretium a a suspendisse a vestibulum dolor a adipiscing a curabitur integer vulputate praesent convallis. Est nisi ante accumsan pulvinar facilisi orci dignissim laci",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 56,
+      "name": "Black umbrella in handle",
+      "slug": "black-umbrella-in-handle",
+      "old_url": "/product/black-umbrella-in-handle/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "99",
+      "regular_price": "99",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Stone sculptures [Taxila]"
+      ],
+      "brand": [],
+      "short_description": "Dui eu proin parturient vestibulum vestibulum sit cubilia morbi taciti a parturient malesuada risus morbi a ac sed a.Vulputate ad dictumst ullamcorper inceptos a ullamcorper curabitur neque etiam class fermentum nam.",
+      "description": "Venenatis duis tristique accumsan netus enim in posuere torquent ut ullamcorper integer aliquam a mi curae elementum. Maecenas iaculis viverra tellus ridiculus a sed vestibulum dapibus. Ante a mollis habitant duis urna cum iaculis ullamcorper luctus.\n65% Polyester, 23% Elastane\nAbitur parturient praesent ipsu\nMinceptos pri 187cm/3'1.3\" tall\nDiam parturient dictumst nibh mu\nNunc per mollis pot enti",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 57,
+      "name": "Bold metallic watch",
+      "slug": "bold-metallic-watch",
+      "old_url": "/product/bold-metallic-watch/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "10",
+      "regular_price": "10",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Wall Decor & Accessories"
+      ],
+      "brand": [],
+      "short_description": "Suspendisse natoque aliquet diam mattis ridiculus adipiscing tincidunt sem a eu in scelerisque vestibulum aenean morbi orci aliquet et class tortor luctus inceptos felis purus.A neque enim ullamcorper parturient amet.",
+      "description": "Aenean enim nisl volutpat fusce commodo dui hac in a vestibulum diam convallis dis parturient condimentum massa ac sagittis sed dapibus ullamcorper blandit parturient arcu urna cursus suscipit diam rhoncus. Mus pretium etiam a magna malesuada pharetra tempus nam sapien a adipiscing blandit lorem urna maecenas donec porttitor faucibus malesuada ac consequat. Aliquet sit fusce sociosqu suscipit per ",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 58,
+      "name": "Eingerless gloves in camel",
+      "slug": "eingerless-gloves-in-camel",
+      "old_url": "/product/eingerless-gloves-in-camel/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "340",
+      "regular_price": "390",
+      "sale_price": "340",
+      "sku": null,
+      "categories": [
+        "Posters & Prints"
+      ],
+      "brand": [],
+      "short_description": "Integer nostra dis urna blandit interdum ultrices curabitur nisl ridiculus a adipiscing gravida et condimentum est in ad eu vivamus potenti consequat facilisis dapibus cras elit nam hendrerit adipiscing.",
+      "description": "Condimentum mi curae adipiscing a viverra id vel curae nec parturient elementum pharetra ante a orci a ad praesent himenaeos ultrices conubia a maecenas.A nisi elementum fringilla sodales suspendisse at accumsan dictum vestibulum parturient condimentum condimentum augue.\nDui parturient ullamcorper a aptent sociosqu nisl a fringilla vestibulum adipiscing cras convallis pretium parturient senectus r",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 59,
+      "name": "Gthnic detail open jacket",
+      "slug": "gthnic-detail-open-jacket",
+      "old_url": "/product/gthnic-detail-open-jacket/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "59",
+      "regular_price": "59",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Paintings"
+      ],
+      "brand": [],
+      "short_description": "Mollis suspendisse at fringilla consectetur tincidunt arcu erat adipiscing a vel duis morbi phasellus ante sem morbi sodales dictumst sagittis egestas vel tristique vestibulum aptent porta condimentum.Suscipit habitant potenti.",
+      "description": "Blandit parturient adipiscing faucibus fringilla vestibulum ultrices integer dolor parturient parturient at porta platea inceptos. Habitant dui ut fringilla eleifend tincidunt scelerisque porta a tortor adipiscing ullamcorper etiam imperdiet pulvinar vel facilisis potenti facilisis mi parturient sed per egestas vivamus a auctor eu curae. Id dui bibendum non enim accumsan leo habitant diam eu.\nEtia",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 69,
+      "name": "Jhecked flannel shirt",
+      "slug": "jhecked-flannel-shirt",
+      "old_url": "/product/jhecked-flannel-shirt/",
+      "status": "publish",
+      "created": "2017-01-23",
+      "price_pkr_in_export": "79",
+      "regular_price": "79",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "Handmade Carpets & Rugs"
+      ],
+      "brand": [],
+      "short_description": "Adipiscing vehicula amet in natoque lobortis mus velit dis vestibulum ullamcorper senectus conubia suspendisse vestibulum nam condimentum aliquet ipsum justo eu vestibulum sagittis.A vel vehicula a mi varius porta.",
+      "description": "Ac dis vestibulum ut primis eleifend at neque at ornare mus nostra non senectus magna natoque porta scelerisque molestie taciti lobortis torquent ullamcorper a ullamcorper. Hac suspendisse varius ut et consectetur eu in nisi vestibulum consectetur ultricies in dictum consectetur eu hendrerit ante tortor sagittis etiam porta scelerisque molestie ostra non senectus magna natoque .\nVestibulum volutpa",
+      "featured_image": null,
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 250,
+      "name": "Curve",
+      "slug": "curve",
+      "old_url": "/product/curve/",
+      "status": "publish",
+      "created": "2023-04-21",
+      "price_pkr_in_export": "320",
+      "regular_price": "320",
+      "sale_price": null,
+      "sku": "CH-832",
+      "categories": [
+        "Customize"
+      ],
+      "brand": [
+        "4Mariani"
+      ],
+      "short_description": "Soft curves and tapering slender lines are inspired by modern design. The result is a classic yet contemporary chair, ideally combined with the table by the same name",
+      "description": "The company reinterprets tradition by calling upon international designers to work with them and developing new technologies and materials to guarantee innovative and surprising results. Passion is the engine that drives the brand – together with its renowned creatives and high-profile collaborators – to search for original solutions using advanced materials, methods, tools, and technologies.\nChoo",
+      "featured_image": "2023/04/wd-furniture-chair-prod-1-1.jpg",
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 32029,
+      "name": "Grace",
+      "slug": "grace",
+      "old_url": "/product/grace/",
+      "status": "publish",
+      "created": "2023-04-21",
+      "price_pkr_in_export": "485",
+      "regular_price": "485",
+      "sale_price": null,
+      "sku": "CH-834",
+      "categories": [
+        "Calligraphy Art"
+      ],
+      "brand": [
+        "Bitte"
+      ],
+      "short_description": "Soft curves and tapering slender lines are inspired by modern design. The result is a classic yet contemporary chair, ideally combined with the table by the same name",
+      "description": "The company reinterprets tradition by calling upon international designers to work with them and developing new technologies and materials to guarantee innovative and surprising results. Passion is the engine that drives the brand – together with its renowned creatives and high-profile collaborators – to search for original solutions using advanced materials, methods, tools, and technologies.\nChoo",
+      "featured_image": "2023/04/wd-furniture-chair-prod-3-1.jpg",
+      "demo": true,
+      "reason": "WoodMart/Basel demo product (lorem-ipsum description, furniture/fashion demo name) re-filed under a Wahbayaan category"
+    },
+    {
+      "id": 32246,
+      "name": "Reverse Withdrawal Payment",
+      "slug": "reverse-withdrawal-payment",
+      "old_url": "/product/reverse-withdrawal-payment/",
+      "status": "publish",
+      "created": "2025-06-15",
+      "price_pkr_in_export": "0",
+      "regular_price": "0",
+      "sale_price": null,
+      "sku": null,
+      "categories": [
+        "-"
+      ],
+      "brand": [],
+      "short_description": "",
+      "description": "This is Dokan reverse withdrawal payment product, do not delete.",
+      "featured_image": null,
+      "demo": true,
+      "reason": "Dokan system product (reverse withdrawal); not a real listing"
+    },
+    {
+      "id": 32615,
+      "name": "hoodie",
+      "slug": "hoodie",
+      "old_url": "/product/hoodie/",
+      "status": "publish",
+      "created": "2026-01-25",
+      "price_pkr_in_export": null,
+      "regular_price": null,
+      "sale_price": null,
+      "sku": null,
+      "categories": [],
+      "brand": [],
+      "short_description": "test",
+      "description": "",
+      "featured_image": "2026/01/image.png",
+      "demo": true,
+      "reason": "Vendor test listing (\"hoodie\", description \"test\"); not a real product"
+    }
+  ],
+  "product_brands": [
+    {
+      "name": "4Mariani",
+      "slug": "4mariani",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Bitte",
+      "slug": "bitte",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Elitis",
+      "slug": "elitis",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Enza Home",
+      "slug": "enza-home",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Flos",
+      "slug": "flos",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Gan",
+      "slug": "gan",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Hay",
+      "slug": "hay",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Kettal",
+      "slug": "kettal",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Lladro",
+      "slug": "lladro",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    },
+    {
+      "name": "Minotti",
+      "slug": "minotti",
+      "demo": true,
+      "note": "WoodMart Furniture-2 demo furniture brand; never ship"
+    }
+  ],
+  "product_color_attribute": [
+    {
+      "name": "American Silver",
+      "swatch": "rgb(205,206,208)"
+    },
+    {
+      "name": "Black",
+      "swatch": "#000000"
+    },
+    {
+      "name": "Blue",
+      "swatch": "#1e73be"
+    },
+    {
+      "name": "Bone",
+      "swatch": "rgb(225,218,207)"
+    },
+    {
+      "name": "Brown",
+      "swatch": "#997521"
+    },
+    {
+      "name": "Brown Sugar",
+      "swatch": "rgb(178,104,80)"
+    },
+    {
+      "name": "Dark Gray",
+      "swatch": "rgb(176,169,163)"
+    },
+    {
+      "name": "French Bistre",
+      "swatch": "rgb(127,111,75)"
+    },
+    {
+      "name": "Gray",
+      "swatch": "rgb(129,122,130)"
+    },
+    {
+      "name": "Green",
+      "swatch": "rgb(30,77,59)"
+    },
+    {
+      "name": "Jet",
+      "swatch": "rgb(54,54,54)"
+    },
+    {
+      "name": "Marigold",
+      "swatch": "rgb(225,152,31)"
+    },
+    {
+      "name": "Pale Chestnut",
+      "swatch": "rgb(212,174,169)"
+    },
+    {
+      "name": "Queen Blue",
+      "swatch": "rgb(69,98,136)"
+    },
+    {
+      "name": "Venetian Red",
+      "swatch": "rgb(204,21,18)"
+    },
+    {
+      "name": "White",
+      "swatch": "rgb(255,255,255)"
+    }
+  ],
+  "vendors": {
+    "public_vendor_names_in_export": [],
+    "note": "No vendor/store names appear in public page content. The Marketplace page rendered the WCFM [wcfm_stores] list dynamically; store data lives in user meta, which a WXR export does not include. Seller-facing pages: Dashboard (Dokan), Store Manager (WCFM), Seller Membership, Seller Registration."
+  },
+  "blog_posts": [
+    {
+      "id": 976,
+      "title": "Here comes autumn",
+      "slug": "here-comes-autumn",
+      "old_url": "/here-comes-autumn/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "The passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software. Today it’s seen all around the web; on templates, websites, and stock designs. Use our generator to get your own, or read on for the authoritative history of lorem ipsum.\nThe passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software. Today it’s seen all around the web; on templates, websites, and stock designs. Use our generator to get your own, or read on for the authoritative history of lorem ipsum.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Until recently, the prevailing view assumed lorem ipsum was born as a nonsense text. “It’s not Latin, though it looks like it, and it actually says nothing,” Before & After magazine answered a curious reader, “Its ‘words’ loosely approximate the frequency with which letters occur in English, which is why at a glance it looks pretty real.”\nAs Cicero would put it um, not so fast. The placeholder text, beginning with the line “Lorem ipsum dolor sit amet, consectetur adipiscing elit”, looks like Latin because in its youth, centuries ago, it was Latin. It’s difficult to find examples of lorem ipsum in use before Letraset made it popular as a dummy text in the 1960s, although McClintock says he remembers coming across.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "There was that time artists at Sequence opted to hand-Sharpie the lorem ipsum passage on a line of paper bags they designed for Chipotle—the result being a mixture of avant-garde, inside joke, and Sharpie-stained tables. Those with an eye for detail may have caught a tribute to the classic text in an episode of Mad Men (S6E1 around 1:18:55 for anyone that didn’t).\nSecond, use lorem ipsum if you think the placeholder text will be too distracting. For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Torino showroom",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Of course, we’d be remiss not to include the veritable cadre of lorem ipsum knock offs featuring:\nBacon Ipsum – Served all day. “Bacon ipsum dolor amet chicken turducken spare ribs.”\nHipster Ipsum – In case you’re in need of a “shoreditch direct trade four dollar toast copper mug.”\nCorporate Ipsum – “Leveraging agile frameworks to provide a robust synopsis” from eight to five.\nLegal Ipsum – Fully unlicensed legalese for those times you don’t want to pay $400/hr.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Inspiration"
+      ],
+      "tags": [
+        "chair",
+        "furniture",
+        "guide",
+        "style"
+      ],
+      "date": "2023-04-25"
+    },
+    {
+      "id": 990,
+      "title": "Flowing serpentines",
+      "slug": "flowing-serpentines",
+      "old_url": "/flowing-serpentines/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "As an alternative theory, (and because Latin scholars do this sort of thing) someone tracked down a 1914 Latin edition of De Finibus which challenges McClintock’s 15th century claims and suggests that the dawn of lorem ipsum was as recent as the 20th century. The 1914 Loeb Classical Library Edition ran out of room on page 34 for the Latin phrase “dolorem ipsum” (sorrow in itself). Thus, the truncated phrase leaves one page dangling with “do-”, while another begins with the now ubiquitous lorem ipsum. Been either fished for, or wished.\nControversy in the Design World\nWhether a medieval typesetter chose to garble a well-known (but non-Biblical—that would have been sacrilegious) text, or whether a quirk in the 1914 Loeb Edition inspired a graphic designer, it’s admittedly an odd way.\nOne brave soul did take a stab at translating the almost-not-quite-Latin. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Augue a commodo vestibulum vulputate parturient fermentum parturient eget vel consequat mauris feugiat vestibulum suspendisse consectetur a posuere leo in habitasse scelerisque.Quisque non elementum vestibulum montes praesent urna montes etiam enim arcu urna lobortis suspendisse urna velit a adipiscing imperdiet sem a a sapien suspendisse auctor elit.Ad gravida faucibus vel purus sodales a scelerisque non nam malesuada sem eros quis at nisi suscipit suspendisse ullamcorper natoque dolor maecenas.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "So when is it okay to use lorem ipsum? First, lorem ipsum works well for staging. It’s like the props in a furniture store—filler text makes it look like someone is home. The same WordPress template might eventually be home to a fitness blog, a photography website, or the online journal of a cupcake fanatic. Lorem ipsum helps them imagine what the lived-in website.\nUsage and Examples\nOne word of caution: make sure your client knows that lorem ipsum is filler text. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it.One word of caution: make sure your client knows.\nYou don’t want them wondering why you filled.\nThat is cheated out of its justification – an object.\nIn an attempt to make the days before computerized.\nThus, the truncated phrase leaves.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Second, use lorem ipsum if you think the placeholder text will be too distracting. For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Decoration"
+      ],
+      "tags": [
+        "chair",
+        "furniture",
+        "guide",
+        "style"
+      ],
+      "date": "2023-04-25"
+    },
+    {
+      "id": 1001,
+      "title": "The clean series",
+      "slug": "the-clean-series",
+      "old_url": "/the-clean-series/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "So when is it okay to use lorem ipsum? First, lorem ipsum works well for staging. It’s like the props in a furniture store—filler text makes it look like someone is home. The same WordPress template might eventually be home to a fitness blog, a photography website, or the online journal of a cupcake fanatic. Lorem ipsum helps them imagine what the lived-in website might look like.\nSecond, use lorem ipsum if you think the placeholder text will be too distracting. For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused. One word of caution: make sure your client knows that lorem ipsum is filler text. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused. One word of caution: make sure your client knows that lorem ipsum is filler text. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it. So when is it okay to use lorem ipsum? First, lorem ipsum works well for staging. It’s like the props in a furniture store—filler text makes it look like someone is home. The same WordPress template might eventually be home to a fitness blog, a photography website, or the online journal of a cupcake fanatic. Lorem ipsum helps them imagine what the lived-in website might look like. Second, use lorem ipsum if you think the placeholder text will be too distracting.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "subtitle",
+          "text": "How choose furniture",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "SØLREM furniture collection",
+          "demo": true
+        },
+        {
+          "widget": "wd_video",
+          "field": "text",
+          "text": "Play video",
+          "demo": true,
+          "generic_ui_label": true
+        },
+        {
+          "widget": "wd_video",
+          "field": "video",
+          "text": "https://www.youtube.com/watch?v=XHOmBV4js_E",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Design trends"
+      ],
+      "tags": [
+        "bathroom",
+        "inspiration",
+        "machine",
+        "sofa",
+        "trends"
+      ],
+      "date": "2023-04-25"
+    },
+    {
+      "id": 1007,
+      "title": "For clear thinking",
+      "slug": "for-clear-thinking",
+      "old_url": "/for-clear-thinking/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "The passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software. Today it’s seen all around the web; on templates, websites, and stock designs. Use our generator to get your own, or read on for the authoritative history of lorem ipsum.\nThe passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software. Today it’s seen all around the web; on templates, websites, and stock designs. Use our generator to get your own, or read on for the authoritative history of lorem ipsum.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Until recently, the prevailing view assumed lorem ipsum was born as a nonsense text. “It’s not Latin, though it looks like it, and it actually says nothing,” Before & After magazine answered a curious reader, “Its ‘words’ loosely approximate the frequency with which letters occur in English, which is why at a glance it looks pretty real.”\nAs Cicero would put it um, not so fast. The placeholder text, beginning with the line “Lorem ipsum dolor sit amet, consectetur adipiscing elit”, looks like Latin because in its youth, centuries ago, it was Latin. It’s difficult to find examples of lorem ipsum in use before Letraset made it popular as a dummy text in the 1960s, although McClintock says he remembers coming across.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "There was that time artists at Sequence opted to hand-Sharpie the lorem ipsum passage on a line of paper bags they designed for Chipotle—the result being a mixture of avant-garde, inside joke, and Sharpie-stained tables. Those with an eye for detail may have caught a tribute to the classic text in an episode of Mad Men (S6E1 around 1:18:55 for anyone that didn’t).\nSecond, use lorem ipsum if you think the placeholder text will be too distracting. For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused.",
+          "demo": true
+        },
+        {
+          "widget": "wd_title",
+          "field": "title",
+          "text": "Torino showroom",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Of course, we’d be remiss not to include the veritable cadre of lorem ipsum knock offs featuring:\nBacon Ipsum – Served all day. “Bacon ipsum dolor amet chicken turducken spare ribs.”\nHipster Ipsum – In case you’re in need of a “shoreditch direct trade four dollar toast copper mug.”\nCorporate Ipsum – “Leveraging agile frameworks to provide a robust synopsis” from eight to five.\nLegal Ipsum – Fully unlicensed legalese for those times you don’t want to pay $400/hr.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Wooden accessories"
+      ],
+      "tags": [
+        "chair",
+        "furniture",
+        "guide",
+        "style"
+      ],
+      "date": "2023-04-25"
+    },
+    {
+      "id": 1013,
+      "title": "Ethimo mountain style",
+      "slug": "ethimo-mountain-style",
+      "old_url": "/ethimo-mountain-style/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "So how did the classical Latin become so incoherent? According to McClintock, a 15th century typesetter likely scrambled part of Cicero’s De Finibus in order to provide placeholder text to mockup various fonts for a type specimen book. It’s difficult to find examples of lorem ipsum in use before Letraset made it popular as a dummy text in the 1960s, although McClintock says he remembers coming across the lorem ipsum passage in a book of old metal type samples. So far he hasn’t relocated where he once saw the passage, but the popularity of Cicero in the 15th century supports the theory that the filler text has been used for centuries.\nDon’t bother typing “lorem ipsum” into Google translate. If you already tried, you may have gotten anything from “NATO” to “China”, depending on how you capitalized the letters. The bizarre translation was fodder for conspiracy theories, but Google has since updated its “lorem ipsum” translation to, boringly enough, “lorem ipsum”. One brave soul did take a stab at translating the almost-not-quite-Latin.\nAccording to The Guardian, Jaspreet Singh Boparai undertook the challenge with the goal of making the text “precisely as incoherent in English as it is in Latin – and to make it incoherent in the same way”. As a result, “the Greek ‘eu’ in Latin became the French ‘bien’ […] and the ‘-ing’ ending in ‘lorem ipsum’ seemed best rendered by an ‘-iendum’ in English.”",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Find Your Focus While Working\nAs an alternative theory, (and because Latin scholars do this sort of thing) someone tracked down a 1914 Latin edition of De Finibus which challenges McClintock’s 15th century claims and suggests that the dawn of lorem ipsum was as recent as the 20th century. The 1914 Loeb Classical Library Edition ran out of room on page 34 for the Latin phrase “dolorem ipsum” (sorrow in itself). Thus, the truncated phrase leaves one page dangling with “do-”, while another begins with the now ubiquitous “lorem ipsum”.\nWhether a medieval typesetter chose to garble a well-known (but non-Biblical—that would have been sacrilegious) text, or whether a quirk in the 1914 Loeb Edition inspired a graphic designer, it’s admittedly an odd way for Cicero to sail into the 21st century.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Furniture"
+      ],
+      "tags": [
+        "bathroom",
+        "inspiration",
+        "machine",
+        "sofa",
+        "trends"
+      ],
+      "date": "2023-04-25"
+    },
+    {
+      "id": 1020,
+      "title": "In the heart of Valencia",
+      "slug": "in-the-heart-of-valencia",
+      "old_url": "/in-the-heart-of-valencia/",
+      "status": "publish",
+      "kind": "post",
+      "blocks": [
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "As an alternative theory, (and because Latin scholars do this sort of thing) someone tracked down a 1914 Latin edition of De Finibus which challenges McClintock’s 15th century claims and suggests that the dawn of lorem ipsum was as recent as the 20th century. The 1914 Loeb Classical Library Edition ran out of room on page 34 for the Latin phrase “dolorem ipsum” (sorrow in itself). Thus, the truncated phrase leaves one page dangling with “do-”, while another begins with the now ubiquitous lorem ipsum. Been either fished for, or wished.\nControversy in the Design World\nWhether a medieval typesetter chose to garble a well-known (but non-Biblical—that would have been sacrilegious) text, or whether a quirk in the 1914 Loeb Edition inspired a graphic designer, it’s admittedly an odd way.\nOne brave soul did take a stab at translating the almost-not-quite-Latin. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Augue a commodo vestibulum vulputate parturient fermentum parturient eget vel consequat mauris feugiat vestibulum suspendisse consectetur a posuere leo in habitasse scelerisque.Quisque non elementum vestibulum montes praesent urna montes etiam enim arcu urna lobortis suspendisse urna velit a adipiscing imperdiet sem a a sapien suspendisse auctor elit.Ad gravida faucibus vel purus sodales a scelerisque non nam malesuada sem eros quis at nisi suscipit suspendisse ullamcorper natoque dolor maecenas.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "So when is it okay to use lorem ipsum? First, lorem ipsum works well for staging. It’s like the props in a furniture store—filler text makes it look like someone is home. The same WordPress template might eventually be home to a fitness blog, a photography website, or the online journal of a cupcake fanatic. Lorem ipsum helps them imagine what the lived-in website.\nUsage and Examples\nOne word of caution: make sure your client knows that lorem ipsum is filler text. You don’t want them wondering why you filled their website with a foreign language, and you certainly don’t want anyone prematurely publishing it.One word of caution: make sure your client knows.\nYou don’t want them wondering why you filled.\nThat is cheated out of its justification – an object.\nIn an attempt to make the days before computerized.\nThus, the truncated phrase leaves.",
+          "demo": true
+        },
+        {
+          "widget": "wd_text_block",
+          "field": "text",
+          "text": "Second, use lorem ipsum if you think the placeholder text will be too distracting. For specific projects, collaboration between copywriters and designers may be best, however, like Karen McGrane said, draft copy has a way of turning any meeting about layout decisions into a discussion about word choice. So don’t be afraid to use lorem ipsum to keep everyone focused.",
+          "demo": true
+        }
+      ],
+      "has_real_content": false,
+      "demo": true,
+      "categories": [
+        "Decoration"
+      ],
+      "tags": [
+        "bathroom",
+        "inspiration",
+        "machine",
+        "sofa",
+        "trends"
+      ],
+      "date": "2023-04-25"
+    }
+  ],
+  "blog_categories": [
+    {
+      "name": "Decoration",
+      "slug": "decoration",
+      "old_url": "/category/decoration/",
+      "demo": true
+    },
+    {
+      "name": "Design trends",
+      "slug": "design-trends",
+      "old_url": "/category/design-trends/",
+      "demo": true
+    },
+    {
+      "name": "Fashion",
+      "slug": "fashion",
+      "old_url": "/category/fashion/",
+      "demo": true
+    },
+    {
+      "name": "Furniture",
+      "slug": "furniture",
+      "old_url": "/category/furniture/",
+      "demo": true
+    },
+    {
+      "name": "Inspiration",
+      "slug": "inspiration",
+      "old_url": "/category/inspiration/",
+      "demo": true
+    },
+    {
+      "name": "Lifestyle",
+      "slug": "lifestyle",
+      "old_url": "/category/lifestyle/",
+      "demo": true
+    },
+    {
+      "name": "Travel",
+      "slug": "travel",
+      "old_url": "/category/travel/",
+      "demo": true
+    },
+    {
+      "name": "Uncategorized",
+      "slug": "uncategorized",
+      "old_url": "/category/uncategorized/",
+      "demo": true
+    },
+    {
+      "name": "Wooden accessories",
+      "slug": "wooden-accessories",
+      "old_url": "/category/wooden-accessories/",
+      "demo": true
+    }
+  ],
+  "blog_tags": [
+    {
+      "name": "bathroom",
+      "slug": "bathroom",
+      "old_url": "/tag/bathroom/",
+      "demo": true
+    },
+    {
+      "name": "chair",
+      "slug": "chair",
+      "old_url": "/tag/chair/",
+      "demo": true
+    },
+    {
+      "name": "furniture",
+      "slug": "furniture",
+      "old_url": "/tag/furniture/",
+      "demo": true
+    },
+    {
+      "name": "guide",
+      "slug": "guide",
+      "old_url": "/tag/guide/",
+      "demo": true
+    },
+    {
+      "name": "inspiration",
+      "slug": "inspiration",
+      "old_url": "/tag/inspiration/",
+      "demo": true
+    },
+    {
+      "name": "machine",
+      "slug": "machine",
+      "old_url": "/tag/machine/",
+      "demo": true
+    },
+    {
+      "name": "sofa",
+      "slug": "sofa",
+      "old_url": "/tag/sofa/",
+      "demo": true
+    },
+    {
+      "name": "style",
+      "slug": "style",
+      "old_url": "/tag/style/",
+      "demo": true
+    },
+    {
+      "name": "trends",
+      "slug": "trends",
+      "old_url": "/tag/trends/",
+      "demo": true
+    }
+  ],
+  "portfolio": [
+    {
+      "title": "A fusce fringilla scelerisque",
+      "old_url": "/portfolio/a-fusce-fringilla-scelerisque/",
+      "demo": true
+    },
+    {
+      "title": "Lectus aptent facilisis habitasse",
+      "old_url": "/portfolio/lectus-aptent-facilisis-habitasse/",
+      "demo": true
+    },
+    {
+      "title": "Varius tempor arcu sociosqu",
+      "old_url": "/portfolio/varius-tempor-arcu-sociosqu/",
+      "demo": true
+    }
+  ],
+  "menus": [
+    {
+      "menu": "Top bar menu Furniture 2",
+      "status": "DEMO",
+      "demo": true,
+      "items": [
+        {
+          "label": "Gift cards",
+          "target": "/gift-cards/",
+          "parent_item": null,
+          "item_id": 32043
+        },
+        {
+          "label": "Showrooms",
+          "target": "/showrooms/",
+          "parent_item": null,
+          "item_id": 32044
+        },
+        {
+          "label": "About us",
+          "target": "/about-us/",
+          "parent_item": null,
+          "item_id": 32042
+        }
+      ],
+      "note": "Demo top-bar menu (links to demo Gift cards/Showrooms pages)"
+    },
+    {
+      "menu": "Currency Furniture 2",
+      "status": "REAL (labels only)",
+      "demo": false,
+      "items": [
+        {
+          "label": "PAK",
+          "target": "#",
+          "parent_item": null,
+          "item_id": 32056
+        },
+        {
+          "label": "Canada",
+          "target": "#",
+          "parent_item": 32056,
+          "item_id": 32057
+        },
+        {
+          "label": "USA",
+          "target": "#",
+          "parent_item": 32056,
+          "item_id": 32058
+        },
+        {
+          "label": "Pakistan",
+          "target": "#",
+          "parent_item": 32056,
+          "item_id": 32060
+        }
+      ],
+      "note": "Header currency/country switcher; all links are \"#\" (not wired)"
+    },
+    {
+      "menu": "Main navigation",
+      "status": "DEMO",
+      "demo": true,
+      "items": [
+        {
+          "label": "Home",
+          "target": "/",
+          "parent_item": null,
+          "item_id": 32061
+        },
+        {
+          "label": "Pages",
+          "target": "#",
+          "parent_item": null,
+          "item_id": 266
+        },
+        {
+          "label": "Additional",
+          "target": "#",
+          "parent_item": 266,
+          "item_id": 267
+        },
+        {
+          "label": "Single Project",
+          "target": "/portfolio/a-fusce-fringilla-scelerisque/",
+          "parent_item": 286,
+          "item_id": 275
+        },
+        {
+          "label": "Project Full Width",
+          "target": "/portfolio/lectus-aptent-facilisis-habitasse/",
+          "parent_item": 286,
+          "item_id": 274
+        },
+        {
+          "label": "Project with video",
+          "target": "/portfolio/varius-tempor-arcu-sociosqu/",
+          "parent_item": 286,
+          "item_id": 273
+        },
+        {
+          "label": "Elements",
+          "target": "#",
+          "parent_item": null,
+          "item_id": 269
+        },
+        {
+          "label": "WooCommerce",
+          "target": "#",
+          "parent_item": 269,
+          "item_id": 270
+        },
+        {
+          "label": "Xtemos Elements",
+          "target": "#",
+          "parent_item": 269,
+          "item_id": 271
+        },
+        {
+          "label": "More Elements",
+          "target": "#",
+          "parent_item": 269,
+          "item_id": 272
+        }
+      ],
+      "note": "Demo menu (Pages/Elements/portfolio demo links); only \"Home\" is real"
+    },
+    {
+      "menu": "Mobile navigation",
+      "status": "MIXED",
+      "demo": false,
+      "items": [
+        {
+          "label": "Home",
+          "target": "/",
+          "parent_item": null,
+          "item_id": 32062
+        },
+        {
+          "label": "Blog",
+          "target": "/blog/",
+          "parent_item": null,
+          "item_id": 32037
+        },
+        {
+          "label": "About us",
+          "target": "/about-us/",
+          "parent_item": null,
+          "item_id": 32038
+        },
+        {
+          "label": "Contact us",
+          "target": "/contact-us/",
+          "parent_item": null,
+          "item_id": 32039
+        },
+        {
+          "label": "Showrooms",
+          "target": "/showrooms/",
+          "parent_item": null,
+          "item_id": 32041
+        },
+        {
+          "label": "Gift cards",
+          "target": "/gift-cards/",
+          "parent_item": null,
+          "item_id": 32040
+        }
+      ],
+      "note": "Mobile drawer menu; Blog/Showrooms/Gift cards targets are demo pages"
+    },
+    {
+      "menu": "Main Menu Primary",
+      "status": "REAL",
+      "demo": false,
+      "items": [
+        {
+          "label": "Shop",
+          "target": "/shop/",
+          "parent_item": null,
+          "item_id": 32284
+        },
+        {
+          "label": "Marketplace",
+          "target": "/marketplace/",
+          "parent_item": null,
+          "item_id": 32283
+        },
+        {
+          "label": "Compare",
+          "target": "/compare/",
+          "parent_item": null,
+          "item_id": 32287
+        },
+        {
+          "label": "About us",
+          "target": "/about-us/",
+          "parent_item": null,
+          "item_id": 32285
+        },
+        {
+          "label": "Contact us",
+          "target": "/contact-us/",
+          "parent_item": null,
+          "item_id": 32286
+        }
+      ],
+      "note": "Owner-built main menu (likely the live desktop menu)"
+    }
+  ],
+  "footer": {
+    "blocks": [
+      {
+        "widget": "wd_title",
+        "field": "title",
+        "text": "Useful links",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Shop → /shop/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Marketplace → /marketplace/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "About us → /about-us/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Contact us → /contact-us/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Become a seller → /my-account/",
+        "demo": false
+      },
+      {
+        "widget": "wd_title",
+        "field": "title",
+        "text": "Categories",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Calligraphy Art → /product-category/calligraphy-art/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Paintings → /product-category/paintings/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Handmade Carpets & Rugs → /product-category/handmade-carpets/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Posters & Prints → /product-category/posters-prints/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Salat Art & Decor → /product-category/salt-art-decor/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Stone Sculptures (Taxila) → /product-category/stone-sculptures-taxila/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Furnitures → /product-category/furnitures",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Antique Art → /product-category/antique-art/",
+        "demo": false
+      },
+      {
+        "widget": "wd_extra_menu_list",
+        "field": "link",
+        "text": "Customized → /product-category/customized/",
+        "demo": false
+      },
+      {
+        "widget": "wd_social_buttons",
+        "field": "label_text",
+        "text": "Subscribe us:",
+        "demo": false
+      },
+      {
+        "widget": "wd_social_buttons",
+        "field": "social",
+        "text": "fb: facebook.com/wahbayaan",
+        "demo": false
+      },
+      {
+        "widget": "wd_social_buttons",
+        "field": "social",
+        "text": "instagram: instagram.com/wahbayaan.shop",
+        "demo": false
+      },
+      {
+        "widget": "wd_social_buttons",
+        "field": "social",
+        "text": "pinterest: pinterest.com/wahbayaan",
+        "demo": false
+      },
+      {
+        "widget": "wd_title",
+        "field": "title",
+        "text": "Download App on Mobile:",
+        "demo": false
+      },
+      {
+        "widget": "wd_title",
+        "field": "after_title",
+        "text": "Coming Soon!",
+        "demo": false
+      }
+    ],
+    "note": "Footer CMS block (Elementor). \"Salat Art & Decor\" is a typo for \"Salt Art & Decor\"; links to /product-category/furnitures, /antique-art/, /customized/ point at categories that do not exist in the export."
+  },
+  "forms": {
+    "contact_form_used_on_contact_page": {
+      "fields": [
+        "Your Name (required)",
+        "Your Email (required)",
+        "Reason for Contact (optional): General Inquiry / Order or Shipping / Custom Art Request / Artist Collaboration / Feedback / Other",
+        "Your Message"
+      ],
+      "submit": "Send Message"
+    },
+    "contact_form_1_default": {
+      "fields": [
+        "Your name*",
+        "Your email*",
+        "Subject*",
+        "Your message (optional)"
+      ],
+      "submit": "Submit",
+      "note": "Contact Form 7 default form; unused"
+    },
+    "newsletter_mc4wp": {
+      "fields": [
+        "Your email address"
+      ],
+      "submit": "Sign up",
+      "note": "Mailchimp for WP form; only used in the demo promo popup"
+    }
+  },
+  "cms_blocks": [
+    {
+      "id": 244,
+      "title": "Menu “Shop”",
+      "slug": "menu-shop-full-width",
+      "demo": true,
+      "excerpt": "Free Shipping / Free for $50+ orders / Buyer Support / Get in touch 24/7 / Total Security / Secure checkout / RETURN POLICY / 14 days ago"
+    },
+    {
+      "id": 245,
+      "title": "Menu \"Home\"",
+      "slug": "menu-home",
+      "demo": true,
+      "excerpt": "1. MENU TITLE / 2. MENU TITLE / 3. MENU TITLE / 4. MENU TITLE"
+    },
+    {
+      "id": 254,
+      "title": "Menu \"Categories\"",
+      "slug": "menu-categories",
+      "demo": true,
+      "excerpt": ""
+    },
+    {
+      "id": 688,
+      "title": "Footer",
+      "slug": "footer",
+      "demo": false,
+      "excerpt": "Useful links Shop → /shop/ Marketplace → /marketplace/ About us → /about-us/ Contact us → /contact-us/ Become a seller → /my-account/ Categories Calligraphy Art → /product-category/calligraphy-art/ Paintings → /product-category/paintings/ Handmade Carpets & Rugs → /product-category/handmade-carpets/"
+    },
+    {
+      "id": 749,
+      "title": "Info-header",
+      "slug": "info-header",
+      "demo": true,
+      "excerpt": "05:00 – 20:00 / Monday to Friday / Grand Palais / Paris, LP 10231"
+    },
+    {
+      "id": 760,
+      "title": "Furniture size guidelines",
+      "slug": "furniture-size-guidelines",
+      "demo": true,
+      "excerpt": "The compact and well-proportioned silhouette of both the seats and the small sofa, opens up to a new way of using the dining space. A new, more intimate way of opening up new visual and proportional horizons of the living space, both in homes and in hospitality venues.‎ The possibility of having bot"
+    },
+    {
+      "id": 766,
+      "title": "Description brand",
+      "slug": "description-brand",
+      "demo": true,
+      "excerpt": "About brand FLOS Horsens / Denmark Share: fb: # instagram: # pinterest: # twitter: # youtube: # Contact us 788 The company reinterprets tradition by calling upon international designers to work with them and developing new technologies and materials to guarantee innovative and surprising results. Pa"
+    },
+    {
+      "id": 788,
+      "title": "Contact us brand",
+      "slug": "contact-us-brand",
+      "demo": true,
+      "excerpt": "If You Have Questions Please, Contact Us Be the first to learn about our latest trends"
+    },
+    {
+      "id": 1214,
+      "title": "info-header-lighting",
+      "slug": "info-header-lighting",
+      "demo": true,
+      "excerpt": "05:00 – 20:00 / Monday to Friday / Grand Palais / Paris, LP 10231"
+    },
+    {
+      "id": 1388,
+      "title": "Promo popup Furniture2",
+      "slug": "promo-popup-furniture2",
+      "demo": true,
+      "excerpt": "Hey You, Sign Up And / Connect To Woodmart! the first to learn about our latest trends"
+    }
+  ]
+}

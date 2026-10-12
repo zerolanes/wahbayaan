@@ -1,0 +1,970 @@
+{
+  "_meta": {
+    "source": "Elementor data of page \"Home\" (ID 15, the front page at /) in the old wahbayaan.com WordPress export",
+    "generated": "2026-10-12",
+    "breakpoints": {
+      "mobile": "≤768px (Elementor viewport_mobile 768.98)",
+      "tablet": "769–1024px (viewport_lg 1025)",
+      "desktop": "≥1025px"
+    },
+    "units": "margins/paddings are {top,right,bottom,left,unit}; widths per breakpoint",
+    "page_settings": {
+      "title_bar": "off",
+      "layout": "full-width (no sidebar)",
+      "header": "global WoodMart header (not in export)"
+    },
+    "demo_flag": "demo:true = the section only holds WoodMart demo content; mixed = real heading over demo items"
+  },
+  "global": {
+    "page_background": "#F3F2EE (inferred)",
+    "card_background": "#FFFFFF",
+    "section_spacing_px": {
+      "desktop": [
+        80,
+        100,
+        110
+      ],
+      "tablet": [
+        60,
+        80
+      ],
+      "mobile": [
+        40,
+        60
+      ]
+    },
+    "section_title": "WoodMart wd_title \"bordered\" large, Russo One 400, 40/26/22px",
+    "container_width_px": 1200,
+    "accent_colors": [
+      "#3B96E3 (product tabs)",
+      "#F59A57 (WoodMart Furniture-2 demo accent, in checkout/cart layouts)"
+    ]
+  },
+  "sections": [
+    {
+      "order": 1,
+      "id": "26e8d44",
+      "label": "Hero slider",
+      "type": "slider",
+      "demo": false,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": -40.0,
+          "right": 0.0,
+          "bottom": 100.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": -40.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": -40.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_slider"
+      ],
+      "background": null,
+      "animation": {
+        "transition": "parallax",
+        "autoplay": true,
+        "autoplay_speed_ms": 20000,
+        "stretch": "full width (stretch_slider on)",
+        "height_px": {
+          "desktop": 600,
+          "tablet": 500,
+          "mobile": 500
+        },
+        "arrows_style": 3,
+        "pagination_style": 3,
+        "pagination_align": "center",
+        "pagination_color": "dark"
+      },
+      "content": {
+        "slider": "furniture-2-slider (WoodMart Slider, 3 slides)",
+        "slides": [
+          {
+            "n": 1,
+            "background": "2023/04/pexels-wasifmehmood997-19442078-scaled.jpg (Pexels stock)",
+            "bg_position": {
+              "desktop": "center center / cover",
+              "tablet": "x -120px",
+              "mobile": "x -360px"
+            },
+            "content": [
+              "Wahbayaan wordmark image 2023/04/Wahbayaan-1-1.png (full width, 80% on mobile, drop shadow 0 25px 50px 15px rgba(0,0,0,.3))",
+              "50px spacer",
+              "button \"Shop Now\" → /shop/ (white bg, hover rgba(0,0,0,.3) + white text)"
+            ]
+          },
+          {
+            "n": 2,
+            "background": "2023/04/pexels-yunustug-23638659-scaled.jpg (Pexels stock; tablet uses the 2025/06 copy)",
+            "bg_position": {
+              "desktop": "center center / cover",
+              "tablet": "center bottom, x -120px",
+              "mobile": "center bottom, x -360px"
+            },
+            "content": [
+              "image 2023/04/image-5-1-modified.png at 700×100",
+              "heading \"SHOP BY OUR SELLERS\" (Genos 36px / 17px mobile, #FFFEFE, centered)",
+              "50px spacer",
+              "button \"Marketplace\" → /marketplace/ (animation delay 350ms)"
+            ]
+          },
+          {
+            "n": 3,
+            "background": "2023/04/10-6.jpg (origin unknown)",
+            "bg_position": {
+              "desktop": "center center / cover",
+              "mobile": "x -360px"
+            },
+            "content": [
+              "heading \"OUR STORIES\" (Do Hyeon 70px weight 800 / 50px mobile, white, centered)",
+              "50px spacer",
+              "button \"About us\" → /about-us/ (extra-large, entrance animation slide-from-bottom, delay 350ms)"
+            ]
+          }
+        ],
+        "slide_settings": {
+          "content_width": {
+            "desktop": 1200,
+            "tablet": 1200,
+            "mobile": 500
+          },
+          "align": "middle / center (all breakpoints)",
+          "fallback_bg_color": "rgb(176,179,168)",
+          "slide_animation": "none"
+        }
+      },
+      "notes": "Negative top margin (-40px) pulls the slider up under the header gap."
+    },
+    {
+      "order": 2,
+      "id": "7ddcdd5",
+      "label": "Our Collections (category circles)",
+      "type": "categories",
+      "demo": false,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 110.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_title",
+        "wd_product_categories"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "heading": "Our Collections",
+        "subheading": "Browse a wide range of handcrafted pieces across all our categories. / New collections are added regularly — discover something made just for you.",
+        "title_style": "bordered, large, Russo One 40/26/26px weight 400",
+        "categories_ids_in_order": [
+          91,
+          92,
+          93,
+          96,
+          97,
+          98,
+          95,
+          94
+        ],
+        "categories": [
+          "Calligraphy Art",
+          "Paintings",
+          "Handmade Carpets & Rugs",
+          "Salt Art & Decor",
+          "Stone sculptures [Taxila]",
+          "Customize",
+          "Wall Decor & Accessories",
+          "Posters & Prints"
+        ],
+        "shows_product_count": true,
+        "image": "category thumbnail, rounded 50% (circles), white card background",
+        "columns": {
+          "desktop": "widget default (not set in data)",
+          "tablet": 4,
+          "mobile": 3
+        },
+        "title_font": "20/18px weight 200 capitalize"
+      },
+      "notes": null
+    },
+    {
+      "order": 3,
+      "id": "28521a5",
+      "label": "Bestsellers (tabbed product grid)",
+      "type": "product_tabs",
+      "demo": "mixed",
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": {
+        "desktop": {
+          "column": "10",
+          "row": "0",
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 40.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_products_tabs"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "heading": "Bestsellers (Anton 30/26/26px)",
+        "tabs": [
+          "All (bestselling, hand-picked IDs — mostly missing)",
+          "Calligraphy Art",
+          "Salt Art",
+          "Stone Sculptures",
+          "Wall decor",
+          "Customized"
+        ],
+        "tab_label_font": "Cairo, capitalize",
+        "accent_color": "#3B96E3",
+        "design": "simple",
+        "columns": {
+          "desktop": 5,
+          "tablet": 3,
+          "mobile": "widget default (not set)"
+        },
+        "items_per_page": 10,
+        "image_size": "350×400 crop",
+        "cards": "white background, bordered grid, no shadow"
+      },
+      "notes": "Tab names are real; the products it shows are demo products."
+    },
+    {
+      "order": 4,
+      "id": "85ab481",
+      "label": "Shop by Artists (five tall image cards)",
+      "type": "vendors_list",
+      "demo": "mixed",
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 100.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": [
+        {
+          "id": "41d75b6",
+          "width": null,
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_infobox",
+            "wd_infobox",
+            "wd_infobox",
+            "wd_infobox",
+            "wd_infobox"
+          ],
+          "sticky": null
+        }
+      ],
+      "widgets": [
+        "wd_title",
+        "wd_infobox",
+        "wd_infobox",
+        "wd_infobox",
+        "wd_infobox",
+        "wd_infobox"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "heading": "Shop by Artists",
+        "subheading": "Paintings rooted in heritage, crafted by artists across Pakistan.",
+        "cards": "5 × wd_infobox \"bg-hover\" cards: 64×64 circular logo, title 22/18px, subtitle, full-bleed background photo (cover), bottom padding 310px makes them tall; hover darkens #0000001C; each links to /shop/?filter_brand=<brand>",
+        "card_content": "DEMO furniture brands (Elitis, Hay, Kettal, Llardo, Poliform) — never ship",
+        "card_widths": {
+          "desktop": "20% (5 in a row)",
+          "tablet": "50% (2 per row, 10px inner margins, 20px row gap, wraps)",
+          "mobile": "100% (stacked, column direction)"
+        },
+        "hidden": "5th card hidden on tablet and mobile"
+      },
+      "notes": "Intended to be a vendor/artist strip; was never filled with real sellers."
+    },
+    {
+      "order": 5,
+      "id": "06232b0",
+      "label": "Crafted Heritage (section heading)",
+      "type": "heading",
+      "demo": false,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 30.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 10.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_title"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "heading": "Crafted Heritage",
+        "subheading": "Moments, textures, and details that carry the spirit of Pakistani craftsmanship.",
+        "style": "bordered, large, Russo One 40/22px"
+      },
+      "notes": null
+    },
+    {
+      "order": 6,
+      "id": "3ed7aae",
+      "label": "Lookbook mosaic (image hotspots + banners)",
+      "type": "banner_grid",
+      "demo": true,
+      "stretch": "stretch-content",
+      "direction": {
+        "desktop": "row",
+        "mobile": "column"
+      },
+      "wrap_tablet": "wrap",
+      "gap": {
+        "tablet": {
+          "column": "0",
+          "row": "20",
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 100.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": {
+        "desktop": {
+          "top": 0.0,
+          "right": 20.0,
+          "bottom": 0.0,
+          "left": 20.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 15.0,
+          "bottom": 0.0,
+          "left": 15.0,
+          "unit": "px"
+        }
+      },
+      "columns": [
+        {
+          "id": "c0b73d1",
+          "width": {
+            "desktop": "20%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": {
+            "tablet": {
+              "top": 0.0,
+              "right": 10.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            },
+            "mobile": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            }
+          },
+          "hidden_on": null,
+          "widgets": [
+            "wd_image_hotspot",
+            "wd_image_hotspot"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "d9fcc89",
+          "width": {
+            "desktop": "20%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": {
+            "tablet": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 10.0,
+              "unit": "px"
+            },
+            "mobile": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            }
+          },
+          "hidden_on": null,
+          "widgets": [
+            "wd_image_hotspot",
+            "wd_banner"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "2e3860d",
+          "width": {
+            "desktop": "20%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": {
+            "tablet": {
+              "top": 0.0,
+              "right": 10.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            },
+            "mobile": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            }
+          },
+          "hidden_on": null,
+          "widgets": [
+            "wd_image_hotspot",
+            "wd_image_hotspot"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "5aa7dcc",
+          "width": {
+            "desktop": "20%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": {
+            "tablet": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 10.0,
+              "unit": "px"
+            },
+            "mobile": {
+              "top": 0.0,
+              "right": 0.0,
+              "bottom": 0.0,
+              "left": 0.0,
+              "unit": "px"
+            }
+          },
+          "hidden_on": null,
+          "widgets": [
+            "wd_banner",
+            "wd_image_hotspot"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "efa65bf",
+          "width": {
+            "desktop": "20%",
+            "tablet": "100%"
+          },
+          "padding": null,
+          "hidden_on": [
+            "tablet",
+            "mobile"
+          ],
+          "widgets": [
+            "wd_image_hotspot",
+            "wd_image_hotspot"
+          ],
+          "sticky": null
+        }
+      ],
+      "widgets": [
+        "wd_image_hotspot",
+        "wd_image_hotspot",
+        "wd_image_hotspot",
+        "wd_banner",
+        "wd_image_hotspot",
+        "wd_image_hotspot",
+        "wd_banner",
+        "wd_image_hotspot",
+        "wd_image_hotspot",
+        "wd_image_hotspot"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "columns": "5 equal columns, each a vertical stack of 2 items (hotspot image or short banner)",
+        "items": [
+          "col1: hotspot-1, hotspot-6",
+          "col2: hotspot-2, banner \"GLADØM\" (186px tall)",
+          "col3: hotspot-3 (plays an mp4 video), hotspot-7",
+          "col4: banner \"HÄLLAN\" (186px), hotspot-4",
+          "col5: hotspot-5, hotspot-8 (whole column hidden on tablet+mobile)"
+        ],
+        "hotspots": "3 pins each, icon shows on hover, pin colour #FFFFFF4D, each linked to a product (demo IDs 250/421/380)",
+        "stretch": "stretch-content (full-bleed) with 20px side padding (15px tablet)"
+      },
+      "notes": "All images/text are WoodMart demo; only the idea (a shoppable lookbook) is reusable."
+    },
+    {
+      "order": 7,
+      "id": "b0c1d74",
+      "label": "Collection of the week (products carousel + hotspot)",
+      "type": "product_carousel",
+      "demo": true,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "row",
+        "mobile": "column"
+      },
+      "wrap_tablet": null,
+      "gap": {
+        "desktop": {
+          "column": "30",
+          "row": "40",
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 100.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": [
+        {
+          "id": "1780e46",
+          "width": {
+            "desktop": "66.6%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_title",
+            "wd_products"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "339780a",
+          "width": {
+            "desktop": "33.4%",
+            "tablet": "50%",
+            "mobile": "100%"
+          },
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_image_hotspot"
+          ],
+          "sticky": null
+        }
+      ],
+      "widgets": [
+        "wd_title",
+        "wd_products",
+        "wd_image_hotspot"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "left_66%": "heading \"Furniture collection of the week\" (32/26/22px, left) + wd_products carousel, 3 hand-picked top-rated products, 350×400 images, slides per view tablet 2 / mobile 2",
+        "right_33%": "image hotspot (demo hotspot-9)"
+      },
+      "notes": null
+    },
+    {
+      "order": 8,
+      "id": "45ab4ee",
+      "label": "Rules for choosing furniture (heading)",
+      "type": "heading",
+      "demo": true,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 10.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_title"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "heading": "Rules for choosing furniture (32/26/22px, left)"
+      },
+      "notes": null
+    },
+    {
+      "order": 9,
+      "id": "66428ad",
+      "label": "Image + text + video card",
+      "type": "text_image",
+      "demo": true,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "row"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 100.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": [
+        {
+          "id": "1a4214c",
+          "width": {
+            "desktop": "42%"
+          },
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_image_or_svg"
+          ],
+          "sticky": null
+        },
+        {
+          "id": "c62ec60",
+          "width": {
+            "desktop": "58%"
+          },
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_text_block",
+            "wd_list",
+            "wd_title",
+            "wd_video"
+          ],
+          "sticky": null
+        }
+      ],
+      "widgets": [
+        "wd_image_or_svg",
+        "wd_text_block",
+        "wd_list",
+        "wd_title",
+        "wd_video"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "left_42%": "illustration PNG",
+        "responsive": "no tablet/mobile overrides: the 42/58 split stays side by side on phones",
+        "right_58%": "H4 + paragraph, 3-item bullet list (6px dot SVG), then a pill card (border-radius 200px, padding 90px 15px, cover background photo) holding a white title \"SØLREM furniture collection\" + YouTube play button (80px, white 90%)"
+      },
+      "notes": null
+    },
+    {
+      "order": 10,
+      "id": "0d84707",
+      "label": "Latest articles (blog carousel)",
+      "type": "blog_carousel",
+      "demo": true,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": {
+        "desktop": {
+          "column": "30",
+          "row": "30",
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "desktop": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 80.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "tablet": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 60.0,
+          "left": 0.0,
+          "unit": "px"
+        },
+        "mobile": {
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 40.0,
+          "left": 0.0,
+          "unit": "px"
+        }
+      },
+      "padding": null,
+      "columns": [
+        {
+          "id": "81f5575",
+          "width": null,
+          "padding": null,
+          "hidden_on": null,
+          "widgets": [
+            "wd_title",
+            "wd_button"
+          ],
+          "sticky": null
+        }
+      ],
+      "widgets": [
+        "wd_title",
+        "wd_button",
+        "wd_blog"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "header_row": "title \"Latest articles\" (left) + round white button \"Visit the Blog\" with arrow icon (right), space-between",
+        "blog": "wd_blog carousel, design \"meta-image\", 5 posts, 20px spacing, slides per view 4 / 3 / 1"
+      },
+      "notes": "Posts shown are the six demo posts."
+    },
+    {
+      "order": 11,
+      "id": "35a30bd",
+      "label": "SEO text with Read more",
+      "type": "collapsible_text",
+      "demo": true,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": null,
+      "padding": null,
+      "columns": null,
+      "widgets": [
+        "wd_text_block",
+        "wd_button"
+      ],
+      "background": null,
+      "animation": null,
+      "content": {
+        "text": "H3 + paragraphs about a furniture store (demo)",
+        "collapse": "collapsible container 330px (216px tablet), fades into #F3F2EE, \"Read More\" link button expands it"
+      },
+      "notes": "#F3F2EE is the page background colour (the fade matches it)."
+    },
+    {
+      "order": 12,
+      "id": "dfc11fa",
+      "label": "Empty container",
+      "type": "empty",
+      "demo": false,
+      "stretch": "boxed (theme container)",
+      "direction": {
+        "desktop": "column"
+      },
+      "wrap_tablet": null,
+      "gap": null,
+      "margin": null,
+      "padding": null,
+      "columns": null,
+      "widgets": [],
+      "background": null,
+      "animation": null,
+      "content": {},
+      "notes": "Empty leftover container at the end of the page."
+    }
+  ]
+}
