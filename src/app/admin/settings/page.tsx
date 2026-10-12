@@ -10,6 +10,7 @@ import {
   saveReferralSettingsAction,
   saveSeoSettingsAction,
   saveSiteSettingsAction,
+  saveVisitorMapSettingsAction,
 } from "@/app/actions/admin/settings";
 import { ActionForm, SubmitButton } from "@/components/admin/action-form";
 import { FieldRow, SelectInput, TextArea, TextInput, Toggle } from "@/components/admin/controls";
@@ -32,6 +33,7 @@ const SECTIONS = [
   { id: "payouts", label: "Payout schedule", keys: ["payouts"] },
   { id: "programmes", label: "Referrals & loyalty", keys: ["referral", "loyalty"] },
   { id: "maintenance", label: "Maintenance mode", keys: ["maintenance"] },
+  { id: "visitor-map", label: "Visitor map", keys: ["visitor_map"] },
 ] as const;
 
 const KEYS = [...new Set(SECTIONS.flatMap((s) => s.keys))] as SettingKey[];
@@ -45,7 +47,7 @@ export default async function SettingsPage() {
   const canRates = user.permissions.has("rates.manage");
   const d = await db();
   const [s, allVendors, history] = await Promise.all([
-    getSettings(["site", "seo", "home", "escrow", "buyer_protection", "payouts", "referral", "loyalty", "maintenance"]),
+    getSettings(["site", "seo", "home", "escrow", "buyer_protection", "payouts", "referral", "loyalty", "maintenance", "visitor_map"]),
     d.select({ id: vendors.id, name: vendors.displayName, status: vendors.status }).from(vendors).orderBy(asc(vendors.displayName)),
     d
       .select({ entityId: auditLog.entityId, createdAt: auditLog.createdAt, actor: users.name, summary: auditLog.summary })
@@ -292,6 +294,17 @@ export default async function SettingsPage() {
                   <TextInput name="message" defaultValue={s.maintenance.message} required />
                 </FieldRow>
                 <SubmitButton variant={s.maintenance.enabled ? "primary" : "outline"}>Save maintenance mode</SubmitButton>
+              </ActionForm>
+            </Panel>
+          </section>
+
+          <section id="visitor-map" className="scroll-mt-24">
+            <Panel title={sec("visitor-map").label} description="The visitor map uses its built-in world map unless a Google Maps key is saved." action={lastSaved(sec("visitor-map").keys)}>
+              <ActionForm action={saveVisitorMapSettingsAction} className="space-y-3">
+                <FieldRow label="Google Maps JavaScript API key" hint="A browser key: it is sent to staff browsers, so restrict it to this site's address in Google Cloud. Leave empty for the built-in map.">
+                  <TextInput name="googleMapsKey" defaultValue={s.visitor_map.googleMapsKey ?? ""} placeholder="AIza…" autoComplete="off" spellCheck={false} className="max-w-md font-mono" />
+                </FieldRow>
+                <SubmitButton>Save visitor map</SubmitButton>
               </ActionForm>
             </Panel>
           </section>

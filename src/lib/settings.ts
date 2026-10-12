@@ -50,6 +50,8 @@ export type SettingsShape = {
   domestic_delivery: DomesticDeliverySetting;
   /** Card, JazzCash, Easypaisa — non-secret config only; secrets are env vars. */
   payment_methods: PaymentMethodsSetting;
+  /** Admin visitor map: optional Google Maps browser key (public by design — restrict it by HTTP referrer). */
+  visitor_map: { googleMapsKey: string | null };
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -91,6 +93,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   brand_margin: DEFAULT_BRAND_MARGIN,
   domestic_delivery: DEFAULT_DOMESTIC_DELIVERY,
   payment_methods: DEFAULT_PAYMENT_METHODS,
+  visitor_map: { googleMapsKey: null },
 };
 
 export type SettingKey = keyof SettingsShape;
