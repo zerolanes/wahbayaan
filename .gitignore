@@ -14,3 +14,8 @@ screenshots/
 
 # Local agent worktrees
 .claude/worktrees/
+
+# WordPress export / theme files: untrusted input, may contain personal data — never commit.
+theme-source/*.xml
+theme-source/*.zip
+theme-source/unpacked/
