@@ -60,6 +60,8 @@ export type SettingsShape = {
   analytics_secrets: { ipinfoToken: string | null; ip2locationKey: string | null };
   /** Last daily cleanup run (written by the ingest route or /api/cron/analytics-cleanup). */
   analytics_maintenance: { lastCleanupAt: string | null; lastSummary: string | null };
+  /** Admin visitor map: optional Google Maps browser key (public by design — restrict it by HTTP referrer). */
+  visitor_map: { googleMapsKey: string | null };
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -105,6 +107,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   analytics: DEFAULT_ANALYTICS,
   analytics_secrets: { ipinfoToken: null, ip2locationKey: null },
   analytics_maintenance: { lastCleanupAt: null, lastSummary: null },
+  visitor_map: { googleMapsKey: null },
 };
 
 export type SettingKey = keyof SettingsShape;

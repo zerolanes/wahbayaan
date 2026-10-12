@@ -19,3 +19,4 @@ screenshots/
 theme-source/*.xml
 theme-source/*.zip
 theme-source/unpacked/
+.cache/

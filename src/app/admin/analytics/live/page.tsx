@@ -27,7 +27,7 @@ export default async function LivePage() {
         <MiniStat label="Countries" value={String(countries.size)} />
         <MiniStat label="Busiest page" value={topPage ? topPage[0] : "—"} hint={topPage ? `${topPage[1]} viewing` : undefined} />
       </div>
-      <VisitorMapSlot live />
+      <VisitorMapSlot liveOnly />
       <TableCard>
         {rows.length ? (
           <Table scrollLabel="Live visitors">

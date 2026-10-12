@@ -85,6 +85,15 @@ export const saveLoyaltySettingsAction = adminAction(
   },
 );
 
+/** Google Maps browser key for the admin visitor map. Empty = use the built-in map. */
+export const saveVisitorMapSettingsAction = adminAction(
+  "settings.manage",
+  z.object({
+    googleMapsKey: zOptStr(120).refine((v) => !v || /^[A-Za-z0-9_-]{20,120}$/.test(v), "That doesn't look like a Google Maps API key."),
+  }),
+  async ({ data, audit }) => saveSetting("visitor_map", "Visitor map", { googleMapsKey: data.googleMapsKey ?? null }, audit),
+);
+
 // ── Feature flags ───────────────────────────────────────────────────────────
 
 const zFlag = z.enum(FLAG_KEYS as [string, ...string[]]);
