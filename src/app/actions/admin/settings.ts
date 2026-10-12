@@ -9,6 +9,7 @@ import { adminAction, AdminError, type AuditEntry } from "@/lib/admin/action";
 import { changedFields } from "@/lib/admin/diff";
 import { FLAG_KEYS, FLAG_META } from "@/lib/admin/flags";
 import { zBool, zInt, zOptMoney, zOptStr, zStr } from "@/lib/admin/zod";
+import { parseSocialLinks, SOCIAL_KEYS } from "@/lib/social";
 
 /** Save one typed setting and record exactly which fields changed. */
 async function saveSetting<K extends SettingKey>(key: K, label: string, value: SettingsShape[K], audit: (e: AuditEntry) => Promise<void>) {
@@ -24,8 +25,23 @@ const zUrlOrNull = zOptStr(300).refine((v) => !v || /^https?:\/\//.test(v), "Use
 
 export const saveSiteSettingsAction = adminAction(
   "settings.manage",
-  z.object({ name: zStr(80), supportEmail: z.email("Enter a valid support email"), whatsapp: zOptStr(40), instagram: zUrlOrNull, pinterest: zUrlOrNull }),
-  async ({ data, audit }) => saveSetting("site", "Store info", data, audit),
+  z.object({ name: zStr(80), supportEmail: z.email("Enter a valid support email"), whatsapp: zOptStr(40), instagram: zUrlOrNull.optional(), pinterest: zUrlOrNull.optional() }),
+  async ({ data, audit }) => {
+    // Instagram / Pinterest moved to "Social links"; keep the stored values when the form no longer sends them.
+    const before = await getSetting("site");
+    return saveSetting("site", "Store info", { ...data, instagram: data.instagram === undefined ? before.instagram : data.instagram, pinterest: data.pinterest === undefined ? before.pinterest : data.pinterest }, audit);
+  },
+);
+
+/** Footer and mobile-menu social icons. Each link is checked against its network; empty = not shown. */
+export const saveSocialLinksAction = adminAction(
+  "settings.manage",
+  z.object(Object.fromEntries(SOCIAL_KEYS.map((k) => [k, zOptStr(300)])) as Record<(typeof SOCIAL_KEYS)[number], ReturnType<typeof zOptStr>>),
+  async ({ data, audit }) => {
+    const parsed = parseSocialLinks(data);
+    if (!parsed.ok) throw new AdminError(parsed.error);
+    return saveSetting("social_links", "Social links", parsed.links, audit);
+  },
 );
 
 export const saveSeoSettingsAction = adminAction(

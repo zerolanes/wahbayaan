@@ -13,6 +13,7 @@ import { ROLE_PRESETS } from "../src/lib/auth/permissions";
 import { DESTINATIONS } from "../src/lib/money/currency";
 import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES } from "./seed-data";
 import { seedBrandsBase, seedBrandsDemo } from "./seed-brands";
+import { seedDirectory } from "../src/lib/directory-seed";
 
 const DEMO_PASSWORD = "wahbayaan-demo";
 const art = (kind: string, seed: number, size?: string) => `/art/${kind}/${seed}${size ? `-${size}` : ""}.svg`;
@@ -99,6 +100,7 @@ export async function seedBase(db: Db) {
   for (const p of POLICY_PAGES) await db.insert(t.pages).values(p).onConflictDoNothing({ target: t.pages.slug });
 
   await seedBrandsBase(db);
+  await seedDirectory(db);
 
   // Owner account from the environment (production bootstrap).
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {

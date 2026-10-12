@@ -22,6 +22,8 @@ export default async function BrandsPage() {
   if (!flags.pakistaniBrands) notFound();
   const [ctx, brands, products] = await Promise.all([getBuyerContext(), getPublicBrands(), getPublicBrandProducts()]);
   const fresh = products.filter((p) => p.isNew).slice(0, 8);
+  // Partner brands and self-listed labels together; a brand shows once it has something to buy.
+  const shown = brands.filter((b) => b.productCount > 0);
   const domestic = isDomestic(ctx.destination);
 
   return (
@@ -58,10 +60,23 @@ export default async function BrandsPage() {
 
       <Container className="mt-14 space-y-16">
         <section aria-labelledby="dir-h">
-          <SectionHeading eyebrow="Brand partners" title={<span id="dir-h">Shop by brand</span>} />
-          {brands.length ? (
+          <SectionHeading
+            eyebrow="Brand partners"
+            title={<span id="dir-h">Shop by brand</span>}
+            action={
+              <span className="flex flex-wrap gap-4 text-sm font-medium">
+                <Link href="/brands/directory" className="text-terracotta-600 hover:underline">
+                  Brand directory
+                </Link>
+                <Link href="/brands/join" className="text-umber-600 hover:text-umber-900">
+                  Sell your brand
+                </Link>
+              </span>
+            }
+          />
+          {shown.length ? (
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {brands.map((b) => (
+              {shown.map((b) => (
                 <BrandTile key={b.id} brand={b} />
               ))}
             </div>

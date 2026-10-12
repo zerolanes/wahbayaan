@@ -3,11 +3,13 @@ import { BadgeCheck, Lock, ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { featureFlags } from "@/lib/features";
 import { getPublicCategories } from "@/lib/queries/catalog";
+import { getSetting } from "@/lib/settings";
 import { NewsletterForm } from "./newsletter-form";
+import { SocialLinksList } from "./social-links";
 
 /** Plain deep-indigo footer. `tabBarSpace` leaves room for the phone tab bar. */
 export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean }) {
-  const [categories, flags] = await Promise.all([getPublicCategories(), featureFlags()]);
+  const [categories, flags, social] = await Promise.all([getPublicCategories(), featureFlags(), getSetting("social_links")]);
   const col = "space-y-1 text-sm text-sand-100/85";
   const link = "inline-flex min-h-9 items-center transition-colors hover:text-gold-200 md:min-h-0 md:py-1";
   const head = "text-xs font-semibold tracking-[0.08em] text-gold-300 uppercase";
@@ -20,6 +22,7 @@ export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean
             Heritage craft from verified Pakistani artisans. Every cost shown up front; your payment protected until it arrives.
           </p>
           <NewsletterForm />
+          <SocialLinksList links={social} owner="Wahbayaan" className="mt-6 -ml-2.5" linkClassName="text-sand-100/85 hover:bg-white/10 hover:text-gold-200" />
         </div>
         <div>
           <p className={head}>Crafts</p>
@@ -52,6 +55,8 @@ export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean
             <li><Link className={link} href="/artisans">Our artisans</Link></li>
             {flags.journal ? <li><Link className={link} href="/journal">Heritage journal</Link></li> : null}
             <li><Link className={link} href="/become-a-seller">Sell on Wahbayaan</Link></li>
+            {flags.pakistaniBrands ? <li><Link className={link} href="/brands/join">Sell your brand</Link></li> : null}
+            {flags.pakistaniBrands ? <li><Link className={link} href="/brands/directory">Brand directory</Link></li> : null}
             <li><Link className={link} href="/contact">Contact</Link></li>
             <li><Link className={link} href="/terms">Terms</Link> · <Link className={link} href="/privacy">Privacy</Link></li>
           </ul>

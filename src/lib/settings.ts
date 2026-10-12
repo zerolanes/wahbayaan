@@ -7,6 +7,7 @@ import type { GiftWrapSetting, HandlingFeeSetting } from "@/lib/commerce/landed-
 import { DEFAULT_BRAND_MARGIN, type BrandMarginSetting } from "@/lib/brands/margin";
 import { DEFAULT_DOMESTIC_DELIVERY, type DomesticDeliverySetting } from "@/lib/brands/domestic";
 import { DEFAULT_PAYMENT_METHODS, type PaymentMethodsSetting } from "@/lib/payments/methods";
+import type { SocialLinks } from "@/lib/db/schema";
 
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
@@ -50,6 +51,8 @@ export type SettingsShape = {
   domestic_delivery: DomesticDeliverySetting;
   /** Card, JazzCash, Easypaisa — non-secret config only; secrets are env vars. */
   payment_methods: PaymentMethodsSetting;
+  /** Site social profiles (footer, mobile menu). Only networks with a URL are shown. */
+  social_links: SocialLinks;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -91,6 +94,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   brand_margin: DEFAULT_BRAND_MARGIN,
   domestic_delivery: DEFAULT_DOMESTIC_DELIVERY,
   payment_methods: DEFAULT_PAYMENT_METHODS,
+  social_links: {},
 };
 
 export type SettingKey = keyof SettingsShape;

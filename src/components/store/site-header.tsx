@@ -7,6 +7,7 @@ import { getBuyerContext } from "@/lib/buyer-context";
 import { getCartCount, getWishlistIds, loadCart } from "@/lib/commerce/cart";
 import { featureFlags } from "@/lib/features";
 import { getPublicCategories } from "@/lib/queries/catalog";
+import { getSetting } from "@/lib/settings";
 import { CurrencySwitcher } from "./currency-switcher";
 import { HeaderFrame } from "./header-frame";
 import { MenuOverlay } from "./menu-overlay";
@@ -16,7 +17,7 @@ import { MobileTabBar } from "./mobile-tab-bar";
 import { SearchDialog } from "./search-dialog";
 
 export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overlay?: boolean; tabBar?: boolean }) {
-  const [ctx, user, categories, flags] = await Promise.all([getBuyerContext(), getCurrentUser(), getPublicCategories(), featureFlags()]);
+  const [ctx, user, categories, flags, social] = await Promise.all([getBuyerContext(), getCurrentUser(), getPublicCategories(), featureFlags(), getSetting("social_links")]);
   const hidden = [
     !flags.limitedDrops && "/drops",
     !flags.customRequests && "/custom",
@@ -24,12 +25,14 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
     !flags.compare && "/compare",
     !flags.wholesale && "/wholesale",
     !flags.pakistaniBrands && "/brands",
+    !flags.pakistaniBrands && "/brands/directory",
+    !flags.pakistaniBrands && "/brands/join",
     !flags.brandRequests && "/brands/request",
   ].filter((h): h is string => !!h);
   const [cartCount, wishlist] = await Promise.all([getCartCount(ctx.ownerKey), getWishlistIds(ctx.ownerKey)]);
   // The mini-cart body is only worth loading when there is something in the bag.
   const cart = cartCount > 0 ? await loadCart() : null;
-  const accountHref = user ? (user.role === "staff" ? "/admin" : user.vendorId ? "/seller" : "/account") : "/login";
+  const accountHref = user ? (user.role === "staff" ? "/admin" : user.vendorId ? "/seller" : user.role === "seller" ? "/brand-portal" : "/account") : "/login";
   const icon = iconButtonClass("plain", "md");
   const priced = !!ctx.fx;
   const emptyCart = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null };
@@ -43,7 +46,9 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
             signedIn={!!user}
             isSeller={!!user?.vendorId}
             isStaff={user?.role === "staff"}
+            isBrandSeller={user?.role === "seller" && !user.vendorId}
             hidden={hidden}
+            social={social}
           />
           <nav className="hidden items-center gap-1 text-sm font-medium lg:flex" aria-label="Primary">
             {[

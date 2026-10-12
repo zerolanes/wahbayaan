@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, ExternalLink, Ruler } from "lucide-react";
 import { BrandListing } from "@/components/store/brands/brand-listing";
 import { BrandLogo } from "@/components/store/brands/brand-tile";
 import { NotifyForm } from "@/components/store/brands/notify-form";
+import { isSvg } from "@/components/store/illustration-tag";
+import { SocialLinksList } from "@/components/store/social-links";
 import { Breadcrumbs, Container } from "@/components/ui/misc";
 import { featureFlags } from "@/lib/features";
-import { getPublicBrand, getPublicBrandProducts } from "@/lib/queries/brands";
+import { getPublicBrand, getPublicBrandProducts, getPublicBrandProfile } from "@/lib/queries/brands";
 
 export async function generateMetadata(props: PageProps<"/brands/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
@@ -21,11 +24,16 @@ export default async function BrandPage(props: PageProps<"/brands/[slug]">) {
   const params = await props.searchParams;
   const brand = await getPublicBrand(slug);
   if (!brand) notFound();
-  const products = await getPublicBrandProducts(brand.id);
+  const [products, profile] = await Promise.all([getPublicBrandProducts(brand.id), getPublicBrandProfile(brand.id)]);
 
   return (
     <Container className="py-10 md:py-14">
       <Breadcrumbs items={[{ label: "Pakistani Brands", href: "/brands" }, { label: brand.name }]} />
+      {profile?.bannerUrl ? (
+        <div className="relative mt-6 aspect-[3/1] overflow-hidden rounded-[var(--radius-card)] bg-sand-100 md:aspect-[4/1]">
+          <Image src={profile.bannerUrl} alt={`${brand.name} banner`} fill priority sizes="(min-width: 1400px) 1400px, 100vw" unoptimized={isSvg(profile.bannerUrl)} className="object-cover" />
+        </div>
+      ) : null}
       <header className="mt-6 flex flex-wrap items-start justify-between gap-6 border-b border-umber-200/60 pb-8">
         <div className="flex items-center gap-5">
           <BrandLogo name={brand.name} logoUrl={brand.logoUrl} size={88} />
@@ -48,6 +56,7 @@ export default async function BrandPage(props: PageProps<"/brands/[slug]">) {
               </a>
             ) : null}
           </div>
+          <SocialLinksList links={profile?.socials} owner={brand.name} className="-mr-2.5" linkClassName="text-umber-700 hover:bg-umber-900/[0.06] hover:text-umber-900" />
           <NotifyForm brandId={brand.id} kind="sale" />
         </div>
       </header>
