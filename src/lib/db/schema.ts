@@ -1004,6 +1004,190 @@ export const brandFulfilments = pgTable(
   (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandLabel)],
 );
 
+// ── Brand sellers: self-signup brands and their portal ──────────────────────
+//
+// A Pakistani label applies itself (/brands/join), accepts the brand seller
+// terms (recorded below — who, when, which version), and on approval gets a
+// row in `brands` plus a `brand_members` login. The acceptance is the brand's
+// permission record, so the brand is `authorised` without a separate manual
+// permission. Everything here is self-contained; brand products, variants and
+// orders reuse the Pakistani Brands tables above.
+
+/** Public social profile links. Only links with a URL are ever rendered. */
+export type SocialLinks = Partial<Record<"instagram" | "facebook" | "tiktok" | "youtube" | "x" | "pinterest" | "whatsapp" | "linkedin", string>>;
+
+/** Extra brand page content: banner and social links (any brand), and whether the brand listed itself. */
+export const brandProfiles = pgTable("brand_profiles", {
+  brandId: uuid("brand_id")
+    .primaryKey()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  bannerUrl: text("banner_url"),
+  socials: jsonb("socials").$type<SocialLinks>().notNull().default({}),
+  /** True for brands that signed up themselves and manage their own catalogue. */
+  selfListed: boolean("self_listed").notNull().default(false),
+  updatedAt: updatedAt(),
+});
+
+export const brandSellerApplications = pgTable("brand_seller_applications", {
+  id: id(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  brandName: text("brand_name").notNull(),
+  contactName: text("contact_name").notNull(),
+  /** The applicant's role at the brand (owner, designer, e-commerce lead…). */
+  contactRole: text("contact_role"),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  websiteUrl: text("website_url"),
+  instagram: text("instagram"),
+  city: text("city"),
+  audiences: jsonb("audiences").$type<("women" | "men" | "kids" | "unisex")[]>().notNull().default([]),
+  /** What they sell, in their words (e.g. "lawn, pret, bridal"). */
+  productTypes: text("product_types"),
+  catalogueSize: text("catalogue_size"),
+  about: text("about"),
+  status: applicationStatus("status").notNull().default("submitted"),
+  reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+  reviewerNotes: text("reviewer_notes"),
+  brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+});
+
+/** Acceptance of the brand seller terms: who, when, which version. Never edited — a new acceptance is a new row. */
+export const brandTermsAcceptances = pgTable(
+  "brand_terms_acceptances",
+  {
+    id: id(),
+    applicationId: uuid("application_id").references(() => brandSellerApplications.id, { onDelete: "set null" }),
+    brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+    /** The account that accepted (set at approval when the applicant was signed out). */
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    termsVersion: text("terms_version").notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }).notNull().defaultNow(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+  },
+  (t) => [index("brand_terms_brand_idx").on(t.brandId)],
+);
+
+/** Logins that manage a brand in the brand portal. One brand per account. */
+export const brandMembers = pgTable("brand_members", {
+  id: id(),
+  brandId: uuid("brand_id")
+    .notNull()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role").notNull().default("owner"),
+  createdAt: createdAt(),
+});
+
+/** A brand's own collections. Products carry the collection name in `brand_products.collection` (storefront filters use it). */
+export const brandCollections = pgTable(
+  "brand_collections",
+  {
+    id: id(),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("brand_collections_name_idx").on(t.brandId, t.name)],
+);
+
+/** Fulfil hook: the brand marks an ordered item ready for Wahbayaan to collect. Shipping/hub logic lives elsewhere. */
+export const brandItemReadiness = pgTable("brand_item_readiness", {
+  orderItemId: uuid("order_item_id")
+    .primaryKey()
+    .references(() => brandOrderItems.id, { onDelete: "cascade" }),
+  brandId: uuid("brand_id")
+    .notNull()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  readyAt: timestamp("ready_at", { withTimezone: true }).notNull().defaultNow(),
+  markedById: uuid("marked_by_id").references(() => users.id, { onDelete: "set null" }),
+  note: text("note"),
+});
+
+// ── Brand directory (text only) ─────────────────────────────────────────────
+//
+// Pakistani brands that are NOT on Wahbayaan: name, category, a one-line factual
+// description and the brand's website. No logos, photos, products or contact
+// details — the table has no column for them.
+
+export const brandDirectoryEntries = pgTable("brand_directory_entries", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  /** women | men | women_men | kids | footwear | accessories | home | other */
+  category: text("category").notNull().default("other"),
+  description: text("description"),
+  websiteUrl: text("website_url"),
+  isHidden: boolean("is_hidden").notNull().default(false),
+  sort: integer("sort").notNull().default(0),
+  /** `seed` (docs/outreach CSV: name, category, website only) or `admin`. */
+  source: text("source").notNull().default("admin"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+// ── Affiliate programmes ────────────────────────────────────────────────────
+//
+// Outbound "Shop at {Brand}" partner links. Feed products are shown only when an
+// admin recorded that the programme's terms allow displaying feed products and
+// images (who, when, note — audited). Never added to the Wahbayaan cart.
+
+export const affiliateProgrammes = pgTable("affiliate_programmes", {
+  id: id(),
+  name: text("name").notNull(),
+  /** The store the links go to, shown as "Shop at {brandName}". */
+  brandName: text("brand_name").notNull(),
+  network: text("network"),
+  termsUrl: text("terms_url"),
+  /** draft | active | paused | ended */
+  status: text("status").notNull().default("draft"),
+  notes: text("notes"),
+  /** e.g. https://network.example/click?id=123&u={url} — `{url}` is replaced by the encoded product URL. */
+  trackingTemplate: text("tracking_template"),
+  feedUrl: text("feed_url"),
+  displayAllowed: boolean("display_allowed").notNull().default(false),
+  displayAllowedAt: timestamp("display_allowed_at", { withTimezone: true }),
+  displayAllowedById: uuid("display_allowed_by_id").references(() => users.id, { onDelete: "set null" }),
+  displayAllowedNote: text("display_allowed_note"),
+  lastImportAt: timestamp("last_import_at", { withTimezone: true }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  isDemo: isDemo(),
+});
+
+export const affiliateProducts = pgTable(
+  "affiliate_products",
+  {
+    id: id(),
+    programmeId: uuid("programme_id")
+      .notNull()
+      .references(() => affiliateProgrammes.id, { onDelete: "cascade" }),
+    externalId: text("external_id").notNull(),
+    title: text("title").notNull(),
+    productUrl: text("product_url").notNull(),
+    imageUrl: text("image_url"),
+    /** As listed in the feed (PKR minor units), for staff reference. Not shown as a Wahbayaan price. */
+    pricePkr: money("price_pkr"),
+    category: text("category"),
+    isHidden: boolean("is_hidden").notNull().default(false),
+    lastImportedAt: timestamp("last_imported_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("affiliate_products_external_idx").on(t.programmeId, t.externalId)],
+);
+
 // ── Cross-border rates (business data; pending until supplied) ──────────────
 
 export const fxRates = pgTable("fx_rates", {
@@ -1643,4 +1827,31 @@ export const analyticsVisitsRelations = relations(analyticsVisits, ({ many }) =>
 
 export const analyticsPageViewsRelations = relations(analyticsPageViews, ({ one }) => ({
   visit: one(analyticsVisits, { fields: [analyticsPageViews.visitId], references: [analyticsVisits.id] }),
+}));
+
+export const brandProfilesRelations = relations(brandProfiles, ({ one }) => ({
+  brand: one(brands, { fields: [brandProfiles.brandId], references: [brands.id] }),
+}));
+
+export const brandSellerApplicationsRelations = relations(brandSellerApplications, ({ one, many }) => ({
+  brand: one(brands, { fields: [brandSellerApplications.brandId], references: [brands.id] }),
+  acceptances: many(brandTermsAcceptances),
+}));
+
+export const brandTermsAcceptancesRelations = relations(brandTermsAcceptances, ({ one }) => ({
+  application: one(brandSellerApplications, { fields: [brandTermsAcceptances.applicationId], references: [brandSellerApplications.id] }),
+  brand: one(brands, { fields: [brandTermsAcceptances.brandId], references: [brands.id] }),
+}));
+
+export const brandMembersRelations = relations(brandMembers, ({ one }) => ({
+  brand: one(brands, { fields: [brandMembers.brandId], references: [brands.id] }),
+  user: one(users, { fields: [brandMembers.userId], references: [users.id] }),
+}));
+
+export const affiliateProgrammesRelations = relations(affiliateProgrammes, ({ many }) => ({
+  products: many(affiliateProducts),
+}));
+
+export const affiliateProductsRelations = relations(affiliateProducts, ({ one }) => ({
+  programme: one(affiliateProgrammes, { fields: [affiliateProducts.programmeId], references: [affiliateProgrammes.id] }),
 }));

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Banknote, Camera, FileCheck2, Globe2, PackageCheck, ShieldCheck } from "lucide-react";
 import { InfoHeader } from "@/components/store/info-page";
 import { ArtisanApplicationForm } from "@/components/store/lead-forms";
@@ -81,7 +82,10 @@ export default async function BecomeASellerPage() {
 
         <div className="mt-14 rounded-[var(--radius-card)] bg-white p-6 ring-1 ring-umber-200/70 sm:p-10">
           <h2 className="font-display text-4xl text-umber-900">Apply to sell</h2>
-          <p className="mt-2 mb-8 text-umber-600">About ten minutes. Have a few good photos of your finished work ready.</p>
+          <p className="mt-2 text-umber-600">About ten minutes. Have a few good photos of your finished work ready.</p>
+          <p className="mt-1 mb-8 text-sm text-umber-500">
+            Selling a clothing or fashion brand? <Link href="/brands/join" className="font-medium text-terracotta-600 underline">Sell your brand on Wahbayaan</Link>.
+          </p>
           <ArtisanApplicationForm
             categories={categories.map((c) => ({ id: c.id, label: c.name }))}
             regions={Object.entries(REGION_LABELS).map(([id, label]) => ({ id, label }))}

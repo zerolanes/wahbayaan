@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { brandProductImages, brandProducts, brandProductVariants, brands } from "@/lib/db/schema";
+import { brandProductImages, brandProducts, brandProductVariants, brandProfiles, brands } from "@/lib/db/schema";
 import { partnerLine } from "@/lib/brands/permission";
 import { isNewArrival, itemPricePkr, sortSizes, wasPricePkr } from "@/lib/brands/catalog";
 import { isBrandProductPublic, isBrandPublic } from "@/lib/trust/visibility";
@@ -104,4 +104,13 @@ export async function getBuyableVariant(variantId: string) {
   const product = (await loadAll()).products.find((p) => p.id === v.productId);
   if (!product) return null;
   return { variant: v, product };
+}
+
+/** Banner and social links for a public brand page (only for brands that pass the guards). */
+export async function getPublicBrandProfile(brandId: string) {
+  const brand = (await loadAll()).brands.find((b) => b.id === brandId);
+  if (!brand) return null;
+  const d = await db();
+  const profile = await d.query.brandProfiles.findFirst({ where: eq(brandProfiles.brandId, brandId) });
+  return { bannerUrl: profile?.bannerUrl ?? null, socials: profile?.socials ?? {}, selfListed: profile?.selfListed ?? false };
 }

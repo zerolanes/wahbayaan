@@ -7,6 +7,7 @@ import { BrandProductCard } from "@/components/store/brands/brand-product-card";
 import { NotifyForm } from "@/components/store/brands/notify-form";
 import { SizeGuideTable } from "@/components/store/brands/size-guide";
 import { VariantPicker, type PickerVariant } from "@/components/store/brands/variant-picker";
+import { CompareToggle } from "@/components/store/compare-toggle";
 import { DestinationPicker } from "@/components/store/destination-picker";
 import { LandedCostBreakdown } from "@/components/store/landed-cost";
 import { ProductGallery } from "@/components/store/product/gallery";
@@ -19,6 +20,7 @@ import { buyerUnitPrice } from "@/lib/commerce/landed-cost";
 import { featureFlags } from "@/lib/features";
 import { formatMoney, isDomestic } from "@/lib/money/currency";
 import { getPublicBrandProduct, getPublicBrandProducts } from "@/lib/queries/brands";
+import { getCompareBrandIds } from "@/lib/queries/storefront";
 
 export async function generateMetadata(props: PageProps<"/brands/[slug]/[product]">): Promise<Metadata> {
   const { slug, product } = await props.params;
@@ -27,9 +29,10 @@ export async function generateMetadata(props: PageProps<"/brands/[slug]/[product
 }
 
 export default async function BrandProductPage(props: PageProps<"/brands/[slug]/[product]">) {
-  if (!(await featureFlags()).pakistaniBrands) notFound();
+  const flags = await featureFlags();
+  if (!flags.pakistaniBrands) notFound();
   const { slug, product: productSlug } = await props.params;
-  const [ctx, product] = await Promise.all([getBuyerContext(), getPublicBrandProduct(slug, productSlug)]);
+  const [ctx, product, compareIds] = await Promise.all([getBuyerContext(), getPublicBrandProduct(slug, productSlug), getCompareBrandIds()]);
   if (!product) notFound();
   const fx = ctx.fx;
   const money = (pkr: number) => (fx ? formatMoney(buyerUnitPrice(pkr, fx), ctx.currency, { cents: true }) : "Price on request");
@@ -73,6 +76,7 @@ export default async function BrandProductPage(props: PageProps<"/brands/[slug]/
 
           <VariantPicker variants={variants} sizes={product.sizes} colours={product.colours} />
           {!product.inStock ? <NotifyForm brandId={product.brandId} productId={product.id} kind="restock" /> : null}
+          {flags.compare ? <CompareToggle productId={product.id} compared={compareIds.includes(product.id)} variant="full" kind="brand" /> : null}
 
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">

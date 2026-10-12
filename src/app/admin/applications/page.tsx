@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { and, desc, eq, ilike, or, sql, type SQL } from "drizzle-orm";
 import { DemoBadge, Empty, FilterBar, FilterSelect, StatusBadge, TableCard, Thumb } from "@/components/admin/ui";
+import { ApplicationTypeTabs, BrandApplicationsList } from "@/components/admin/brands/brand-applications-list";
 import { PageHeader, Pagination, Tabs } from "@/components/ui/misc";
 import { TBody, THead, Table, Td, Th, Tr } from "@/components/ui/table";
 import { requireStaff } from "@/lib/auth/session";
@@ -25,6 +26,7 @@ const TABS = [
 export default async function ApplicationsPage(props: PageProps<"/admin/applications">) {
   await requireStaff("vendors.view");
   const params = await props.searchParams;
+  if (str(params, "type") === "brand") return <BrandApplicationsList params={params} />;
   const page = pageOf(params);
   const tab = str(params, "status");
   const d = await db();
@@ -54,6 +56,7 @@ export default async function ApplicationsPage(props: PageProps<"/admin/applicat
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Marketplace" title="Artisan applications" description="Workshops asking to sell on Wahbayaan. Approving creates their account and artisan profile in review; verification checks happen on the artisan page." />
+      <ApplicationTypeTabs type="artisan" />
       <Tabs items={TABS.map((t) => ({ label: t.label, href: hrefWith("/admin/applications", params, { status: t.value || null }), active: tab === t.value, count: count(t.value) }))} />
       <FilterBar action="/admin/applications" q={q} placeholder="Name, email, craft or city">
         {tab ? <input type="hidden" name="status" value={tab} /> : null}

@@ -1,6 +1,6 @@
 import {
   Activity, BadgePercent, ChartLine, Cookie, Radio, Route, ShieldCheck, SlidersHorizontal, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
-  HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Mail, Megaphone, MessagesSquare, Package,
+  HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Link2, Mail, Megaphone, MessagesSquare, Package,
   PackageSearch, Palette, Receipt, Scale, ScrollText, Settings, Shield, ShieldAlert, Ship, Sparkles, Star, Store, Tags,
   Truck, UserCheck, Users, Wallet, Waypoints, Wrench,
 } from "lucide-react";
@@ -15,6 +15,7 @@ export type AdminCounts = {
   newMessages: number;
   newRequests: number;
   brandQueue: number;
+  brandApplications: number;
 };
 
 /** Company admin navigation. Items are hidden when the staff role lacks the permission. */
@@ -58,6 +59,9 @@ export function adminNav(c: AdminCounts): NavGroup[] {
         { href: "/admin/brands", label: "Brands", icon: <Tags />, permission: "brands.view" },
         { href: "/admin/brand-products", label: "Brand products", icon: <Boxes />, permission: "brands.view" },
         { href: "/admin/brand-requests", label: "Brand orders & requests", icon: <PackageSearch />, permission: "orders.view", badge: c.brandQueue },
+        { href: "/admin/applications?type=brand", label: "Brand applications", icon: <UserCheck />, permission: "vendors.view", badge: c.brandApplications },
+        { href: "/admin/brand-directory", label: "Brand directory", icon: <BookOpen />, permission: "brands.view" },
+        { href: "/admin/affiliates", label: "Affiliate programmes", icon: <Link2 />, permission: "brands.view" },
         { href: "/admin/rates/service-fee", label: "Service fee", icon: <BadgePercent />, permission: "rates.view" },
       ],
     },
