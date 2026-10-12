@@ -14,9 +14,7 @@ import { parseSizeGuide } from "@/lib/brands/size-guide";
 import { runBrandSync } from "@/lib/brands/sync";
 import { queueBrandAlerts } from "@/lib/brands/alerts";
 import { saveUpload } from "@/lib/storage";
-
-/** Paths under /brands that a brand slug must never take. */
-const RESERVED = new Set(["shop", "bag", "checkout", "request", "order-placed", "art"]);
+import { RESERVED_BRAND_SLUGS as RESERVED } from "@/lib/brands/reserved";
 
 const AUDIENCES = ["women", "men", "kids", "unisex"] as const;
 const zAudiences = z.preprocess((v) => (v == null ? [] : Array.isArray(v) ? v : [v]), z.array(z.enum(AUDIENCES)));
