@@ -346,7 +346,9 @@ export async function findParcel(input: string) {
   if (!raw) return null;
   const parsed = parseReference(raw);
   if (parsed) return (await d.query.hubParcels.findFirst({ where: eq(hubParcels.reference, parsed.reference) })) ?? null;
-  return (await d.query.hubParcels.findFirst({ where: eq(hubParcels.trackingNumber, raw) })) ?? null;
+  // Tracking numbers can repeat across couriers / over time: prefer a parcel still on its way.
+  const byTracking = await d.query.hubParcels.findMany({ where: eq(hubParcels.trackingNumber, raw), orderBy: desc(hubParcels.createdAt) });
+  return byTracking.find((p) => p.status === "in_transit" || p.status === "expected") ?? byTracking[0] ?? null;
 }
 
 async function itemCounts(orderId: string) {
@@ -433,6 +435,16 @@ export async function qcParcel(parcelId: string, actor: Actor, input: { result: 
     }
   }
   return consolidationProgress(await orderParcels(p.orderId));
+}
+
+/** Record the hand-over date a seller promised (drives "late" on the consolidation board). */
+export async function setParcelDueDate(parcelId: string, due: Date | null) {
+  const d = await db();
+  const p = await d.query.hubParcels.findFirst({ where: eq(hubParcels.id, parcelId) });
+  if (!p) throw new OrderError("Parcel not found");
+  if (!["expected", "in_transit"].includes(p.status)) throw new OrderError("This parcel has already arrived.");
+  await d.update(hubParcels).set({ expectedBy: due }).where(eq(hubParcels.id, parcelId));
+  return p;
 }
 
 export async function setParcelBin(parcelId: string, bin: string | null) {
@@ -677,7 +689,7 @@ export async function createFulfilmentQuote(orderId: string, actor: Actor, input
 export async function declineFulfilmentQuote(quoteId: string, userId: string) {
   const d = await db();
   const q = await d.query.fulfilmentQuotes.findFirst({ where: eq(fulfilmentQuotes.id, quoteId), with: { order: true } });
-  if (!q || q.order.userId !== userId) throw new OrderError("Not found");
+  if (!q || !userId || q.order.userId !== userId) throw new OrderError("Not found");
   if (q.status !== "pending" && q.status !== "approved") throw new OrderError("This charge has already been answered.");
   await d.update(fulfilmentQuotes).set({ status: "declined", respondedAt: new Date() }).where(eq(fulfilmentQuotes.id, q.id));
   await event(q.orderId, "extra_shipping_declined", "You declined the extra shipping — nothing more is charged. Our team will be in touch about the rest of your order.", { actorUserId: userId });
@@ -687,7 +699,7 @@ export async function declineFulfilmentQuote(quoteId: string, userId: string) {
 export async function payFulfilmentQuote(quoteId: string, userId: string, origin: string) {
   const d = await db();
   const q = await d.query.fulfilmentQuotes.findFirst({ where: eq(fulfilmentQuotes.id, quoteId), with: { order: true } });
-  if (!q || q.order.userId !== userId) throw new OrderError("Not found");
+  if (!q || !userId || q.order.userId !== userId) throw new OrderError("Not found");
   if (q.status !== "pending" && q.status !== "approved") throw new OrderError("This charge has already been answered.");
   const start = await startCheckout({
     orderId: q.orderId,
@@ -751,7 +763,7 @@ export function returnEligibility(
 export async function requestReturn(orderNumber: string, userId: string, input: { items: ReturnItem[]; reason: string; description: string; photos: string[]; vendorOrderId?: string | null }) {
   const d = await db();
   const order = await d.query.orders.findFirst({ where: eq(orders.number, orderNumber), with: { fulfilment: true, returnRequests: true } });
-  if (!order || order.userId !== userId) throw new OrderError("Order not found");
+  if (!order || !userId || order.userId !== userId) throw new OrderError("Order not found");
   const { buyer_protection } = await getSettings(["buyer_protection"]);
   const elig = returnEligibility(order, order.fulfilment?.mode ?? null, buyer_protection);
   if (!elig.ok) throw new OrderError(elig.reason);

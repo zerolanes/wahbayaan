@@ -6,7 +6,7 @@ import { db } from "@/lib/db/client";
 import { couriers, hubs, orders, returnRequests } from "@/lib/db/schema";
 import { adminAction, AdminError, files } from "@/lib/admin/action";
 import { orderMoney } from "@/lib/admin/money";
-import { zBool, zIds, zMoney, zOptInt, zOptNum, zOptStr, zStr, zUuid } from "@/lib/admin/zod";
+import { zBool, zIds, zMoney, zOptDate, zOptInt, zOptNum, zOptStr, zStr, zUuid } from "@/lib/admin/zod";
 import { sendEmail } from "@/lib/email";
 import { adapterChoices } from "@/lib/fulfilment/couriers/registry";
 import {
@@ -21,6 +21,7 @@ import {
   refundReturn,
   sendParcelBackToSeller,
   setParcelBin,
+  setParcelDueDate,
   updateReturn,
   vendorContact,
 } from "@/lib/fulfilment/service";
@@ -166,6 +167,12 @@ export const setBinAction = adminAction("hub.operate", z.object({ parcelId: zUui
   await setParcelBin(data.parcelId, data.bin);
   await audit({ action: "hub.bin", entity: "hub_parcel", entityId: data.parcelId, summary: `Stored in ${data.bin ?? "—"}` });
   return { message: "Location saved" };
+});
+
+export const parcelDueAction = adminAction("hub.operate", z.object({ parcelId: zUuid, due: zOptDate }), async ({ data, audit }) => {
+  const p = await setParcelDueDate(data.parcelId, data.due);
+  await audit({ action: "hub.due_date", entity: "hub_parcel", entityId: p.id, summary: `${p.reference}: seller's hand-over date set to ${data.due ? data.due.toISOString().slice(0, 10) : "not stated"}` });
+  return { message: "Due date saved" };
 });
 
 export const sendBackAction = adminAction("hub.operate", z.object({ parcelId: zUuid, note: zStr(1000) }), async ({ data, user, audit }) => {

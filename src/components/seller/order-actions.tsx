@@ -16,7 +16,7 @@ export function OrderActions({ vendorOrderId, status, orderPaid, disputed, couri
   if (disputed)
     return <p className="text-umber-600 text-sm">The buyer opened a case. Your payout is on hold until our team resolves it — reply if they message you.</p>;
   if (status === "shipped") return <p className="text-umber-600 text-sm">Shipped — delivery is confirmed by the courier or our team.</p>;
-  if (hideShipForm && status === "ready_to_ship") return null;
+  if (hideShipForm && status === "ready_to_ship") return <p className="text-umber-600 text-sm">Ready — follow the courier or hub steps below.</p>;
   if (status === "delivered")
     return <p className="text-success-700 text-sm">Delivered. Your payout is released when the buyer confirms or the protection window ends.</p>;
   if (status === "cancelled") return <p className="text-umber-500 text-sm">This order was cancelled.</p>;

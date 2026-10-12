@@ -3,6 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { ScanLine } from "lucide-react";
 import {
   consolidationDecisionAction,
+  parcelDueAction,
   qcParcelAction,
   receiveParcelAction,
   remindSellerAction,
@@ -187,7 +188,7 @@ export default async function HubOpsPage(props: PageProps<"/admin/hub">) {
                   </div>
                   <StatusBadge kind="hubParcel" status={p.status} />
                 </div>
-                <ActionForm action={qcParcelAction} encType="multipart/form-data" inline className="mt-3 grid gap-3 sm:grid-cols-[1fr_120px_1fr_auto] sm:items-end">
+                <ActionForm action={qcParcelAction} inline className="mt-3 grid gap-3 sm:grid-cols-[1fr_120px_1fr_auto] sm:items-end">
                   <input type="hidden" name="parcelId" value={p.id} />
                   <FieldRow label="Notes (required if it fails)" htmlFor={`qcn-${p.id}`}>
                     <TextInput id={`qcn-${p.id}`} name="notes" placeholder="Condition, matches the listing, packing…" />
@@ -312,6 +313,13 @@ export default async function HubOpsPage(props: PageProps<"/admin/hub">) {
                         <span className="flex items-center gap-2">
                           {lateParcels.some((l) => l.id === p.id) ? <Badge tone="danger">Late</Badge> : null}
                           <StatusBadge kind="hubParcel" status={p.status} />
+                          {["expected", "in_transit"].includes(p.status) ? (
+                            <ActionForm action={parcelDueAction} className="flex items-center gap-1">
+                              <input type="hidden" name="parcelId" value={p.id} />
+                              <TextInput type="date" name="due" aria-label={`Seller's hand-over date for ${p.reference}`} defaultValue={p.expectedBy ? p.expectedBy.toISOString().slice(0, 10) : ""} className="w-36" />
+                              <SubmitButton variant="ghost">Set due</SubmitButton>
+                            </ActionForm>
+                          ) : null}
                           {lateParcels.some((l) => l.id === p.id) && p.vendorOrderId ? (
                             <ActionButton action={remindSellerAction} fields={{ vendorOrderId: p.vendorOrderId, orderNumber: o.number }} variant="ghost">
                               Remind seller
