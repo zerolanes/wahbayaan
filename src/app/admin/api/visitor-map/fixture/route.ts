@@ -40,7 +40,10 @@ export async function GET(req: Request) {
   const live = url.searchParams.get("live") === "1";
   const hideDc = url.searchParams.get("hideDc") === "1";
   const rotate = Number(url.searchParams.get("rotate") ?? 0);
-  const fixture = JSON.parse(await readFile(path.join(process.cwd(), "tests/fixtures/visitor-map.json"), "utf8")) as { places: FixturePlace[]; latestRotation: string[] };
+  const fixture = JSON.parse(await readFile(path.join(process.cwd(), "tests/fixtures/visitor-map.json"), "utf8")) as {
+    places: FixturePlace[];
+    latestRotation: string[];
+  };
 
   const now = Date.now();
   const maxMinutes = RANGE_MINUTES[range] ?? RANGE_MINUTES["7d"];
@@ -63,7 +66,14 @@ export async function GET(req: Request) {
   const byCountry = new Map<string, { countryCode: string; country: string; visits: number; uniqueVisitors: number; lastSeen: string; online: boolean }>();
   for (const p of places) {
     if (!p.countryCode) continue;
-    const c = byCountry.get(p.countryCode) ?? { countryCode: p.countryCode, country: p.country ?? p.countryCode, visits: 0, uniqueVisitors: 0, lastSeen: p.lastSeen, online: false };
+    const c = byCountry.get(p.countryCode) ?? {
+      countryCode: p.countryCode,
+      country: p.country ?? p.countryCode,
+      visits: 0,
+      uniqueVisitors: 0,
+      lastSeen: p.lastSeen,
+      online: false,
+    };
     c.visits += p.visits;
     c.uniqueVisitors += p.uniqueVisitors;
     if (p.lastSeen > c.lastSeen) c.lastSeen = p.lastSeen;

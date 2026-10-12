@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clusterPoints, crossSize, zoomToSeparate } from "@/components/admin/visitor-map/cluster";
+import { clusterPoints, crossSize, zoomToSeparate, zoomToSplit } from "@/components/admin/visitor-map/cluster";
 import {
   baseToScreen,
   clampK,
@@ -227,8 +227,12 @@ describe("clustering", () => {
 
   it("is order-independent for equal input", () => {
     const pts = Array.from({ length: 60 }, (_, i) => pt(`p${i}`, (i * 37) % 400, (i * 91) % 300, (i % 7) + 1));
-    const a = clusterPoints(pts).map((c) => c.members.slice().sort().join(",")).sort();
-    const b = clusterPoints([...pts].reverse()).map((c) => c.members.slice().sort().join(",")).sort();
+    const a = clusterPoints(pts)
+      .map((c) => c.members.slice().sort().join(","))
+      .sort();
+    const b = clusterPoints([...pts].reverse())
+      .map((c) => c.members.slice().sort().join(","))
+      .sort();
     expect(a).toEqual(b);
     expect(clusterPoints(pts).reduce((n, c) => n + c.members.length, 0)).toBe(60);
   });
@@ -255,8 +259,51 @@ describe("clustering", () => {
     const k = zoomToSeparate(points, 2);
     expect(k).toBeCloseTo(2 * ((26 * 1.25) / 10), 9);
     expect(clusterPoints(points.map((p, i) => pt(String(i), (p.x * k) / 2, (p.y * k) / 2))).length).toBe(3);
-    expect(zoomToSeparate([{ x: 1, y: 1 }, { x: 1, y: 1 }], 3)).toBe(MAX_K);
-    expect(zoomToSeparate([{ x: 0, y: 0 }, { x: 0.001, y: 0 }], 3)).toBe(MAX_K);
+    expect(
+      zoomToSeparate(
+        [
+          { x: 1, y: 1 },
+          { x: 1, y: 1 },
+        ],
+        3,
+      ),
+    ).toBe(MAX_K);
+    expect(
+      zoomToSeparate(
+        [
+          { x: 0, y: 0 },
+          { x: 0.001, y: 0 },
+        ],
+        3,
+      ),
+    ).toBe(MAX_K);
+  });
+
+  it("zoomToSplit finds the zoom where a merged cross first splits in two", () => {
+    // Two tight groups 20 px apart (merged at k = 1).
+    const pts = [
+      { x: 0, y: 0, weight: 5 },
+      { x: 2, y: 1, weight: 1 },
+      { x: 20, y: 0, weight: 4 },
+      { x: 21, y: 2, weight: 1 },
+    ];
+    expect(clusterPoints(pts.map((p, i) => ({ ...p, item: i }))).length).toBe(1);
+    const k = zoomToSplit(pts, 1);
+    expect(k).toBeGreaterThanOrEqual(2);
+    expect(k).toBeLessThan(4);
+    const cx = 10.75;
+    const at = (z: number) => clusterPoints(pts.map((p, i) => ({ x: cx + (p.x - cx) * z, y: p.y * z, weight: p.weight, item: i }))).length;
+    expect(at(k)).toBeGreaterThanOrEqual(2);
+    // Same spot: can't split, go to max zoom.
+    expect(
+      zoomToSplit(
+        [
+          { x: 5, y: 5, weight: 1 },
+          { x: 5, y: 5, weight: 1 },
+        ],
+        2,
+      ),
+    ).toBe(MAX_K);
   });
 
   it("cross size is 11 px for one visit and grows with visits", () => {
@@ -282,7 +329,14 @@ function toData() {
   const places = fixture.places.map((p) => ({ ...p, lastSeen: new Date(Date.now() - p.minutesAgo * 60000).toISOString() }));
   const countries = [...new Set(places.map((p) => p.countryCode))].map((cc) => {
     const ps = places.filter((p) => p.countryCode === cc);
-    return { countryCode: cc, country: ps[0].country, visits: ps.reduce((s, p) => s + p.visits, 0), uniqueVisitors: ps.reduce((s, p) => s + p.uniqueVisitors, 0), lastSeen: ps[0].lastSeen, online: ps.some((p) => p.online) };
+    return {
+      countryCode: cc,
+      country: ps[0].country,
+      visits: ps.reduce((s, p) => s + p.visits, 0),
+      uniqueVisitors: ps.reduce((s, p) => s + p.uniqueVisitors, 0),
+      lastSeen: ps[0].lastSeen,
+      online: ps.some((p) => p.online),
+    };
   });
   const l = places[0];
   return { places, countries, latest: { key: l.key, lat: l.lat, lng: l.lng, city: l.city, countryCode: l.countryCode, at: l.lastSeen } };

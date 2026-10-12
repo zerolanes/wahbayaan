@@ -5,7 +5,7 @@ import { geoGraticule, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature, mesh } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import type { Feature, FeatureCollection, MultiLineString } from "geojson";
-import { zoomToSeparate } from "./cluster";
+import { zoomToSplit } from "./cluster";
 import type { EngineHandle, EngineProps } from "./engine";
 import {
   applyView,
@@ -205,10 +205,10 @@ export function CanvasEngine(props: EngineProps & { ref?: Ref<EngineHandle> }) {
       },
       separate(marker, ms) {
         const s = S.current;
-        const k = zoomToSeparate(
+        const k = zoomToSplit(
           marker.members.map((m) => {
             const p = lngLatToScreen(s.bp!, s.view, s.vp, m.lng, m.lat);
-            return { x: p?.[0] ?? marker.x, y: p?.[1] ?? marker.y };
+            return { x: p?.[0] ?? marker.x, y: p?.[1] ?? marker.y, weight: m.visits };
           }),
           s.view.k,
         );
@@ -696,4 +696,3 @@ export function CanvasEngine(props: EngineProps & { ref?: Ref<EngineHandle> }) {
     </div>
   );
 }
-

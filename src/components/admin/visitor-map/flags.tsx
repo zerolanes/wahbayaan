@@ -18,7 +18,9 @@ function star(cx: number, cy: number, r: number, points = 5, inner = 0.45, rot =
   return pts.join(" ");
 }
 
-const Star = ({ cx, cy, r, fill = "#fff", points = 5 }: { cx: number; cy: number; r: number; fill?: string; points?: number }) => <polygon points={star(cx, cy, r, points)} fill={fill} />;
+const Star = ({ cx, cy, r, fill = "#fff", points = 5 }: { cx: number; cy: number; r: number; fill?: string; points?: number }) => (
+  <polygon points={star(cx, cy, r, points)} fill={fill} />
+);
 
 const h = (colors: string[], weights?: number[]): ReactNode => {
   const ws = weights ?? colors.map(() => 1);
@@ -88,7 +90,10 @@ const FLAGS: Record<string, () => ReactNode> = {
       <rect width={W} height={H} fill="#fff" />
       <rect width={7.5} height={H} fill="#D80621" />
       <rect x={22.5} width={7.5} height={H} fill="#D80621" />
-      <path d="M15 4 L16.3 7 L18.6 6.2 L17.8 9.6 L19.8 9.2 L19 11.2 L20.6 12 L16.4 13.6 L16.6 16 L13.4 16 L13.6 13.6 L9.4 12 L11 11.2 L10.2 9.2 L12.2 9.6 L11.4 6.2 L13.7 7 Z" fill="#D80621" />
+      <path
+        d="M15 4 L16.3 7 L18.6 6.2 L17.8 9.6 L19.8 9.2 L19 11.2 L20.6 12 L16.4 13.6 L16.6 16 L13.4 16 L13.6 13.6 L9.4 12 L11 11.2 L10.2 9.2 L12.2 9.6 L11.4 6.2 L13.7 7 Z"
+        fill="#D80621"
+      />
     </>
   ),
   AE: () => (
@@ -341,7 +346,16 @@ export function Flag({ code, className, title }: { code: string | null | undefin
     return (
       <svg viewBox={`0 0 ${W} ${H}`} className={className} role="img" aria-label={label} data-flag={cc || "unknown"}>
         <rect x={0.5} y={0.5} width={W - 1} height={H - 1} rx={3} fill="#ece2d1" stroke="#a88c62" />
-        <text x={W / 2} y={H / 2 + 0.5} textAnchor="middle" dominantBaseline="middle" fontSize={9} fontWeight={700} fontFamily="Inter Variable, ui-sans-serif, system-ui, sans-serif" fill="#4a3d30">
+        <text
+          x={W / 2}
+          y={H / 2 + 0.5}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={9}
+          fontWeight={700}
+          fontFamily="Inter Variable, ui-sans-serif, system-ui, sans-serif"
+          fill="#4a3d30"
+        >
           {cc || "??"}
         </text>
       </svg>

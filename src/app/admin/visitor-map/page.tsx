@@ -10,7 +10,15 @@ export const metadata = { title: "Visitor map" };
 
 const FIXTURE_ON = process.env.NODE_ENV !== "production" || process.env.WB_VISITOR_MAP_FIXTURE === "1";
 
-type FixturePlace = { key: string; city: string | null; region: string | null; country: string | null; countryCode: string | null; visits: number; online: boolean };
+type FixturePlace = {
+  key: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  countryCode: string | null;
+  visits: number;
+  online: boolean;
+};
 
 /**
  * Demo of the admin visitor map. In development it runs on the fixture in
@@ -53,7 +61,17 @@ export default async function VisitorMapDemoPage(props: PageProps<"/admin/visito
       {view === "card" ? <VisitorMapSlot mode="card" dataUrl={dataUrl} /> : <VisitorMapSlot mode="background" dataUrl={dataUrl} compact={false} />}
       {FIXTURE_ON && one(sp.table) !== "0" ? (
         <Card className="max-w-xl overflow-hidden">
-          <CardHeader title="Places" description={place ? `Filtered to ${place.replace(":", " · ")}` : "Top places in the fixture"} action={place ? <Link className="text-sm underline" href={view === "card" ? "?view=card" : "?"}>Clear</Link> : null} />
+          <CardHeader
+            title="Places"
+            description={place ? `Filtered to ${place.replace(":", " · ")}` : "Top places in the fixture"}
+            action={
+              place ? (
+                <Link className="text-sm underline" href={view === "card" ? "?view=card" : "?"}>
+                  Clear
+                </Link>
+              ) : null
+            }
+          />
           <div className="max-h-[38vh] overflow-y-auto">
             <Table>
               <THead>
@@ -67,7 +85,7 @@ export default async function VisitorMapDemoPage(props: PageProps<"/admin/visito
                 {rows.slice(0, 12).map((r) => (
                   <Tr key={r.key}>
                     <Td>
-                      {r.city ?? r.region ?? "—"} {r.online ? <span className="text-xs text-success-700">· online</span> : null}
+                      {r.city ?? r.region ?? "—"} {r.online ? <span className="text-success-700 text-xs">· online</span> : null}
                     </Td>
                     <Td>{r.country}</Td>
                     <Td className="text-right tabular-nums">{r.visits}</Td>

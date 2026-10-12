@@ -70,6 +70,22 @@ export function zoomToSeparate(points: { x: number; y: number }[], k: number, ra
   return clamp(k * Math.max(1.5, (radius * 1.25) / best), k, maxK);
 }
 
+/**
+ * Zoom for "click a merged cross": the smallest zoom (searched in ×1.15 steps)
+ * at which the cluster's places form at least two crosses, with 20% headroom
+ * and at least ×2. Places that never separate (same spot) go to maxK.
+ */
+export function zoomToSplit(points: { x: number; y: number; weight: number }[], k: number, radius = CLUSTER_RADIUS, maxK = MAX_K): number {
+  if (points.length < 2) return clamp(k * 2, k, maxK);
+  const cx = points.reduce((a, p) => a + p.x, 0) / points.length;
+  const cy = points.reduce((a, p) => a + p.y, 0) / points.length;
+  for (let f = 1.15; k * f <= maxK * 1.15; f *= 1.15) {
+    const scaled = points.map((p, i) => ({ x: cx + (p.x - cx) * f, y: cy + (p.y - cy) * f, weight: p.weight, item: i }));
+    if (clusterPoints(scaled, radius).length > 1) return clamp(k * Math.max(2, f * 1.2), k, maxK);
+  }
+  return maxK;
+}
+
 /** Cross size in px: 11 px for a single visit, growing with the log of visits. */
 export function crossSize(visits: number, multiplier = 1): number {
   const v = Math.max(1, visits);

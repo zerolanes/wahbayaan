@@ -75,7 +75,13 @@ function recorder() {
 }
 
 /** Open the demo page with test hooks. By default the opening flight is pushed far into the future. */
-async function open({ hooks = { startDelayMs: 1e9 }, reducedMotion = "no-preference", hasTouch = false, viewport = { width: 1440, height: 900 }, query = "?table=0" } = {}) {
+async function open({
+  hooks = { startDelayMs: 1e9 },
+  reducedMotion = "no-preference",
+  hasTouch = false,
+  viewport = { width: 1440, height: 900 },
+  query = "?table=0",
+} = {}) {
   const ctx = await browser.newContext({ storageState: state, viewport, reducedMotion, hasTouch });
   const page = await ctx.newPage();
   const errors = [];
@@ -85,7 +91,11 @@ async function open({ hooks = { startDelayMs: 1e9 }, reducedMotion = "no-prefere
   }, hooks);
   await page.addInitScript(recorder);
   await page.goto(BASE + PAGE + query, { waitUntil: "networkidle", timeout: 120000 });
-  await page.waitForFunction(() => document.querySelector('[data-visitor-map][data-loaded="1"]') && Number(document.querySelector("[data-visitor-map]").dataset.markers) > 0, null, { timeout: 60000, polling: 50 });
+  await page.waitForFunction(
+    () => document.querySelector('[data-visitor-map][data-loaded="1"]') && Number(document.querySelector("[data-visitor-map]").dataset.markers) > 0,
+    null,
+    { timeout: 60000, polling: 50 },
+  );
   return { ctx, page, errors };
 }
 const attr = (page, name) => page.evaluate((n) => document.querySelector("[data-visitor-map]")?.getAttribute(n), name);
@@ -93,7 +103,8 @@ const zoom = async (page) => Number(await attr(page, "data-zoom"));
 const mark = (page) => page.evaluate(() => window.__VM_REC__.length);
 const since = (page, i) => page.evaluate((n) => window.__VM_REC__.slice(n), i);
 /** Wait until a predicate over the root's dataset holds. */
-const until = (page, pred, timeout = 15000) => page.waitForFunction(new Function(`const d = document.querySelector("[data-visitor-map]").dataset; return (${pred})(d);`), null, { timeout, polling: 25 });
+const until = (page, pred, timeout = 15000) =>
+  page.waitForFunction(new Function(`const d = document.querySelector("[data-visitor-map]").dataset; return (${pred})(d);`), null, { timeout, polling: 25 });
 const settled = (page, timeout = 15000) => until(page, `(d) => d.animating === "0"`, timeout);
 
 /** A point over open map, away from page cards and crosses. */
@@ -156,7 +167,10 @@ await test("+ and − buttons zoom 1.6× around the centre (animated); Home rese
   await page.click('[data-control="zoom-in"]');
   await until(page, `(d) => d.animating === "0" && Math.abs(Number(d.zoom) - 1.6) < 0.005`, 15000);
   const frames = (await since(page, m)).map((r) => r.zoom);
-  assert(frames.some((z) => z > 1.001 && z < 1.599) || (await since(page, m)).some((r) => r.anim === "1"), `zoom animated through intermediate values (${frames.join(", ")})`);
+  assert(
+    frames.some((z) => z > 1.001 && z < 1.599) || (await since(page, m)).some((r) => r.anim === "1"),
+    `zoom animated through intermediate values (${frames.join(", ")})`,
+  );
   assert((await attr(page, "data-center")) === centre0, "centre unchanged");
   await page.click('[data-control="zoom-in"]');
   await until(page, `(d) => d.animating === "0" && Math.abs(Number(d.zoom) - 2.56) < 0.01`, 8000);
@@ -184,7 +198,8 @@ await test("two-finger pinch zooms around the fingers (CDP touch events)", async
   const { ctx, page } = await open({ hasTouch: true });
   const p = await emptyPoint(page);
   const cdp = await ctx.newCDPSession(page);
-  const touch = (type, pts) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })) });
+  const touch = (type, pts) =>
+    cdp.send("Input.dispatchTouchEvent", { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id, radiusX: 4, radiusY: 4, force: 1 })) });
   const z0 = await zoom(page);
   await touch("touchStart", [
     [p.x - 30, p.y],
@@ -215,7 +230,7 @@ await test("crosses merge into clusters at world view and split as you zoom in; 
   assert(uk && uk.count >= 3, `London is in a cluster at world view (${uk?.count})`);
   const m = await mark(page);
   await page.mouse.click(uk.x, uk.y);
-  await until(page, `(d) => Number(d.zoom) > 2`, 8000);
+  await until(page, `(d) => Number(d.zoom) >= 1.99`, 15000);
   await settled(page);
   const rec = await since(page, m);
   assert(rec.length > 2, "flew in over several frames");
@@ -230,10 +245,17 @@ await test("crosses merge into clusters at world view and split as you zoom in; 
 
 await test("hover shows a tooltip with flag; click pins and filters the table; Esc unpins", async () => {
   const { ctx, page } = await open();
-  const uk = (await page.evaluate(() => window.__VM_TEST__.api.markers())).find((m) => m.memberIds.includes("gb:england:london"));
-  await page.mouse.click(uk.x, uk.y);
-  await until(page, `(d) => Number(d.zoom) > 2`, 8000);
-  await settled(page);
+  // Click into UK clusters until single UK crosses appear.
+  for (let i = 0; i < 6; i++) {
+    const ms = await page.evaluate(() => window.__VM_TEST__.api.markers());
+    if (ms.some((m) => m.count === 1 && m.memberIds[0].startsWith("gb:") && m.x > 880 && m.y > 120 && m.y < 620)) break;
+    const group = ms.filter((m) => m.count > 1 && m.memberIds.some((id) => id.startsWith("gb:"))).sort((a, b) => b.count - a.count)[0];
+    if (!group) break;
+    const z = await zoom(page);
+    await page.mouse.click(group.x, group.y);
+    await until(page, `(d) => Number(d.zoom) > ${z * 1.5}`, 15000);
+    await settled(page);
+  }
   const singles = (await page.evaluate(() => window.__VM_TEST__.api.markers())).filter((m) => m.count === 1 && m.memberIds[0].startsWith("gb:"));
   const single = singles.find((m) => m.x > 880 && m.x < 1400 && m.y > 120 && m.y < 620) ?? singles[0];
   assert(single, `a single UK cross is visible (${singles.length})`);
@@ -316,7 +338,8 @@ await test("prefers-reduced-motion: jumps instead of flying or gliding", async (
   const before = (await page.evaluate(() => window.__VM_TEST__.api.markers())).filter((m) => m.x > 700 && m.x < 1400)[0];
   const cdp = await ctx.newCDPSession(page);
   const t0 = Date.now() / 1000;
-  const ev = (type, x, i, buttons = 1) => cdp.send("Input.dispatchMouseEvent", { type, x, y: p.y, button: "left", buttons, clickCount: 1, timestamp: t0 + i * 0.012 });
+  const ev = (type, x, i, buttons = 1) =>
+    cdp.send("Input.dispatchMouseEvent", { type, x, y: p.y, button: "left", buttons, clickCount: 1, timestamp: t0 + i * 0.012 });
   const burst = [ev("mouseMoved", p.x, 0, 0), ev("mousePressed", p.x, 0)];
   for (let i = 1; i <= 10; i++) burst.push(ev("mouseMoved", p.x - i * 12, i));
   burst.push(ev("mouseReleased", p.x - 120, 11, 0));
@@ -338,7 +361,8 @@ await test("drag pans; release keeps gliding briefly (inertia, ~300 ms)", async 
   // as "stopped, then let go".
   const cdp = await ctx.newCDPSession(page);
   const t0 = Date.now() / 1000;
-  const ev = (type, x, i, buttons = 1) => cdp.send("Input.dispatchMouseEvent", { type, x, y: p.y, button: "left", buttons, clickCount: 1, timestamp: t0 + i * 0.012 });
+  const ev = (type, x, i, buttons = 1) =>
+    cdp.send("Input.dispatchMouseEvent", { type, x, y: p.y, button: "left", buttons, clickCount: 1, timestamp: t0 + i * 0.012 });
   const burst = [ev("mouseMoved", p.x, 0, 0), ev("mousePressed", p.x, 0)];
   for (let i = 1; i <= 10; i++) burst.push(ev("mouseMoved", p.x - i * 25, i));
   burst.push(ev("mouseReleased", p.x - 250, 11, 0));

@@ -95,6 +95,18 @@
   max-width: calc(100% - 24px);
   pointer-events: none;
 }
+.vm-dock-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+@media (max-width: 767px) {
+  .vm-dock-row {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
 .vm-overlay-bg .vm-controls-dock {
   right: 16px;
   bottom: 16px;
@@ -125,6 +137,7 @@
   width: 330px;
   max-width: 100%;
   max-height: min(70vh, 560px);
+  max-height: min(70dvh, 560px);
   display: flex;
   flex-direction: column;
 }
@@ -187,7 +200,9 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--vm-muted);
-  transition: background-color 150ms, color 150ms;
+  transition:
+    background-color 150ms,
+    color 150ms;
 }
 .vm-chip:hover {
   color: var(--vm-text);
@@ -399,11 +414,39 @@
   pointer-events: none;
 }
 :is(body:has([data-vm-background]) main, .vm-scope)
-  :is(a, button, input, select, textarea, label, summary, details, table, form, img, svg, p, h1, h2, h3, h4, li, dt, dd, span, [role], [tabindex], [data-slot="card"], [data-slot="card"] *, .vm-panel, .vm-panel *) {
+  :is(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    label,
+    summary,
+    details,
+    table,
+    form,
+    img,
+    svg,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    li,
+    dt,
+    dd,
+    span,
+    [role],
+    [tabindex],
+    [data-slot="card"],
+    [data-slot="card"] *,
+    .vm-panel,
+    .vm-panel *
+  ) {
   pointer-events: auto;
 }
 :is(body:has([data-vm-background]) main, .vm-scope) :is([data-slot="card"], .vm-panel) {
-  background-color: rgb(255 255 255 / 0.78);
+  background-color: rgb(255 255 255 / 0.82);
   border-color: rgb(255 255 255 / 0.45);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   backdrop-filter: blur(16px) saturate(1.15);

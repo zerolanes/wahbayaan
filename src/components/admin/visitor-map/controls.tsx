@@ -13,11 +13,29 @@ const MODES: { value: MapMode; label: string }[] = [
   { value: "top10", label: "Top 10" },
 ];
 
-function Chips<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: string }[]; onChange(v: T): void }) {
+function Chips<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: { value: T; label: string }[];
+  onChange(v: T): void;
+}) {
   return (
     <div role="radiogroup" aria-label={label} className="vm-chips">
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={value === o.value} className="vm-chip" onClick={() => onChange(o.value)} data-value={o.value}>
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={value === o.value}
+          className="vm-chip"
+          onClick={() => onChange(o.value)}
+          data-value={o.value}
+        >
           {o.label}
         </button>
       ))}
@@ -70,14 +88,26 @@ export function ControlsCard(props: {
             <span aria-hidden className="vm-dot" /> {stats.online} online
           </span>
         ) : null}
-        <button type="button" className="vm-icon-btn ml-auto" aria-expanded={!collapsed} aria-controls={bodyId} aria-label={collapsed ? "Expand map controls" : "Collapse map controls"} onClick={props.onToggleCollapsed} data-control="collapse">
+        <button
+          type="button"
+          className="vm-icon-btn ml-auto"
+          aria-expanded={!collapsed}
+          aria-controls={bodyId}
+          aria-label={collapsed ? "Expand map controls" : "Collapse map controls"}
+          onClick={props.onToggleCollapsed}
+          data-control="collapse"
+        >
           {collapsed ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
         </button>
       </header>
       {collapsed ? null : (
         <div id={bodyId} className="mt-2 space-y-2.5">
           <p className="vm-muted text-xs tabular-nums" aria-live="polite">
-            {props.error ? props.error : props.loaded ? `${stats.places.toLocaleString()} places · ${stats.visits.toLocaleString()} visits` : "Loading visitors…"}
+            {props.error
+              ? props.error
+              : props.loaded
+                ? `${stats.places.toLocaleString()} places · ${stats.visits.toLocaleString()} visits`
+                : "Loading visitors…"}
             {s.everyPlace ? " · every place ever" : ""}
           </p>
           <Chips label="Time range" value={s.everyPlace ? "all" : s.range} options={RANGES} onChange={(range) => onChange({ range, everyPlace: false })} />
@@ -131,7 +161,19 @@ const COLOURS: { value: CrossColour; label: string; swatch: string }[] = [
   { value: "ivory", label: "Ivory", swatch: "#fdfbf7" },
 ];
 
-export function SettingsPanel({ settings: s, onChange, onClose, hasGoogleKey, googleFailed }: { settings: VisitorMapSettings; onChange: Change; onClose(): void; hasGoogleKey: boolean; googleFailed: boolean }) {
+export function SettingsPanel({
+  settings: s,
+  onChange,
+  onClose,
+  hasGoogleKey,
+  googleFailed,
+}: {
+  settings: VisitorMapSettings;
+  onChange: Change;
+  onClose(): void;
+  hasGoogleKey: boolean;
+  googleFailed: boolean;
+}) {
   return (
     <section className="vm-card vm-settings" role="dialog" aria-label="Map settings" data-vm-settings="">
       <header className="mb-2 flex items-center">
@@ -156,7 +198,21 @@ export function SettingsPanel({ settings: s, onChange, onClose, hasGoogleKey, go
         <Row
           label="Map engine"
           hint={
-            hasGoogleKey ? (googleFailed ? "Google Maps didn't load — using the built-in map." : "A Google Maps key is saved in Admin → Settings.") : <>No Google Maps key saved — add one in <a className="underline" href="/admin/settings#visitor-map">Admin → Settings</a>.</>
+            hasGoogleKey ? (
+              googleFailed ? (
+                "Google Maps didn't load — using the built-in map."
+              ) : (
+                "A Google Maps key is saved in Admin → Settings."
+              )
+            ) : (
+              <>
+                No Google Maps key saved — add one in{" "}
+                <a className="underline" href="/admin/settings#visitor-map">
+                  Admin → Settings
+                </a>
+                .
+              </>
+            )
           }
         >
           <select className="vm-select" value={s.engine} onChange={(e) => onChange({ engine: e.target.value as VisitorMapSettings["engine"] })}>
@@ -165,7 +221,12 @@ export function SettingsPanel({ settings: s, onChange, onClose, hasGoogleKey, go
           </select>
         </Row>
         <Row label="Projection">
-          <select className="vm-select" value={s.projection} onChange={(e) => onChange({ projection: e.target.value as VisitorMapSettings["projection"] })} data-setting="projection">
+          <select
+            className="vm-select"
+            value={s.projection}
+            onChange={(e) => onChange({ projection: e.target.value as VisitorMapSettings["projection"] })}
+            data-setting="projection"
+          >
             <option value="naturalEarth">Natural Earth</option>
             <option value="equirectangular">Equirectangular</option>
             <option value="mercator">Mercator</option>
@@ -180,23 +241,57 @@ export function SettingsPanel({ settings: s, onChange, onClose, hasGoogleKey, go
             </select>
           </Row>
           <Row label={`Cross size · ${s.crossSize.toFixed(2)}×`}>
-            <input type="range" className="vm-range" min={0.75} max={1.75} step={0.05} value={s.crossSize} onChange={(e) => onChange({ crossSize: Number(e.target.value) })} />
+            <input
+              type="range"
+              className="vm-range"
+              min={0.75}
+              max={1.75}
+              step={0.05}
+              value={s.crossSize}
+              onChange={(e) => onChange({ crossSize: Number(e.target.value) })}
+            />
           </Row>
         </div>
         <div className="space-y-1">
           <span className="vm-label">Cross colour</span>
           <div role="radiogroup" aria-label="Cross colour" className="flex gap-2">
             {COLOURS.map((c) => (
-              <button key={c.value} type="button" role="radio" aria-checked={s.crossColour === c.value} aria-label={c.label} title={c.label} className="vm-swatch" style={{ background: c.swatch }} onClick={() => onChange({ crossColour: c.value })} />
+              <button
+                key={c.value}
+                type="button"
+                role="radio"
+                aria-checked={s.crossColour === c.value}
+                aria-label={c.label}
+                title={c.label}
+                className="vm-swatch"
+                style={{ background: c.swatch }}
+                onClick={() => onChange({ crossColour: c.value })}
+              />
             ))}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Row label={`Animation speed · ${s.animationSpeed.toFixed(2)}×`}>
-            <input type="range" className="vm-range" min={0.5} max={2} step={0.25} value={s.animationSpeed} onChange={(e) => onChange({ animationSpeed: Number(e.target.value) })} />
+            <input
+              type="range"
+              className="vm-range"
+              min={0.5}
+              max={2}
+              step={0.25}
+              value={s.animationSpeed}
+              onChange={(e) => onChange({ animationSpeed: Number(e.target.value) })}
+            />
           </Row>
           <Row label={`Fly zoom · level ${s.flyZoom}`}>
-            <input type="range" className="vm-range" min={2} max={9} step={1} value={s.flyZoom} onChange={(e) => onChange({ flyZoom: Number(e.target.value) })} />
+            <input
+              type="range"
+              className="vm-range"
+              min={2}
+              max={9}
+              step={1}
+              value={s.flyZoom}
+              onChange={(e) => onChange({ flyZoom: Number(e.target.value) })}
+            />
           </Row>
           <Row label="Fly hold time">
             <select className="vm-select" value={s.flyHoldSeconds} onChange={(e) => onChange({ flyHoldSeconds: Number(e.target.value) })}>

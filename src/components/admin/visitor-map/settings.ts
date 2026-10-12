@@ -29,7 +29,7 @@ export const RANGES: { value: MapRange; label: string }[] = [
   { value: "all", label: "All" },
 ];
 
-const pick = <T,>(v: unknown, allowed: readonly T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback);
+const pick = <T>(v: unknown, allowed: readonly T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback);
 const num = (v: unknown, lo: number, hi: number, fallback: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : fallback);
 const bool = (v: unknown, fallback: boolean) => (typeof v === "boolean" ? v : fallback);
 

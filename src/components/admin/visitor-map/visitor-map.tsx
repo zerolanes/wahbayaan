@@ -73,7 +73,13 @@ export function VisitorMap({ mode, tableFilterParam, dataUrl, compact, userId, g
   // Refs mirror the state the timers and engine callbacks need to read.
   const R = useRef({ hover, pinned, settingsOpen, phase, settings, reducedMotion });
   R.current = { hover, pinned, settingsOpen, phase, settings, reducedMotion };
-  const timers = useRef<{ hold?: ReturnType<typeof setTimeout>; start?: ReturnType<typeof setTimeout>; card?: ReturnType<typeof setTimeout>; hint?: ReturnType<typeof setTimeout>; retry?: ReturnType<typeof setTimeout> }>({});
+  const timers = useRef<{
+    hold?: ReturnType<typeof setTimeout>;
+    start?: ReturnType<typeof setTimeout>;
+    card?: ReturnType<typeof setTimeout>;
+    hint?: ReturnType<typeof setTimeout>;
+    retry?: ReturnType<typeof setTimeout>;
+  }>({});
   const lastLatest = useRef<string | null>(null);
   const firstLoad = useRef(true);
 
@@ -210,7 +216,13 @@ export function VisitorMap({ mode, tableFilterParam, dataUrl, compact, userId, g
     hooks.api = {
       markers: () => {
         const r = mapAreaRef.current?.getBoundingClientRect();
-        return (engine.current?.getScreenMarkers() ?? []).map((m) => ({ id: m.id, x: m.x + (r?.left ?? 0), y: m.y + (r?.top ?? 0), count: m.members.length, memberIds: m.members.map((x) => x.id) }));
+        return (engine.current?.getScreenMarkers() ?? []).map((m) => ({
+          id: m.id,
+          x: m.x + (r?.left ?? 0),
+          y: m.y + (r?.top ?? 0),
+          count: m.members.length,
+          memberIds: m.members.map((x) => x.id),
+        }));
       },
       zoom: () => engine.current?.getZoom() ?? 1,
     };
@@ -416,22 +428,32 @@ export function VisitorMap({ mode, tableFilterParam, dataUrl, compact, userId, g
 
         <div className="vm-controls-dock">
           {newVisit ? <NewVisitCard latest={newVisit.latest} fresh={newVisit.fresh} place={data?.places.find((p) => p.key === newVisit.latest.key)} /> : null}
-          {settingsOpen ? <SettingsPanel settings={settings} onChange={updateSettings} onClose={() => setSettingsOpen(false)} hasGoogleKey={!!googleMapsKey} googleFailed={googleFailed} /> : null}
-          <ControlsCard
-            settings={settings}
-            onChange={updateSettings}
-            collapsed={collapsed}
-            onToggleCollapsed={() => setCollapsed((c) => !c)}
-            stats={stats}
-            error={error}
-            loaded={!!data}
-            onZoomIn={() => zoom(BUTTON_ZOOM)}
-            onZoomOut={() => zoom(1 / BUTTON_ZOOM)}
-            onHome={home}
-            onFullscreen={fullscreen}
-            settingsOpen={settingsOpen}
-            onToggleSettings={() => setSettingsOpen((o) => !o)}
-          />
+          <div className="vm-dock-row">
+            {settingsOpen ? (
+              <SettingsPanel
+                settings={settings}
+                onChange={updateSettings}
+                onClose={() => setSettingsOpen(false)}
+                hasGoogleKey={!!googleMapsKey}
+                googleFailed={googleFailed}
+              />
+            ) : null}
+            <ControlsCard
+              settings={settings}
+              onChange={updateSettings}
+              collapsed={collapsed}
+              onToggleCollapsed={() => setCollapsed((c) => !c)}
+              stats={stats}
+              error={error}
+              loaded={!!data}
+              onZoomIn={() => zoom(BUTTON_ZOOM)}
+              onZoomOut={() => zoom(1 / BUTTON_ZOOM)}
+              onHome={home}
+              onFullscreen={fullscreen}
+              settingsOpen={settingsOpen}
+              onToggleSettings={() => setSettingsOpen((o) => !o)}
+            />
+          </div>
         </div>
       </div>
 
@@ -442,7 +464,8 @@ export function VisitorMap({ mode, tableFilterParam, dataUrl, compact, userId, g
             {topPlaces.map((p) => (
               <li key={p.key}>
                 {placeLabel(p)}
-                {p.country && p.city ? `, ${p.country}` : ""}: {p.visits} visits, {p.uniqueVisitors} unique visitors{p.online ? ", online now" : ""}, last seen {relativeTime(p.lastSeen)}
+                {p.country && p.city ? `, ${p.country}` : ""}: {p.visits} visits, {p.uniqueVisitors} unique visitors{p.online ? ", online now" : ""}, last seen{" "}
+                {relativeTime(p.lastSeen)}
               </li>
             ))}
           </ol>
@@ -495,7 +518,9 @@ function Tooltip({ marker, x, y, size, pinned }: { marker: ScreenMarker; x: numb
           <span aria-hidden className="vm-dot" /> Online now
         </p>
       ) : null}
-      <p className="vm-muted mt-1.5 text-[11px]">{multi ? "Click to zoom in" : pinned ? "Pinned · table filtered · Esc to clear" : "Click to pin and filter the table"}</p>
+      <p className="vm-muted mt-1.5 text-[11px]">
+        {multi ? "Click to zoom in" : pinned ? "Pinned · table filtered · Esc to clear" : "Click to pin and filter the table"}
+      </p>
     </div>
   );
 }

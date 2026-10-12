@@ -38,7 +38,12 @@ function loadConfig(): Promise<MapConfig> {
  *
  * Reads GET /admin/api/analytics/map?range=&live=&hideDc= (staff-only) and polls it.
  */
-export function VisitorMapSlot({ mode = "background", tableFilterParam = "place", dataUrl = "/admin/api/analytics/map", compact = false }: VisitorMapSlotProps) {
+export function VisitorMapSlot({
+  mode = "background",
+  tableFilterParam = "place",
+  dataUrl = "/admin/api/analytics/map",
+  compact = false,
+}: VisitorMapSlotProps) {
   const [config, setConfig] = useState<MapConfig | null>(null);
   useEffect(() => {
     let alive = true;
@@ -51,5 +56,14 @@ export function VisitorMapSlot({ mode = "background", tableFilterParam = "place"
     // Reserve the card's space (background mode takes none) so the page doesn't jump.
     return mode === "card" ? <div className="vm-root vm-root-card" aria-hidden /> : null;
   }
-  return <VisitorMap mode={mode} tableFilterParam={tableFilterParam} dataUrl={dataUrl} compact={compact} userId={config.userId} googleMapsKey={config.googleMapsKey} />;
+  return (
+    <VisitorMap
+      mode={mode}
+      tableFilterParam={tableFilterParam}
+      dataUrl={dataUrl}
+      compact={compact}
+      userId={config.userId}
+      googleMapsKey={config.googleMapsKey}
+    />
+  );
 }

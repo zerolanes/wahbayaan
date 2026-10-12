@@ -150,7 +150,7 @@ export function drawMarkers(ctx: CanvasRenderingContext2D, markers: ScreenMarker
       } else {
         animating = true;
         for (let i = 0; i < 2; i++) {
-          const t = (((now * speed) / 1800 + i * 0.5) % 1 + 1) % 1;
+          const t = ((((now * speed) / 1800 + i * 0.5) % 1) + 1) % 1;
           ctx.globalAlpha = (1 - t) * 0.75;
           ctx.lineWidth = 1.6 * (1 - t) + 0.4;
           ctx.beginPath();
@@ -241,7 +241,11 @@ export function drawMarkers(ctx: CanvasRenderingContext2D, markers: ScreenMarker
     for (const m of byWeight) {
       const lead = m.members[0];
       const name = m.members.length > 1 ? `${lead.label} +${m.members.length - 1}` : lead.label;
-      const text = o.showRanks && lead.rank ? (o.labels ? `${lead.rank}. ${name}` : `${lead.rank}`) : name;
+      const ranks = m.members
+        .map((x) => x.rank)
+        .filter((r): r is number => !!r)
+        .sort((a, b) => a - b);
+      const text = o.showRanks && lead.rank ? (o.labels ? `${lead.rank}. ${name}` : ranks.join(" · ")) : name;
       if (!o.labels && !(o.showRanks && lead.rank)) continue;
       const w = ctx.measureText(text).width;
       const x = m.x + m.size / 2 + 7;
