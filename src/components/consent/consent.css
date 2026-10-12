@@ -128,6 +128,7 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  overflow-anchor: none;
 }
 .wbc-main {
   display: flex;
@@ -359,7 +360,11 @@
 .wbc-actions-settings {
   position: sticky;
   bottom: 0;
+  z-index: 1;
   padding-top: 10px;
+  box-shadow:
+    0 -10px 14px -10px rgb(0 0 0 / 0.18),
+    0 8px 0 var(--consent-bg);
 }
 
 /* Footer strip. */
@@ -378,6 +383,21 @@
   color: var(--consent-muted);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Narrow panels (phones, the corner box): the buttons stay in view at the bottom of the scrolling area. */
+@container wbc (max-width: 599px) {
+  .wbc-main .wbc-actions,
+  .wbc-actions-settings {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin-inline: calc(var(--wbc-pad) * -1);
+    padding: 12px var(--wbc-pad);
+    box-shadow:
+      0 -10px 14px -10px rgb(0 0 0 / 0.22),
+      0 8px 0 var(--consent-bg);
+  }
 }
 
 /* Tablet arrangement (panel 600–899px): the two main buttons side by side, link full width under them. */
@@ -434,14 +454,6 @@
   }
   .wbc-wordmark {
     display: none;
-  }
-  .wbc-main .wbc-actions,
-  .wbc-actions-settings {
-    position: sticky;
-    bottom: 0;
-    margin-inline: calc(var(--wbc-pad) * -1);
-    padding: 12px var(--wbc-pad);
-    box-shadow: 0 -10px 14px -10px rgb(0 0 0 / 0.22);
   }
   .wbc-main .wbc-actions {
     gap: 8px;

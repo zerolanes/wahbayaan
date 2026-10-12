@@ -13,6 +13,7 @@ This repository is a from-scratch rebuild (the previous site was WordPress + Woo
 | Haveli walk-through | `src/app/(home)/haveli` | Optional interactive 3D tour at `/haveli`; no 3D elsewhere on the storefront. |
 | Artisan dashboard | `src/app/seller` | Listings, orders, custom requests, payouts. Always PKR. |
 | Company admin | `src/app/admin` | Orders, quotes, escrow, disputes, refunds, payouts, shipments; artisans, applications, listings, reviews; customers, inbox, commissions; coupons, referrals, trade, waitlists, newsletter; homepage, pages, journal, announcements; rates and fees; reports; settings, feature flags, staff & roles, audit log, health, redirects, media, emails, launch readiness. Neutral dashboard theme shared with the artisan dashboard. |
+| Cookie consent & visitor statistics | `src/components/consent`, `src/lib/consent`, `src/lib/analytics` | Neutral privacy banner (Accept all / Continue without consent, individual settings), proof-of-consent log, first-party statistics only after consent, IP location (Cloudflare headers or ipapi.co / ipinfo.io / IP2Location.io), daily retention cleanup. Admin under Insights. E2E: `node scripts/e2e-consent.mjs`. |
 | Landed-cost engine | `src/lib/commerce/landed-cost.ts` | Pure function; pending rates are shown as pending, never as zero. |
 | Trust guards | `src/lib/trust/visibility.ts` | Categories without covers, unverified or template-banner artisans and demo rows never reach the storefront. |
 | 3D | `src/components/three` | The haveli and its procedural heritage objects, built in Three.js. |
