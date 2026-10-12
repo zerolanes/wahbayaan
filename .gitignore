@@ -14,3 +14,4 @@ screenshots/
 
 # Local agent worktrees
 .claude/worktrees/
+.cache/
