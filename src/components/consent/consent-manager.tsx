@@ -191,18 +191,22 @@ function StatsBeacon({ enabled, consentId, pathname }: { enabled: boolean; conse
   return null;
 }
 
+// Hits go out one at a time: the server sets the visit cookie on the first
+// response, so a second hit sent before it returns would start a new visit.
+let queue: Promise<unknown> = Promise.resolve();
+
 function send(body: Record<string, unknown>) {
-  try {
-    void fetch("/api/collect", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      credentials: "same-origin",
-      keepalive: true,
-      body: JSON.stringify(body),
-    }).catch(() => {});
-  } catch {
-    /* ignore */
-  }
+  queue = queue
+    .then(() =>
+      fetch("/api/collect", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "same-origin",
+        keepalive: true,
+        body: JSON.stringify(body),
+      }),
+    )
+    .catch(() => {});
 }
 
 /** Optional round button bottom-left: change settings, revoke, show the consent id. */
