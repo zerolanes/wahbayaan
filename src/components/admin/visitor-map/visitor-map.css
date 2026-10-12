@@ -4,10 +4,10 @@
  * Wahbayaan's own indigo / gold / terracotta / sand.
  */
 .vm-root {
-  --vm-card-bg: rgb(13 17 36 / 0.72);
+  --vm-card-bg: rgb(13 17 36 / 0.86);
   --vm-card-border: rgb(236 215 164 / 0.16);
   --vm-text: #f6f0e6;
-  --vm-muted: #c3aa82;
+  --vm-muted: #dccbac;
   --vm-accent: #e0bf73;
   --vm-accent-ink: #0d1124;
   --vm-chip-bg: rgb(246 240 230 / 0.06);
@@ -16,7 +16,7 @@
   --vm-focus: #e0bf73;
 }
 .vm-root[data-vm-style="light"] {
-  --vm-card-bg: rgb(253 251 247 / 0.8);
+  --vm-card-bg: rgb(253 251 247 / 0.88);
   --vm-card-border: rgb(118 100 79 / 0.2);
   --vm-text: #221a13;
   --vm-muted: #5e4f3e;

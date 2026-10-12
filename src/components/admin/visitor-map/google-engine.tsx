@@ -133,6 +133,8 @@ export function GoogleEngine(props: EngineProps & { apiKey: string; onFail(): vo
   useEffect(() => {
     let cancelled = false;
     const listeners: { remove(): void }[] = [];
+    // Google calls this global when the key is rejected (wrong key, referrer not allowed, billing off).
+    (window as unknown as { gm_authFailure?: () => void }).gm_authFailure = () => P.current.onFail();
     loadGoogleMaps(apiKey)
       .then((g) => {
         if (cancelled || !mapDiv.current) return;
