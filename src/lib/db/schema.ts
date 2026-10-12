@@ -1003,6 +1003,250 @@ export const brandFulfilments = pgTable(
   (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandLabel)],
 );
 
+// ── Fulfilment: hubs, inbound parcels, outbound shipments, returns ─────────
+//
+// One cart, one payment, one order; behind the scenes one parcel per seller.
+// - Domestic orders (buyer in Pakistan) ship DIRECT from each seller: one
+//   `shipments` row (kind `direct`) per artisan sub-order.
+// - International orders CONSOLIDATE at an origin hub when one is active: each
+//   seller sends a `hub_parcels` row to the hub, the hub receives + QC-checks +
+//   stores it, then packs everything into one `shipments` row (kind
+//   `consolidated`, or `partial` when staff ship the ready items early).
+// The artisan sub-order (`vendor_orders`) stays the source of truth for the
+// order status, escrow and payouts — shipments only drive it.
+
+/** `origin`: hub in Pakistan that consolidates exports. `city`: optional domestic city hub (later phase). `forwarder`: partner in the destination country. */
+export const hubType = pgEnum("hub_type", ["origin", "city", "forwarder"]);
+export const fulfilmentMode = pgEnum("fulfilment_mode", ["direct", "hub"]);
+export const hubParcelStatus = pgEnum("hub_parcel_status", [
+  "expected", // seller hasn't sent it yet
+  "in_transit", // on its way to the hub
+  "received", // scanned in at the hub, waiting for QC
+  "qc_passed", // checked and stored
+  "qc_failed", // problem found — staff contact the seller
+  "packed", // inside an outbound box
+  "shipped", // the outbound box left the hub
+  "returned_to_seller",
+  "cancelled",
+]);
+export const shipmentKind = pgEnum("shipment_kind", ["direct", "consolidated", "partial", "forwarder_leg"]);
+export const shipmentStatus = pgEnum("shipment_status", ["draft", "booked", "shipped", "delivered", "cancelled"]);
+export const returnStatus = pgEnum("return_status", ["requested", "approved", "rejected", "in_transit", "received", "refunded", "closed"]);
+export const fulfilmentQuoteStatus = pgEnum("fulfilment_quote_status", ["pending", "approved", "declined", "paid", "withdrawn"]);
+
+export type HubAddress = {
+  line1: string;
+  line2?: string | null;
+  city: string;
+  region?: string | null;
+  postalCode?: string | null;
+  country: string;
+};
+
+export const hubs = pgTable("hubs", {
+  id: id(),
+  name: text("name").notNull(),
+  type: hubType("type").notNull().default("origin"),
+  city: text("city").notNull(),
+  /** ISO country. Origin and city hubs are in PK; a forwarder is in the destination country. */
+  country: text("country").notNull().default("PK"),
+  /** Street address — `[Add: …]` placeholders until the owner chooses a real site. */
+  address: jsonb("address").$type<HubAddress>().notNull(),
+  contactName: text("contact_name"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  receivingHours: text("receiving_hours"),
+  /** Local cut-off for same-day handling, e.g. "15:00". */
+  cutoffTime: text("cutoff_time"),
+  /** Days the hub needs to check, pack and dispatch once everything has arrived. Null = pending. */
+  handlingDays: integer("handling_days"),
+  /** Forwarders: the courier used for the local last mile, with its own rate card. */
+  onwardCourierId: uuid("onward_courier_id").references(() => couriers.id, { onDelete: "set null" }),
+  /** Forwarders: how often they consolidate (e.g. "weekly air cargo"). */
+  consolidationCadence: text("consolidation_cadence"),
+  notes: text("notes"),
+  isActive: boolean("is_active").notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  isDemo: isDemo(),
+});
+
+/** One row per order once it is paid: how it is fulfilled and when it is expected to leave. */
+export const orderFulfilments = pgTable("order_fulfilments", {
+  orderId: uuid("order_id")
+    .primaryKey()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  mode: fulfilmentMode("mode").notNull(),
+  hubId: uuid("hub_id").references(() => hubs.id, { onDelete: "set null" }),
+  /** Later phase: the buyer opted to receive a domestic order in one delivery (via a city hub). */
+  oneDelivery: boolean("one_delivery").notNull().default(false),
+  /** Slowest item's making/dispatch time + hub handling. Null when a time is not stated. */
+  estimatedDispatchAt: timestamp("estimated_dispatch_at", { withTimezone: true }),
+  /** Staff decision when a seller is late: wait for everything, or ship the ready items now. */
+  decision: text("decision"), // wait | ship_partial
+  decisionNote: text("decision_note"),
+  decisionAt: timestamp("decision_at", { withTimezone: true }),
+  decisionById: uuid("decision_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** A seller's parcel on its way to (and through) a hub. */
+export const hubParcels = pgTable(
+  "hub_parcels",
+  {
+    id: id(),
+    /** Printed on the inbound label and scanned at the hub. */
+    reference: text("reference").notNull().unique(),
+    hubId: uuid("hub_id")
+      .notNull()
+      .references(() => hubs.id, { onDelete: "restrict" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "cascade" }),
+    brandFulfilmentId: uuid("brand_fulfilment_id").references(() => brandFulfilments.id, { onDelete: "cascade" }),
+    /** Label shown on hub screens ("Multan Blue Kiln", "Noor Lawn House"). */
+    senderLabel: text("sender_label").notNull(),
+    senderCity: text("sender_city"),
+    status: hubParcelStatus("status").notNull().default("expected"),
+    /** Seller → hub leg. */
+    courier: text("courier"),
+    trackingNumber: text("tracking_number"),
+    trackingUrl: text("tracking_url"),
+    provider: text("provider"),
+    /** When the seller is expected to hand it over (from the slowest making/dispatch time). */
+    expectedBy: timestamp("expected_by", { withTimezone: true }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    receivedAt: timestamp("received_at", { withTimezone: true }),
+    receivedById: uuid("received_by_id").references(() => users.id, { onDelete: "set null" }),
+    measuredWeightG: integer("measured_weight_g"),
+    qcNotes: text("qc_notes"),
+    qcPhotos: jsonb("qc_photos").$type<string[]>().notNull().default([]),
+    qcAt: timestamp("qc_at", { withTimezone: true }),
+    qcById: uuid("qc_by_id").references(() => users.id, { onDelete: "set null" }),
+    /** Storage location at the hub, e.g. "A-03". */
+    bin: text("bin"),
+    shipmentId: uuid("shipment_id"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("hub_parcels_order_idx").on(t.orderId), index("hub_parcels_hub_status_idx").on(t.hubId, t.status)],
+);
+
+export type ShipmentDocItem = { title: string; qty: number; hsCode: string | null; unitValue: number; weightG: number | null; origin: string; sender: string };
+
+/** An outbound parcel to the buyer (or to a forwarder). */
+export const shipments = pgTable(
+  "shipments",
+  {
+    id: id(),
+    reference: text("reference").notNull().unique(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    kind: shipmentKind("kind").notNull(),
+    status: shipmentStatus("status").notNull().default("draft"),
+    /** Direct parcels: the artisan sub-order. */
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "cascade" }),
+    fromHubId: uuid("from_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    /** Forwarder legs: the forwarder hub receiving the box. */
+    toHubId: uuid("to_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    courierId: uuid("courier_id").references(() => couriers.id, { onDelete: "set null" }),
+    courierName: text("courier_name"),
+    serviceName: text("service_name"),
+    /** Booking adapter: manual | sandbox | a real provider id. */
+    provider: text("provider").notNull().default("manual"),
+    bookingRef: text("booking_ref"),
+    trackingNumber: text("tracking_number"),
+    trackingUrl: text("tracking_url"),
+    weightG: integer("weight_g"),
+    lengthCm: numeric("length_cm"),
+    widthCm: numeric("width_cm"),
+    heightCm: numeric("height_cm"),
+    volumetricWeightG: integer("volumetric_weight_g"),
+    chargeableWeightG: integer("chargeable_weight_g"),
+    /** What the rate card says this box costs Wahbayaan (PKR). Null = pending. */
+    rateCostPkr: money("rate_cost_pkr"),
+    /** Snapshot for the commercial invoice / packing list. */
+    documentItems: jsonb("document_items").$type<ShipmentDocItem[]>().notNull().default([]),
+    notes: text("notes"),
+    createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+    bookedAt: timestamp("booked_at", { withTimezone: true }),
+    shippedAt: timestamp("shipped_at", { withTimezone: true }),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("shipments_order_idx").on(t.orderId)],
+);
+
+export const shipmentItems = pgTable("shipment_items", {
+  id: id(),
+  shipmentId: uuid("shipment_id")
+    .notNull()
+    .references(() => shipments.id, { onDelete: "cascade" }),
+  orderItemId: uuid("order_item_id").references(() => orderItems.id, { onDelete: "cascade" }),
+  brandOrderItemId: uuid("brand_order_item_id").references(() => brandOrderItems.id, { onDelete: "cascade" }),
+  hubParcelId: uuid("hub_parcel_id").references(() => hubParcels.id, { onDelete: "set null" }),
+  qty: integer("qty").notNull(),
+});
+
+/**
+ * Extra charges after payment (a second box for a partial shipment, or a packed
+ * box that costs more than estimated). Never charged without the buyer's approval.
+ */
+export const fulfilmentQuotes = pgTable("fulfilment_quotes", {
+  id: id(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), // partial_shipment | final_weight
+  /** Buyer currency (the order's currency). */
+  amount: money("amount").notNull(),
+  currency: text("currency").notNull(),
+  note: text("note"),
+  status: fulfilmentQuoteStatus("status").notNull().default("pending"),
+  paymentRef: text("payment_ref"),
+  createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  respondedAt: timestamp("responded_at", { withTimezone: true }),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  createdAt: createdAt(),
+});
+
+export type ReturnItem = { orderItemId?: string | null; brandOrderItemId?: string | null; title: string; qty: number };
+
+export const returnRequests = pgTable(
+  "return_requests",
+  {
+    id: id(),
+    number: text("number").notNull().unique(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "set null" }),
+    items: jsonb("items").$type<ReturnItem[]>().notNull().default([]),
+    reason: text("reason").notNull(),
+    description: text("description").notNull(),
+    photos: jsonb("photos").$type<string[]>().notNull().default([]),
+    status: returnStatus("status").notNull().default("requested"),
+    /** Where the item goes back to: the seller (domestic), the origin hub, or a forwarder. */
+    destination: text("destination").notNull(), // seller | hub | forwarder
+    returnHubId: uuid("return_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    courier: text("courier"),
+    trackingNumber: text("tracking_number"),
+    refundId: uuid("refund_id"),
+    staffNote: text("staff_note"),
+    decidedById: uuid("decided_by_id").references(() => users.id, { onDelete: "set null" }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    receivedAt: timestamp("received_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("return_requests_order_idx").on(t.orderId)],
+);
+
 // ── Cross-border rates (business data; pending until supplied) ──────────────
 
 export const fxRates = pgTable("fx_rates", {
@@ -1415,6 +1659,11 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   payments: many(payments),
   refunds: many(refunds),
   disputes: many(disputes),
+  fulfilment: one(orderFulfilments),
+  hubParcels: many(hubParcels),
+  shipments: many(shipments),
+  fulfilmentQuotes: many(fulfilmentQuotes),
+  returnRequests: many(returnRequests),
 }));
 
 export const vendorOrdersRelations = relations(vendorOrders, ({ one, many }) => ({
@@ -1554,6 +1803,47 @@ export const brandOrderItemsRelations = relations(brandOrderItems, ({ one }) => 
 export const brandFulfilmentsRelations = relations(brandFulfilments, ({ one }) => ({
   order: one(orders, { fields: [brandFulfilments.orderId], references: [orders.id] }),
   brand: one(brands, { fields: [brandFulfilments.brandId], references: [brands.id] }),
+}));
+
+export const hubsRelations = relations(hubs, ({ one, many }) => ({
+  onwardCourier: one(couriers, { fields: [hubs.onwardCourierId], references: [couriers.id] }),
+  parcels: many(hubParcels),
+}));
+
+export const orderFulfilmentsRelations = relations(orderFulfilments, ({ one }) => ({
+  order: one(orders, { fields: [orderFulfilments.orderId], references: [orders.id] }),
+  hub: one(hubs, { fields: [orderFulfilments.hubId], references: [hubs.id] }),
+}));
+
+export const hubParcelsRelations = relations(hubParcels, ({ one }) => ({
+  hub: one(hubs, { fields: [hubParcels.hubId], references: [hubs.id] }),
+  order: one(orders, { fields: [hubParcels.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [hubParcels.vendorOrderId], references: [vendorOrders.id] }),
+  brandFulfilment: one(brandFulfilments, { fields: [hubParcels.brandFulfilmentId], references: [brandFulfilments.id] }),
+  shipment: one(shipments, { fields: [hubParcels.shipmentId], references: [shipments.id] }),
+}));
+
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  order: one(orders, { fields: [shipments.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [shipments.vendorOrderId], references: [vendorOrders.id] }),
+  fromHub: one(hubs, { fields: [shipments.fromHubId], references: [hubs.id] }),
+  items: many(shipmentItems),
+}));
+
+export const shipmentItemsRelations = relations(shipmentItems, ({ one }) => ({
+  shipment: one(shipments, { fields: [shipmentItems.shipmentId], references: [shipments.id] }),
+  orderItem: one(orderItems, { fields: [shipmentItems.orderItemId], references: [orderItems.id] }),
+  hubParcel: one(hubParcels, { fields: [shipmentItems.hubParcelId], references: [hubParcels.id] }),
+}));
+
+export const fulfilmentQuotesRelations = relations(fulfilmentQuotes, ({ one }) => ({
+  order: one(orders, { fields: [fulfilmentQuotes.orderId], references: [orders.id] }),
+}));
+
+export const returnRequestsRelations = relations(returnRequests, ({ one }) => ({
+  order: one(orders, { fields: [returnRequests.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [returnRequests.vendorOrderId], references: [vendorOrders.id] }),
+  returnHub: one(hubs, { fields: [returnRequests.returnHubId], references: [hubs.id] }),
 }));
 
 export const brandAlertsRelations = relations(brandAlerts, ({ one }) => ({

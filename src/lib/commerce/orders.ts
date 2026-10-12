@@ -334,6 +334,8 @@ export async function markPaid(orderId: string, providerRef: string | null) {
     await event(tx, orderId, "paid", "Payment received — held safely by Wahbayaan until your piece arrives.");
     await notifyVendors(tx, orderId, { kind: "order", title: `New paid order ${order.number}`, link: "/seller/orders" });
   });
+  // Route the order (direct from each seller, or consolidated at a hub) and create its inbound parcels.
+  await (await import("@/lib/fulfilment/service")).ensureFulfilment(orderId);
   await sendEmail({ to: order.email, subject: `Payment received for ${order.number}`, template: "paid", body: "Your payment is held by Wahbayaan and only released to the artisan once your piece arrives." });
   await emailVendors(orderId, (name) => ({
     subject: `New paid order ${order.number}`,
@@ -359,7 +361,18 @@ const VENDOR_LABEL: Record<VendorAction["type"], string> = {
   delivered: "Delivered",
 };
 
-export async function vendorOrderAction(vendorOrderId: string, action: VendorAction, actor: { userId: string; vendorId?: string | null; isStaff?: boolean }) {
+/**
+ * `opts.quiet`: the fulfilment service moves several parcels at once (a hub
+ * box holding every artisan's pieces) and tells the buyer itself — one event
+ * and one email for the box instead of one per parcel. The order-level
+ * "Delivered" event and email still go out.
+ */
+export async function vendorOrderAction(
+  vendorOrderId: string,
+  action: VendorAction,
+  actor: { userId: string; vendorId?: string | null; isStaff?: boolean },
+  opts: { quiet?: boolean } = {},
+) {
   const d = await db();
   const vo = await d.query.vendorOrders.findFirst({ where: eq(vendorOrders.id, vendorOrderId), with: { order: true } });
   if (!vo) throw new OrderError("Order not found");
@@ -416,7 +429,7 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
     const orderBecomesDelivered = next === "delivered" && next !== order.status && order.status !== "disputed";
     // The order-level "Delivered" event says it all; don't repeat it per parcel.
     if (!(action.type === "delivered" && orderBecomesDelivered)) {
-      await event(tx, order.id, `vendor_${action.type}`, message, { actorUserId: actor.userId, vendorOrderId });
+      await event(tx, order.id, `vendor_${action.type}`, message, { actorUserId: actor.userId, vendorOrderId, visibleToBuyer: !opts.quiet });
     }
     if (next !== order.status && order.status !== "disputed") {
       await tx
@@ -429,10 +442,12 @@ export async function vendorOrderAction(vendorOrderId: string, action: VendorAct
       if (next === "delivered")
         await event(tx, order.id, "delivered", "Delivered. Please confirm it arrived as described — or open a case if something is wrong.");
     }
-    await notify(tx, order.userId, { kind: "order", title: `${order.number}: ${message}`, link: `/account/orders/${order.number}` });
+    if (!opts.quiet) await notify(tx, order.userId, { kind: "order", title: `${order.number}: ${message}`, link: `/account/orders/${order.number}` });
   });
+  // Keep outbound shipment rows in step with the parcel (e.g. "Mark delivered" in Admin → Shipments).
+  if (action.type === "delivered" || action.type === "ship") await (await import("@/lib/fulfilment/sync")).syncShipmentsForVendorOrder(vendorOrderId);
   const orderLink = `${appUrl()}/account/orders/${order.number}`;
-  if (action.type === "ship") {
+  if (action.type === "ship" && !opts.quiet) {
     await sendEmail({
       to: order.email,
       subject: `Your Wahbayaan order ${order.number} has shipped`,
@@ -638,6 +653,7 @@ export async function cancelOrder(orderId: string, actor: { userId: string; reas
     await tx.update(brandFulfilments).set({ status: "cancelled" }).where(eq(brandFulfilments.orderId, orderId));
     await event(tx, orderId, "cancelled", `Order cancelled (${actor.reason}).`, { actorUserId: actor.userId });
   });
+  await (await import("@/lib/fulfilment/sync")).cancelFulfilment(orderId);
 }
 
 export const ORDER_STATUS_LABEL: Record<string, string> = {

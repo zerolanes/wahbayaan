@@ -131,6 +131,14 @@ export type LcInput = {
   extraLines?: LcLine[];
   /** Overrides the shipping note when every parcel ships from one place (e.g. Wahbayaan consolidates brand orders). */
   shippingNote?: string;
+  /**
+   * Hub consolidation: every item leaves in ONE box priced on its chargeable
+   * (max of actual / volumetric) weight instead of one parcel per artisan.
+   * `weightG: null` keeps shipping pending with `reason`.
+   */
+  consolidate?: { weightG: number | null; reason?: string };
+  /** Pre-priced parcels (domestic direct delivery: one courier rate per seller, from the city-zone rate cards). */
+  shipmentsOverride?: ShipmentQuote[];
 };
 
 export const PENDING_NOTE = "Pending real rate data";
@@ -148,9 +156,14 @@ export function buyerUnitPrice(unitPricePkr: number, fx: FxQuote) {
 
 export { FREIGHT_THRESHOLD_G };
 
+export const HUB_SHIPMENT_ID = "hub";
+
 function quoteShipments(input: LcInput): ShipmentQuote[] {
+  if (input.shipmentsOverride) return input.shipmentsOverride;
+  if (input.consolidate && input.consolidate.weightG == null)
+    return [{ vendorId: HUB_SHIPMENT_ID, weightG: null, status: "pending", reason: input.consolidate.reason ?? "Shipping weight not listed for every item" }];
   const byVendor = new Map<string, LcItem[]>();
-  for (const item of input.items) {
+  for (const item of input.consolidate ? input.items.map((i) => ({ ...i, vendorId: HUB_SHIPMENT_ID })) : input.items) {
     const list = byVendor.get(item.vendorId) ?? [];
     list.push(item);
     byVendor.set(item.vendorId, list);
@@ -168,7 +181,7 @@ function quoteShipments(input: LcInput): ShipmentQuote[] {
       });
       continue;
     }
-    const weightG = items.reduce((sum, i) => sum + (i.weightG ?? 0) * i.qty, 0);
+    const weightG = input.consolidate?.weightG ?? items.reduce((sum, i) => sum + (i.weightG ?? 0) * i.qty, 0);
     const candidates = input.shippingRates
       .filter(
         (r) =>
