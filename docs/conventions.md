@@ -44,6 +44,19 @@ Read this before adding pages. It is short on purpose.
 - Payment methods (`src/lib/payments/methods.ts`): card / JazzCash / Easypaisa per market. Only non-secret config in settings; secrets are env vars. No cash on delivery.
 - Recorded adapter fixtures (FICTIONAL brands) live in `tests/fixtures/brands/`; `fixture:<name>` source URLs work outside production only.
 
+## Fulfilment (`src/lib/fulfilment`)
+
+- One cart, one payment, one order; behind the scenes one parcel per seller. `ensureFulfilment` (called from `markPaid`) routes the order: **domestic** (`PK`) → `direct` (each seller books a courier and ships to the buyer; one `shipments` row per artisan sub-order); **international** → `hub` when an origin hub is active and consolidation is on (Admin → Hubs & booking), else `direct`. Brand orders use the hub whenever one is active. Orders without an `order_fulfilments` row are older direct orders.
+- Tables: `hubs` (origin / city / forwarder; `[Add: …]` address placeholders until the owner picks a site), `order_fulfilments`, `hub_parcels` (seller → hub, statuses expected → in_transit → received → qc_passed/qc_failed → shipped), `shipments` (+ `shipment_items`; `direct`, `consolidated`, `partial`), `fulfilment_quotes` (extra shipping after payment), `return_requests`.
+- Escrow and payouts are untouched: everything still moves artisan sub-orders through `vendorOrderAction`. Hub boxes call it with `{ quiet: true }` so the buyer gets one event + one email per box, not per parcel.
+- Pure rules live in `consolidation.ts` (x of y arrived, slowest item + hub handling days, lateness, partial-shipment check, volumetric / chargeable weight), `domestic-parcels.ts` (one zoned rate per seller; same city → `same_city` zone; any parcel unpriced → the whole line is pending), `reference.ts` (`WB-XXXXXX-P1K` parcel / `-S1M` box references with a check character), `barcode.ts` (Code 128 SVG), `label.ts`, `journey.ts`, `plan.ts`.
+- **Never charge more silently.** A second box (partial shipment) or a heavier packed box is a `fulfilment_quotes` row the buyer approves and pays; declining charges nothing. "Ship ready items now" is only allowed when a seller is late past the threshold.
+- Couriers are booked through adapters (`couriers/`): `manual` (type the tracking number; link from the courier's URL template) and `sandbox` (demo/tests, `SBX…` numbers, refused in production). Real providers are listed in `couriers/providers.ts` with the env var names they will read — no courier API is called until an integration is written against the courier's own documentation. The adapter per courier is chosen in Admin → Hubs & booking.
+- Printable labels: `/labels/<reference>` (staff, or the seller who owns the parcel). Consolidated commercial invoice + packing list: `/admin/orders/<n>/invoice?shipment=<reference>`.
+- Returns: requested from the order page inside `buyer_protection.returnWindowDays` (while that is pending: until funds are released). Opening one pauses escrow auto-release; refunds go through `refundOrder`.
+- Permissions: `hub.operate` (hub screens), `hubs.manage` (hub configuration, booking adapters).
+- E2E: `scripts/e2e-fulfilment.mjs` switches the fictional "Demo Hub (Lahore)" on for its run and off again afterwards.
+
 ## Auth
 
 - Buyer pages: `await requireUser("/account/...")`.
