@@ -1,0 +1,566 @@
+/*
+ * Cookie banner. Every colour and size comes from a --consent-* variable set
+ * inline from the `consent_banner` setting (src/lib/consent/banner-settings.ts).
+ * Two containers: `wbc-root` (the viewport strip: phone rules, corner box,
+ * animation) and `wbc` (the panel's own width: phone / tablet / desktop
+ * arrangement), so the admin preview frame shows the real layouts.
+ */
+.wbc-root {
+  --wbc-scale: 1;
+  --wbc-pad: var(--consent-padding, 20px);
+  container: wbc-root / inline-size;
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 70;
+  font-family: var(--font-sans, "Inter Variable", system-ui, sans-serif);
+  color: var(--consent-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.wbc-root[data-preview] {
+  position: absolute;
+}
+.wbc-root[data-layout="top"] {
+  inset: 0 0 auto 0;
+}
+.wbc-root[data-layout="dialog"],
+.wbc-root[data-layout="dialog-dark"] {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 0.5);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.wbc-root[data-layout="corner"] {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.wbc-panel {
+  container: wbc / inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: var(--consent-max-height, 500px);
+  background: var(--consent-bg);
+  box-shadow: 0 0 17px rgb(0 0 0 / 0.2);
+  outline: none;
+  pointer-events: auto;
+  animation: wbc-fade 200ms ease both;
+}
+.wbc-panel[data-view="settings"] {
+  max-height: calc(var(--wbc-vh, 1vh) * 85);
+}
+.wbc-root[data-layout^="dialog"] .wbc-panel {
+  width: min(530px, 100%);
+  border-radius: var(--consent-panel-radius);
+  overflow: hidden;
+}
+.wbc-root[data-layout^="dialog"] .wbc-panel[data-view="settings"] {
+  width: min(970px, 100%);
+}
+.wbc-root[data-layout="corner"] .wbc-panel {
+  width: min(420px, 100%);
+  border-radius: var(--consent-panel-radius);
+  overflow: hidden;
+}
+.wbc-root[data-preview] .wbc-panel {
+  animation: none;
+}
+
+.wbc-inner {
+  width: 100%;
+  max-width: var(--consent-max-width, 1024px);
+  margin-inline: auto;
+  padding-inline: var(--wbc-pad);
+}
+
+/* Header: logo + headline, hairline below. */
+.wbc-header {
+  flex: none;
+  border-bottom: 1px solid var(--consent-border);
+}
+.wbc-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-block: 12px;
+}
+.wbc-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-height: var(--consent-logo-height, 53px);
+  height: min(var(--consent-logo-height, 53px), 40px);
+}
+.wbc-logo .wbc-mark {
+  height: 100%;
+  width: auto;
+}
+.wbc-wordmark {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 72;
+  color: var(--consent-text);
+}
+.wbc-title {
+  margin: 0;
+  padding-left: 14px;
+  border-left: 1px solid var(--consent-border);
+  font-family: var(--font-display, var(--font-sans));
+  font-size: calc(var(--consent-headline-size, 20px) * var(--wbc-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--consent-text);
+}
+
+/* Middle: scrolls; header and footer stay. */
+.wbc-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.wbc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: var(--wbc-pad) 0;
+}
+.wbc-desc {
+  margin: 0;
+  font-size: calc(var(--consent-text-size, 16px) * var(--wbc-scale));
+  color: var(--consent-text);
+}
+.wbc-sep {
+  width: 50px;
+  height: 1px;
+  margin: 14px 0;
+  border: 0;
+  background: var(--consent-muted);
+  opacity: 0.45;
+}
+.wbc-small {
+  margin: 0;
+  font-size: calc(var(--consent-small-size, 12px) * var(--wbc-scale));
+  color: var(--consent-muted);
+}
+.wbc-small sup {
+  font-size: 0.75em;
+  line-height: 0;
+  margin-left: 1px;
+}
+
+.wbc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--consent-gap, 10px);
+  padding-bottom: var(--wbc-pad);
+  background: var(--consent-bg);
+}
+.wbc-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--consent-gap, 10px);
+}
+.wbc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--consent-button-min-height, 50px);
+  padding: var(--consent-button-padding, 10px);
+  border: 0;
+  border-radius: var(--consent-radius, 5px);
+  background: var(--consent-button-bg);
+  color: var(--consent-button-text);
+  font: inherit;
+  font-size: calc(var(--consent-button-font-size, 18px) * var(--wbc-scale));
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    scale 200ms ease,
+    filter 200ms ease;
+}
+.wbc-btn:hover {
+  filter: brightness(1.12);
+}
+.wbc-btn:active {
+  scale: 0.97;
+  transition-duration: 120ms;
+}
+.wbc-link {
+  align-self: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  color: var(--consent-link);
+  font: inherit;
+  font-size: calc(var(--consent-text-size, 16px) * 0.9 * var(--wbc-scale));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.wbc-link:hover {
+  text-decoration-thickness: 2px;
+}
+.wbc-root :focus-visible {
+  outline: 2px solid var(--consent-focus);
+  outline-offset: 2px;
+}
+.wbc-panel:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Individual settings view. */
+.wbc-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 8px 0;
+}
+.wbc-back {
+  align-self: flex-start;
+}
+.wbc-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wbc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  border: 1px solid var(--consent-border);
+  border-radius: var(--consent-radius, 5px);
+  background: var(--consent-box-bg);
+}
+.wbc-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.wbc-group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.wbc-group-name {
+  font-weight: 600;
+  font-size: calc(var(--consent-text-size, 16px) * var(--wbc-scale));
+}
+.wbc-always {
+  font-size: calc(var(--consent-small-size, 12px) * var(--wbc-scale));
+  font-weight: 600;
+  color: var(--consent-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.wbc-group-desc {
+  margin: 0;
+  font-size: calc(var(--consent-text-size, 16px) * 0.875 * var(--wbc-scale));
+  color: var(--consent-muted);
+}
+.wbc-more {
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 2px 0;
+}
+.wbc-switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--consent-muted) 55%, transparent);
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+.wbc-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  transition: translate 200ms ease;
+}
+.wbc-switch:checked {
+  background: var(--consent-switch-on);
+}
+.wbc-switch:checked::after {
+  translate: 18px 0;
+}
+.wbc-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.wbc-services {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wbc-services[hidden] {
+  display: none;
+}
+.wbc-service {
+  padding: 12px 14px;
+  border-radius: var(--consent-radius, 5px);
+  background: var(--consent-footer-bg);
+  font-size: calc(var(--consent-small-size, 12px) * 1.08 * var(--wbc-scale));
+}
+.wbc-service-name {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.wbc-service dl {
+  display: grid;
+  grid-template-columns: minmax(0, 9.5em) minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0;
+}
+.wbc-service dt {
+  color: var(--consent-muted);
+}
+.wbc-service dd {
+  margin: 0;
+}
+.wbc-cookies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wbc-cookies code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95em;
+}
+.wbc-actions-settings {
+  position: sticky;
+  bottom: 0;
+  padding-top: 10px;
+}
+
+/* Footer strip. */
+.wbc-footer {
+  flex: none;
+  border-top: 1px solid var(--consent-border);
+  background: var(--consent-footer-bg);
+}
+.wbc-footer .wbc-inner {
+  padding-block: 8px;
+}
+.wbc-footer-link {
+  display: inline-block;
+  padding-block: 4px;
+  font-size: calc(14px * var(--wbc-scale));
+  color: var(--consent-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Tablet arrangement (panel 600–899px): the two main buttons side by side, link full width under them. */
+@container wbc (min-width: 600px) {
+  .wbc-buttons {
+    flex-direction: row;
+  }
+  .wbc-buttons .wbc-btn {
+    flex: 1 1 0;
+  }
+  .wbc-individual {
+    align-self: stretch;
+  }
+}
+
+/* Desktop arrangement (panel ≥ 900px): text left, 320px button column right, buttons stay in view. */
+@container wbc (min-width: 900px) {
+  .wbc-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--consent-button-column, 320px);
+    gap: 32px;
+    align-items: start;
+    padding-bottom: var(--wbc-pad);
+  }
+  .wbc-main .wbc-actions {
+    position: sticky;
+    top: 0;
+    padding-bottom: 0;
+  }
+  .wbc-buttons {
+    flex-direction: column;
+  }
+  .wbc-individual {
+    align-self: center;
+  }
+  .wbc-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* Phones (viewport < 600px): stacked, 90% type, 400px tall with text scrolling, buttons sticky at the bottom. */
+@container wbc-root (max-width: 599px) {
+  .wbc-panel {
+    --wbc-scale: 0.9;
+    --wbc-pad: 14px;
+  }
+  .wbc-panel[data-view="main"] {
+    max-height: min(400px, var(--consent-max-height, 500px));
+  }
+  .wbc-logo {
+    height: min(var(--consent-logo-height, 53px), 40px, 32px);
+  }
+  .wbc-wordmark {
+    display: none;
+  }
+  .wbc-main .wbc-actions,
+  .wbc-actions-settings {
+    position: sticky;
+    bottom: 0;
+    margin-inline: calc(var(--wbc-pad) * -1);
+    padding: 12px var(--wbc-pad);
+    box-shadow: 0 -10px 14px -10px rgb(0 0 0 / 0.22);
+  }
+  .wbc-main .wbc-actions {
+    gap: 8px;
+  }
+  .wbc-root:not([data-preview]):not([data-layout^="dialog"]):not([data-layout="top"]) .wbc-panel {
+    animation: wbc-slide-up 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .wbc-root:not([data-preview])[data-layout="top"] .wbc-panel {
+    animation: wbc-slide-down 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* The compact corner box becomes a full-width bottom bar on phones. */
+  .wbc-root[data-layout="corner"] .wbc-panel {
+    width: calc(100% + 32px);
+    margin: 0 -16px -16px;
+    border-radius: 0;
+  }
+}
+
+@keyframes wbc-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wbc-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes wbc-slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wbc-root .wbc-panel,
+  .wbc-root .wbc-btn,
+  .wbc-switch,
+  .wbc-switch::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Floating privacy button (optional, Admin → Cookie banner). Sits above the phone tab bar. */
+.wbc-fab {
+  position: fixed;
+  left: 16px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: 45;
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+@media (min-width: 768px) {
+  .wbc-fab {
+    bottom: 16px;
+  }
+}
+.wbc-fab-button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--consent-button-bg);
+  color: var(--consent-button-text);
+  box-shadow: 0 0 17px rgb(0 0 0 / 0.2);
+  cursor: pointer;
+}
+.wbc-fab-button svg {
+  width: 30px;
+  height: 30px;
+}
+.wbc-fab-menu {
+  position: absolute;
+  left: 0;
+  bottom: 58px;
+  min-width: 260px;
+  padding: 6px;
+  border: 1px solid var(--consent-border);
+  border-radius: var(--consent-panel-radius, 5px);
+  background: var(--consent-bg);
+  color: var(--consent-text);
+  box-shadow: 0 0 17px rgb(0 0 0 / 0.2);
+}
+.wbc-fab-menu button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--consent-radius, 5px);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.wbc-fab-menu button:hover {
+  background: var(--consent-footer-bg);
+}
+.wbc-fab-id {
+  margin: 4px 0 0;
+  padding: 8px 12px 6px;
+  border-top: 1px solid var(--consent-border);
+  font-size: 12px;
+  color: var(--consent-muted);
+  word-break: break-all;
+}
+.wbc-fab :focus-visible {
+  outline: 2px solid var(--consent-focus);
+  outline-offset: 2px;
+}

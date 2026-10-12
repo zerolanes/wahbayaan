@@ -1,3 +1,4 @@
+import { ConsentRoot } from "@/components/consent/consent-root";
 import { MaintenanceGate } from "@/components/store/maintenance";
 import { AnnouncementBar } from "@/components/store/announcement-bar";
 import { DemoRibbon } from "@/components/store/demo-ribbon";
@@ -16,6 +17,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
         <SiteFooter />
+        <ConsentRoot />
       </div>
     </MaintenanceGate>
   );
