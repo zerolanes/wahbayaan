@@ -16,6 +16,7 @@ import {
   bigint,
   boolean,
   date,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -1350,6 +1351,81 @@ export const adminNotes = pgTable("admin_notes", {
   createdAt: createdAt(),
 });
 
+// ── Visitor statistics & proof of consent ───────────────────────────────────
+// Rows are written only after the visitor allowed "Statistics" in the cookie
+// banner (the server re-checks the consent cookie). No raw IP is stored: visits
+// carry a coarse location, consent records an IP shortened to /24 (IPv6 /48).
+
+export const analyticsVisits = pgTable(
+  "analytics_visits",
+  {
+    id: id(),
+    consentId: text("consent_id").notNull(),
+    /** Value of the 30-minute `wb_visit` cookie. */
+    visitKey: text("visit_key").notNull().unique(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    landingPath: text("landing_path").notNull(),
+    referrer: text("referrer"),
+    countryCode: text("country_code"),
+    country: text("country"),
+    region: text("region"),
+    city: text("city"),
+    latitude: doublePrecision("latitude"),
+    longitude: doublePrecision("longitude"),
+    device: text("device"),
+    browser: text("browser"),
+    os: text("os"),
+    screen: text("screen"),
+    language: text("language"),
+    isDatacenter: boolean("is_datacenter").notNull().default(false),
+    pageCount: integer("page_count").notNull().default(0),
+  },
+  (t) => [
+    index("analytics_visits_last_seen_idx").on(t.lastSeenAt),
+    index("analytics_visits_started_idx").on(t.startedAt),
+    index("analytics_visits_consent_idx").on(t.consentId),
+  ],
+);
+
+export const analyticsPageViews = pgTable(
+  "analytics_page_views",
+  {
+    id: id(),
+    visitId: uuid("visit_id")
+      .notNull()
+      .references(() => analyticsVisits.id, { onDelete: "cascade" }),
+    path: text("path").notNull(),
+    title: text("title"),
+    referrer: text("referrer"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("analytics_page_views_visit_idx").on(t.visitId), index("analytics_page_views_created_idx").on(t.createdAt)],
+);
+
+export const consentRecords = pgTable(
+  "consent_records",
+  {
+    id: id(),
+    consentId: text("consent_id").notNull(),
+    /** accept_all | essentials | custom | revoke */
+    decision: text("decision").notNull(),
+    categories: jsonb("categories").notNull(),
+    rev: integer("rev").notNull(),
+    ipShort: text("ip_short"),
+    userAgent: text("user_agent"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("consent_records_created_idx").on(t.createdAt), index("consent_records_consent_idx").on(t.consentId)],
+);
+
+/** IP-location lookups, cached for 24 hours. Keyed by a salted hash, never the IP. */
+export const ipGeoCache = pgTable("ip_geo_cache", {
+  ipHash: text("ip_hash").primaryKey(),
+  data: jsonb("data").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // ── Relations (for the relational query API) ────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1559,4 +1635,12 @@ export const brandFulfilmentsRelations = relations(brandFulfilments, ({ one }) =
 export const brandAlertsRelations = relations(brandAlerts, ({ one }) => ({
   brand: one(brands, { fields: [brandAlerts.brandId], references: [brands.id] }),
   product: one(brandProducts, { fields: [brandAlerts.productId], references: [brandProducts.id] }),
+}));
+
+export const analyticsVisitsRelations = relations(analyticsVisits, ({ many }) => ({
+  pageViews: many(analyticsPageViews),
+}));
+
+export const analyticsPageViewsRelations = relations(analyticsPageViews, ({ one }) => ({
+  visit: one(analyticsVisits, { fields: [analyticsPageViews.visitId], references: [analyticsVisits.id] }),
 }));
