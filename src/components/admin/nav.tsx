@@ -1,5 +1,5 @@
 import {
-  Activity, BadgePercent, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
+  Activity, BadgePercent, ChartLine, Cookie, Radio, Route, ShieldCheck, SlidersHorizontal, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
   HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Mail, Megaphone, MessagesSquare, Package,
   PackageSearch, Palette, Receipt, Scale, ScrollText, Settings, Shield, ShieldAlert, Ship, Sparkles, Star, Store, Tags,
   Truck, UserCheck, Users, Wallet, Waypoints, Wrench,
@@ -113,6 +113,12 @@ export function adminNav(c: AdminCounts): NavGroup[] {
       label: "Insights",
       items: [
         { href: "/admin/reports", label: "Reports", icon: <BarChart3 />, permission: "reports.view" },
+        { href: "/admin/analytics", label: "Visitor statistics", icon: <ChartLine />, exact: true, permission: "analytics.view" },
+        { href: "/admin/analytics/live", label: "Live now", icon: <Radio />, permission: "analytics.view" },
+        { href: "/admin/analytics/visits", label: "Visitor journeys", icon: <Route />, permission: "analytics.view" },
+        { href: "/admin/analytics/consent", label: "Consent log", icon: <ShieldCheck />, permission: "analytics.view" },
+        { href: "/admin/privacy/banner", label: "Cookie banner", icon: <Cookie />, permission: "analytics.manage" },
+        { href: "/admin/analytics/settings", label: "Privacy & tracking", icon: <SlidersHorizontal />, permission: "analytics.manage" },
         { href: "/admin/health", label: "System health", icon: <Gauge />, permission: "settings.manage" },
       ],
     },
