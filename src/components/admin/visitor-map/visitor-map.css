@@ -1,0 +1,422 @@
+/*
+ * Visitor map. Colours are the storefront brand palette written out literally:
+ * `.admin-theme` remaps the Tailwind colour tokens to greys, but the map keeps
+ * Wahbayaan's own indigo / gold / terracotta / sand.
+ */
+.vm-root {
+  --vm-card-bg: rgb(13 17 36 / 0.72);
+  --vm-card-border: rgb(236 215 164 / 0.16);
+  --vm-text: #f6f0e6;
+  --vm-muted: #c3aa82;
+  --vm-accent: #e0bf73;
+  --vm-accent-ink: #0d1124;
+  --vm-chip-bg: rgb(246 240 230 / 0.06);
+  --vm-chip-border: rgb(236 215 164 / 0.18);
+  --vm-online: #9ad1a3;
+  --vm-focus: #e0bf73;
+}
+.vm-root[data-vm-style="light"] {
+  --vm-card-bg: rgb(253 251 247 / 0.8);
+  --vm-card-border: rgb(118 100 79 / 0.2);
+  --vm-text: #221a13;
+  --vm-muted: #5e4f3e;
+  --vm-accent: #a9502e;
+  --vm-accent-ink: #fdfbf7;
+  --vm-chip-bg: rgb(52 42 32 / 0.04);
+  --vm-chip-border: rgb(118 100 79 / 0.22);
+  --vm-online: #2f7a3e;
+  --vm-focus: #a9502e;
+}
+
+/* ---- layout ------------------------------------------------------------- */
+
+.vm-root-card {
+  position: relative;
+  height: clamp(320px, 52vh, 560px);
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  background: #0d1124;
+  isolation: isolate;
+}
+.vm-root-card[data-vm-style="light"] {
+  background: #f6f1e8;
+}
+.vm-root-bg {
+  /* The element itself takes no space; its layers are fixed to the viewport. */
+  position: static;
+}
+.vm-map-area {
+  position: absolute;
+  inset: 0;
+  outline: none;
+}
+.vm-map-area:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--vm-focus);
+}
+.vm-map-area-bg {
+  position: fixed;
+  z-index: -1;
+}
+.vm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  color: var(--vm-text);
+  font-size: 13px;
+}
+.vm-overlay-bg {
+  position: fixed;
+  z-index: 20;
+}
+@media (min-width: 1024px) {
+  .admin-theme .vm-map-area-bg,
+  .admin-theme .vm-overlay-bg {
+    left: 15rem; /* beside the admin sidebar */
+  }
+}
+.vm-root:fullscreen {
+  background: #0d1124;
+}
+.vm-root:fullscreen .vm-map-area-bg,
+.vm-root:fullscreen .vm-overlay-bg {
+  left: 0;
+}
+
+.vm-controls-dock {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+  pointer-events: none;
+}
+.vm-overlay-bg .vm-controls-dock {
+  right: 16px;
+  bottom: 16px;
+}
+
+/* ---- surfaces ----------------------------------------------------------- */
+
+.vm-card {
+  pointer-events: auto;
+  color: var(--vm-text);
+  background: var(--vm-card-bg);
+  border: 1px solid var(--vm-card-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  padding: 10px 12px;
+}
+.vm-controls {
+  width: 300px;
+  max-width: 100%;
+}
+.vm-controls[data-collapsed="1"] {
+  width: auto;
+  min-width: 190px;
+}
+.vm-settings {
+  width: 330px;
+  max-width: 100%;
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+}
+.vm-settings-body {
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.vm-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--vm-text) !important;
+}
+.vm-muted {
+  color: var(--vm-muted);
+}
+.vm-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--vm-muted);
+}
+.vm-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vm-accent);
+}
+.vm-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--vm-online);
+}
+.vm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 25%, transparent);
+}
+
+/* ---- controls ----------------------------------------------------------- */
+
+.vm-chips {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--vm-chip-bg);
+  border: 1px solid var(--vm-chip-border);
+}
+.vm-chip {
+  flex: 1;
+  min-height: 30px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vm-muted);
+  transition: background-color 150ms, color 150ms;
+}
+.vm-chip:hover {
+  color: var(--vm-text);
+}
+.vm-chip[aria-checked="true"] {
+  background: var(--vm-accent);
+  color: var(--vm-accent-ink);
+}
+.vm-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  font-size: 12px;
+  color: var(--vm-text);
+}
+.vm-switch-track {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  border-radius: 99px;
+  background: var(--vm-chip-border);
+  transition: background-color 150ms;
+}
+.vm-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 99px;
+  background: #fdfbf7;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: transform 150ms;
+}
+.vm-switch[aria-checked="true"] .vm-switch-track {
+  background: var(--vm-accent);
+}
+.vm-switch[aria-checked="true"] .vm-switch-thumb {
+  transform: translateX(12px);
+}
+.vm-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  color: var(--vm-text);
+  background: var(--vm-chip-bg);
+  border: 1px solid var(--vm-chip-border);
+  transition: background-color 150ms;
+}
+.vm-icon-btn:hover,
+.vm-icon-btn[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--vm-accent) 22%, transparent);
+}
+.vm-more > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vm-muted);
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vm-more > summary::-webkit-details-marker {
+  display: none;
+}
+.vm-more > summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 150ms;
+}
+.vm-more[open] > summary::after {
+  transform: rotate(-135deg) translateY(-1px);
+}
+.vm-select {
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--vm-text);
+  background: var(--vm-chip-bg);
+  border: 1px solid var(--vm-chip-border);
+}
+.vm-select option {
+  color: #221a13;
+}
+.vm-range {
+  width: 100%;
+  accent-color: var(--vm-accent);
+}
+.vm-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  border: 2px solid var(--vm-chip-border);
+}
+.vm-swatch[aria-checked="true"] {
+  border-color: var(--vm-text);
+  box-shadow: 0 0 0 2px var(--vm-accent);
+}
+.vm-link {
+  color: var(--vm-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.vm-root :is(button, select, input, summary, a):focus-visible {
+  outline: 2px solid var(--vm-focus);
+  outline-offset: 2px;
+}
+
+/* ---- tooltip, hint, new visit ------------------------------------------ */
+
+.vm-tooltip {
+  position: absolute;
+  z-index: 3;
+  width: max-content;
+  max-width: 240px;
+  pointer-events: none;
+  color: var(--vm-text);
+  background: var(--vm-card-bg);
+  border: 1px solid var(--vm-card-border);
+  border-radius: 12px;
+  padding: 9px 11px;
+  font-size: 12px;
+  box-shadow: 0 12px 28px -10px rgb(0 0 0 / 0.5);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.vm-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-size: 13px;
+  color: #f6f0e6;
+  background: rgb(13 17 36 / 0.85);
+  box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.5);
+}
+.vm-overlay-bg .vm-hint {
+  top: auto;
+  bottom: 96px;
+}
+.vm-newvisit {
+  width: 260px;
+  max-width: 100%;
+  pointer-events: auto;
+  color: var(--vm-text);
+  background: var(--vm-card-bg);
+  border: 1px solid var(--vm-card-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  animation: vm-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes vm-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vm-newvisit {
+    animation: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .vm-card,
+  .vm-tooltip,
+  .vm-newvisit {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .vm-root {
+    --vm-card-bg: #171f3d;
+  }
+  .vm-root[data-vm-style="light"] {
+    --vm-card-bg: #fdfbf7;
+  }
+}
+@media (max-width: 639px) {
+  .vm-controls:not([data-collapsed="1"]),
+  .vm-settings {
+    width: calc(100vw - 24px);
+  }
+}
+
+/*
+ * Pages that mount the map in "background" mode: the page sits on top of the
+ * map, gaps between cards let the map through, and cards turn translucent.
+ * Scoped with :has() so no other admin page changes; `.vm-scope` does the same
+ * for a host that prefers an explicit wrapper class.
+ */
+:is(body:has([data-vm-background]) main, .vm-scope) {
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+}
+:is(body:has([data-vm-background]) main, .vm-scope)
+  :is(a, button, input, select, textarea, label, summary, details, table, form, img, svg, p, h1, h2, h3, h4, li, dt, dd, span, [role], [tabindex], [data-slot="card"], [data-slot="card"] *, .vm-panel, .vm-panel *) {
+  pointer-events: auto;
+}
+:is(body:has([data-vm-background]) main, .vm-scope) :is([data-slot="card"], .vm-panel) {
+  background-color: rgb(255 255 255 / 0.78);
+  border-color: rgb(255 255 255 / 0.45);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  backdrop-filter: blur(16px) saturate(1.15);
+}
+/* Text that sits straight on the dark map (page titles, descriptions) turns light. */
+:is(body:has([data-vm-background][data-vm-style="dark"]) main) :is(h1, h2, h3, p, dt, dd, span, li, a):not(:is([data-slot="card"], .vm-panel, .vm-root) *) {
+  color: #f6f0e6;
+  text-shadow: 0 1px 2px rgb(13 17 36 / 0.6);
+}
+@media (prefers-reduced-transparency: reduce) {
+  :is(body:has([data-vm-background]) main, .vm-scope) :is([data-slot="card"], .vm-panel) {
+    background-color: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
