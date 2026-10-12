@@ -1,3 +1,4 @@
+import { ConsentRoot } from "@/components/consent/consent-root";
 import { MaintenanceGate } from "@/components/store/maintenance";
 import { SiteFooter } from "@/components/store/site-footer";
 import { SiteHeader } from "@/components/store/site-header";
@@ -12,6 +13,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <SiteFooter tabBarSpace={false} />
+        <ConsentRoot />
       </div>
     </MaintenanceGate>
   );

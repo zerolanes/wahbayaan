@@ -15,6 +15,13 @@
       "when": 1790967855847,
       "tag": "0001_pakistani_brands",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791791843560,
+      "tag": "0002_visitor_statistics",
+      "breakpoints": true
     }
   ]
 }

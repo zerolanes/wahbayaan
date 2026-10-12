@@ -44,11 +44,18 @@ Read this before adding pages. It is short on purpose.
 - Payment methods (`src/lib/payments/methods.ts`): card / JazzCash / Easypaisa per market. Only non-secret config in settings; secrets are env vars. No cash on delivery.
 - Recorded adapter fixtures (FICTIONAL brands) live in `tests/fixtures/brands/`; `fixture:<name>` source URLs work outside production only.
 
+## Cookie consent & visitor statistics
+
+- The banner (`src/components/consent`) is mounted by the storefront layouts via `<ConsentRoot />`. Bots get no markup; `/privacy` never auto-opens it; any link to `#cookie-settings` reopens the settings.
+- Third-party scripts or embeds load only after consent: `window.Consent.whenAllowed("functional", fn)` or `useConsent()`; videos use `<ConsentEmbed url=… />` (no third-party request before consent).
+- Add a new third-party service to `SERVICES` in `src/lib/consent/services.ts` (the banner, footnotes and privacy cookie list follow), then raise the consent version in Admin → Privacy & tracking.
+- Statistics are stored only by `/api/collect`, which re-checks the consent cookie (Statistics + current version). Look: `consent_banner` setting → `--consent-*` CSS variables. Tables: `analytics_visits`, `analytics_page_views`, `consent_records`, `ip_geo_cache`.
+
 ## Auth
 
 - Buyer pages: `await requireUser("/account/...")`.
 - Seller pages: `await requireSeller()` (layout already does it; actions must re-check and scope every query by `user.vendorId`).
-- Admin pages: `await requireStaff("orders.view")`; admin server actions: `const user = await assertStaff("orders.manage")` then `await audit({...})`.
+- Admin pages: `await requireStaff("orders.view")` (visitor statistics: `analytics.view` / `analytics.manage`); admin server actions: `const user = await assertStaff("orders.manage")` then `await audit({...})`.
 
 ## UI kit
 

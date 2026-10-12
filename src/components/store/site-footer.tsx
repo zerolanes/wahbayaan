@@ -54,6 +54,7 @@ export async function SiteFooter({ tabBarSpace = true }: { tabBarSpace?: boolean
             <li><Link className={link} href="/become-a-seller">Sell on Wahbayaan</Link></li>
             <li><Link className={link} href="/contact">Contact</Link></li>
             <li><Link className={link} href="/terms">Terms</Link> · <Link className={link} href="/privacy">Privacy</Link></li>
+            <li><a className={link} href="#cookie-settings">Cookie settings</a></li>
           </ul>
         </div>
       </div>

@@ -5,6 +5,8 @@ import { SHOW_QA_LABELS } from "@/lib/qa";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Expand, Film, Images, X, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { ConsentEmbed } from "@/components/consent/consent-embed";
+import { parseVideoUrl } from "@/lib/consent/embeds";
 
 export type GalleryImage = { url: string; alt: string | null; kind: "photo" | "illustration" };
 type Mode = "photos" | "video";
@@ -113,7 +115,9 @@ export function ProductGallery({
           </>
         ) : null}
 
-        {mode === "video" && videoUrl ? (
+        {mode === "video" && videoUrl && parseVideoUrl(videoUrl) ? (
+          <ConsentEmbed url={videoUrl} title={`${title} — process video`} fill />
+        ) : mode === "video" && videoUrl ? (
           <video src={videoUrl} controls playsInline preload="metadata" className="absolute inset-0 h-full w-full bg-black object-contain">
             <track kind="captions" />
           </video>

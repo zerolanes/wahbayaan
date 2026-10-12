@@ -7,6 +7,8 @@ import type { GiftWrapSetting, HandlingFeeSetting } from "@/lib/commerce/landed-
 import { DEFAULT_BRAND_MARGIN, type BrandMarginSetting } from "@/lib/brands/margin";
 import { DEFAULT_DOMESTIC_DELIVERY, type DomesticDeliverySetting } from "@/lib/brands/domestic";
 import { DEFAULT_PAYMENT_METHODS, type PaymentMethodsSetting } from "@/lib/payments/methods";
+import { DEFAULT_CONSENT_BANNER, type ConsentBannerSetting } from "@/lib/consent/banner-settings";
+import { DEFAULT_ANALYTICS, type AnalyticsSetting } from "@/lib/analytics/settings-shape";
 
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
@@ -50,6 +52,14 @@ export type SettingsShape = {
   domestic_delivery: DomesticDeliverySetting;
   /** Card, JazzCash, Easypaisa — non-secret config only; secrets are env vars. */
   payment_methods: PaymentMethodsSetting;
+  /** Cookie banner look, texts, layout preset and the floating privacy button. */
+  consent_banner: ConsentBannerSetting;
+  /** Visitor statistics: consent version, IP-location provider, retention. */
+  analytics: AnalyticsSetting;
+  /** IP-location API keys. Server-only: never passed to a client component; the admin shows set / not set. */
+  analytics_secrets: { ipinfoToken: string | null; ip2locationKey: string | null };
+  /** Last daily cleanup run (written by the ingest route or /api/cron/analytics-cleanup). */
+  analytics_maintenance: { lastCleanupAt: string | null; lastSummary: string | null };
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -91,6 +101,10 @@ export const SETTING_DEFAULTS: SettingsShape = {
   brand_margin: DEFAULT_BRAND_MARGIN,
   domestic_delivery: DEFAULT_DOMESTIC_DELIVERY,
   payment_methods: DEFAULT_PAYMENT_METHODS,
+  consent_banner: DEFAULT_CONSENT_BANNER,
+  analytics: DEFAULT_ANALYTICS,
+  analytics_secrets: { ipinfoToken: null, ip2locationKey: null },
+  analytics_maintenance: { lastCleanupAt: null, lastSummary: null },
 };
 
 export type SettingKey = keyof SettingsShape;

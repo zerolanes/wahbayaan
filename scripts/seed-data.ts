@@ -1,3 +1,5 @@
+import { GROUPS, SERVICES } from "../src/lib/consent/services";
+
 /**
  * Seed content.
  *
@@ -159,6 +161,48 @@ export const FAQS: { group: string; question: string; answer: string }[] = [
   },
 ];
 
+/** The first privacy draft. Databases still holding exactly this text get the new policy (staff edits are never overwritten). */
+export const PRIVACY_POLICY_OLD_BODY = `> Draft — pending legal review.
+
+We collect only what we need to fulfil and ship your order (name, address, email, phone for the courier) and to run the marketplace. Payment details are handled by our payment provider and never stored by Wahbayaan.
+`;
+
+const cookieLines = SERVICES.flatMap((svc) =>
+  svc.cookies.map((c) => `- \`${c.name}\` — ${c.duration} — ${c.purpose} (${GROUPS.find((g) => g.id === svc.group)?.name ?? svc.group}${svc.group === "functional" ? `, set by ${svc.name}` : ""})`),
+).join("\n");
+
+export const PRIVACY_POLICY_BODY = `> Draft — pending legal review.
+
+This policy explains what Wahbayaan collects, why, how long we keep it and how you can change your mind. You can [change or withdraw your cookie consent](#cookie-settings) at any time.
+
+## What we collect and why
+- **Orders and your account.** Name, email, delivery address and phone number (for the courier), your orders, messages and reviews. We need these to sell, ship and support your order and to run the marketplace.
+- **Payments.** Card and wallet details are handled by our payment provider and never stored by Wahbayaan.
+- **Visitor statistics — only with your consent.** If you allow *Statistics* in the cookie banner, we record the pages you view, the page title, the site you came from, your screen size, browser language, device and browser type, and an approximate location (city and region, with rough coordinates) derived from your IP address. We use this only to understand which pages work and to improve the shop — never for advertising, and never shared or sold. Your IP address itself is not stored with these statistics.
+- **Proof of your choice.** When you choose in the cookie banner we store your choice, a random consent ID, the consent version, the time, your browser's user agent and a shortened IP address (the last part removed, e.g. 203.0.113.0), so we can show that consent was given or refused.
+
+## Location lookups
+When your visit is counted, your approximate location comes from our network provider's location headers or from an IP-location service (by default ipapi.co; we may use ipinfo.io or IP2Location.io instead). The result is cached for 24 hours under a one-way hash of the IP address, not the address itself.
+
+## How long we keep it
+- Visitor statistics: 90 days, then deleted automatically (the period may be shortened, never silently extended).
+- Proof-of-consent records: 3 years, to be able to demonstrate your choice.
+- Order, tax and payment records: as long as the law requires.
+
+## Cookies we use
+Essential cookies are always on because the shop needs them. Everything else waits for your consent.
+
+${cookieLines}
+
+Videos from YouTube or Vimeo are not loaded — not even their preview image — until you click *Load video* or allow *Functional* in the [cookie settings](#cookie-settings).
+
+## Changing or withdrawing consent
+Open [Cookie settings](#cookie-settings) (also linked in the footer of every page) to change your choice. Withdrawing consent stops statistics immediately and removes the visit cookie. To have statistics already stored about you deleted, contact us with the consent ID shown in your privacy settings.
+
+## Your rights
+You can ask for a copy of your data, its correction or deletion, or object to its use. Contact hello@wahbayaan.com.
+`;
+
 export const POLICY_PAGES = [
   {
     slug: "buyer-protection",
@@ -194,10 +238,7 @@ Buyers pay the item price, international shipping, import duties and taxes of th
   {
     slug: "privacy",
     title: "Privacy policy",
-    body: `> Draft — pending legal review.
-
-We collect only what we need to fulfil and ship your order (name, address, email, phone for the courier) and to run the marketplace. Payment details are handled by our payment provider and never stored by Wahbayaan.
-`,
+    body: PRIVACY_POLICY_BODY,
   },
 ];
 
