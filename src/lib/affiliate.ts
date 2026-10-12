@@ -78,8 +78,13 @@ export function affiliateDisplayGate(p: ProgrammeGateInput): GateResult {
 
 export type AffiliateProductLike = { title: string; productUrl: string; imageUrl: string | null; isHidden: boolean };
 
+/** A partner image: https from the feed, or a local upload / demo illustration. */
+export function isDisplayableImage(u: string | null | undefined) {
+  return !!u && (isHttpsUrl(u) || /^\/(media|brand-art)\/[\w./-]+$/.test(u));
+}
+
 export function isAffiliateProductDisplayable(programme: ProgrammeGateInput, p: AffiliateProductLike) {
-  return affiliateDisplayGate(programme).ok && !p.isHidden && !!p.title.trim() && isHttpsUrl(p.productUrl) && isHttpsUrl(p.imageUrl);
+  return affiliateDisplayGate(programme).ok && !p.isHidden && !!p.title.trim() && isHttpsUrl(p.productUrl) && isDisplayableImage(p.imageUrl);
 }
 
 // ── Feed parsing (CSV upload or CSV feed URL) ───────────────────────────────

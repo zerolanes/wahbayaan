@@ -82,6 +82,13 @@ describe("brand portal import plan", () => {
     expect(plan.counts).toMatchObject({ productsCreate: 2, variantsCreate: 4, productsUpdate: 0, variantsUpdate: 0 });
   });
 
+  it("keeps a photo-less 'published' row as a draft (buyers only see products with a photo)", () => {
+    const csv = [HEADER, "p1,Plain Kurta,,men,,,,,,M,,PK-M,3000,,2,,published", "p2,Lawn Suit,,women,,,,,https://img.example/1.jpg,S,,LS-S,5000,,2,,published"].join("\n");
+    const plan = planBrandImport(validateBrandCsv(csv), { products: [], variants: [] });
+    expect(plan.products.map((p) => p.patch.status)).toEqual(["draft", "published"]);
+    expect(plan.products[0].notes[0]).toMatch(/No photo/);
+  });
+
   it("is idempotent: the same file against the imported state changes nothing", () => {
     const products: ExistingProduct[] = v.products.map((p, i) => ({
       id: `p${i}`,

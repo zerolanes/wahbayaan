@@ -3,6 +3,10 @@
  * `wb_compare` cookie. Pure helpers so the rules are unit-tested.
  */
 export const COMPARE_COOKIE = "wb_compare";
+/** Pakistani Brands products are compared in their own list (different rows: price range, sizes, fabric, delivery). */
+export const COMPARE_BRAND_COOKIE = "wb_compare_brands";
+export type CompareKind = "artisan" | "brand";
+export const compareCookieFor = (kind: CompareKind) => (kind === "brand" ? COMPARE_BRAND_COOKIE : COMPARE_COOKIE);
 export const COMPARE_MAX = 4;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

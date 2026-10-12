@@ -292,7 +292,16 @@ export type ExistingVariant = {
 export type Action = "create" | "update" | "unchanged";
 
 export type PlannedVariant = { csv: CsvVariant; action: Action; variantId: string | null; changes: string[] };
-export type PlannedProduct = { csv: CsvProduct; action: Action; productId: string | null; changes: string[]; variants: PlannedVariant[] };
+export type PlannedProduct = {
+  csv: CsvProduct;
+  action: Action;
+  productId: string | null;
+  changes: string[];
+  variants: PlannedVariant[];
+  /** The product fields the import writes (status already adjusted). */
+  patch: ReturnType<typeof productPatch>;
+  notes: string[];
+};
 
 export type ImportPlan = {
   products: PlannedProduct[];
@@ -366,14 +375,20 @@ export function planBrandImport(v: ValidatedCsv, existing: { products: ExistingP
 
     let action: Action = "create";
     let changes: string[] = [];
+    const next = productPatch(p, match);
+    const notes: string[] = [];
+    // Buyers only see products with a photo: a photo-less "published" row stays a draft.
+    if (next.status === "published" && !next.imageUrls.length) {
+      next.status = match?.status === "published" ? "draft" : (match?.status ?? "draft");
+      notes.push("No photo yet — kept as a draft. Add a photo, then publish.");
+    }
     if (match) {
-      const next = productPatch(p, match);
       const current = { title: match.title, description: match.description, audience: match.audience, category: match.category, collection: match.collection, fabric: match.fabric, tags: match.tags, weightG: match.weightG, status: match.status, imageUrls: match.imageUrls };
       changes = (Object.keys(next) as (keyof typeof next)[]).filter((k) => !same(next[k], current[k]));
       if (match.externalId !== p.handle) changes.push("handle");
       action = changes.length || variants.some((x) => x.action !== "unchanged") ? "update" : "unchanged";
     }
-    plan.products.push({ csv: p, action, productId: match?.id ?? null, changes, variants });
+    plan.products.push({ csv: p, action, productId: match?.id ?? null, changes, variants, patch: next, notes });
     plan.counts[action === "create" ? "productsCreate" : action === "update" ? "productsUpdate" : "productsUnchanged"]++;
     for (const x of variants) plan.counts[x.action === "create" ? "variantsCreate" : x.action === "update" ? "variantsUpdate" : "variantsUnchanged"]++;
   }

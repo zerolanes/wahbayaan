@@ -18,7 +18,7 @@ export function VariantEditor({ initial }: { initial: EditorVariant[] }) {
   return (
     <div className="space-y-3">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] text-sm">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="text-left text-xs font-medium text-umber-500">
               <th className={cell}>Size</th>
@@ -36,22 +36,22 @@ export function VariantEditor({ initial }: { initial: EditorVariant[] }) {
               <tr key={i} className="border-t border-umber-100" data-variant-row={i}>
                 <td className={cell}>
                   {r.id ? <input type="hidden" name={`v.${i}.id`} value={r.id} /> : null}
-                  <TextInput name={`v.${i}.size`} defaultValue={r.size} aria-label={`Variant ${i + 1} size`} className="w-20" />
+                  <TextInput name={`v.${i}.size`} defaultValue={r.size} aria-label={`Variant ${i + 1} size`} className="w-16" />
                 </td>
                 <td className={cell}>
-                  <TextInput name={`v.${i}.colour`} defaultValue={r.colour} aria-label={`Variant ${i + 1} colour`} className="w-28" />
+                  <TextInput name={`v.${i}.colour`} defaultValue={r.colour} aria-label={`Variant ${i + 1} colour`} className="w-24" />
                 </td>
                 <td className={cell}>
-                  <TextInput name={`v.${i}.sku`} defaultValue={r.sku} aria-label={`Variant ${i + 1} SKU`} className="w-40 font-mono text-xs" />
+                  <TextInput name={`v.${i}.sku`} defaultValue={r.sku} aria-label={`Variant ${i + 1} SKU`} className="w-32 font-mono text-xs" />
                 </td>
                 <td className={cell}>
-                  <TextInput name={`v.${i}.price`} defaultValue={r.price} inputMode="decimal" aria-label={`Variant ${i + 1} price in rupees`} className="w-24" />
+                  <TextInput name={`v.${i}.price`} defaultValue={r.price} inputMode="decimal" aria-label={`Variant ${i + 1} price in rupees`} className="w-20" />
                 </td>
                 <td className={cell}>
-                  <TextInput name={`v.${i}.compareAt`} defaultValue={r.compareAt} inputMode="decimal" aria-label={`Variant ${i + 1} original price in rupees`} className="w-24" placeholder="—" />
+                  <TextInput name={`v.${i}.compareAt`} defaultValue={r.compareAt} inputMode="decimal" aria-label={`Variant ${i + 1} original price in rupees`} className="w-20" placeholder="—" />
                 </td>
                 <td className={cell}>
-                  <TextInput name={`v.${i}.stock`} defaultValue={r.stock} type="number" min={0} aria-label={`Variant ${i + 1} stock`} className="w-20" placeholder="—" />
+                  <TextInput name={`v.${i}.stock`} defaultValue={r.stock} type="number" min={0} aria-label={`Variant ${i + 1} stock`} className="w-16" placeholder="—" />
                 </td>
                 <td className={`${cell} text-center`}>
                   <input type="checkbox" name={`v.${i}.available`} defaultChecked={r.available} aria-label={`Variant ${i + 1} available`} className="size-4" />

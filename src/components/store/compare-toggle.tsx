@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
 import { Check, Columns3 } from "lucide-react";
 import { toggleCompare } from "@/app/actions/compare";
+import type { CompareKind } from "@/lib/compare";
 import { cn } from "@/lib/utils/cn";
 
 /** "Add to compare" toggle for product cards and the product page. */
-export function CompareToggle({ productId, compared, variant = "inline", className }: { productId: string; compared: boolean; variant?: "inline" | "full"; className?: string }) {
+export function CompareToggle({ productId, compared, variant = "inline", className, kind = "artisan" }: { productId: string; compared: boolean; variant?: "inline" | "full"; className?: string; kind?: CompareKind }) {
   const [optimistic, setOptimistic] = useOptimistic(compared);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -16,7 +17,7 @@ export function CompareToggle({ productId, compared, variant = "inline", classNa
     setError(null);
     start(async () => {
       setOptimistic(!optimistic);
-      const r = await toggleCompare(productId);
+      const r = await toggleCompare(productId, kind);
       if (r.error) setError(r.error);
     });
   };

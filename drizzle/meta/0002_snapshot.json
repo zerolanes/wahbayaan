@@ -1,5 +1,5 @@
 {
-  "id": "96a38e0b-a787-4db8-b72c-fba186ba8477",
+  "id": "f9ac7744-86e6-47b0-812e-55a71e8e3c68",
   "prevId": "b74df8bf-5d83-4818-b4c1-4191a330f40e",
   "version": "7",
   "dialect": "postgresql",
@@ -399,6 +399,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "is_demo": {
+          "name": "is_demo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},

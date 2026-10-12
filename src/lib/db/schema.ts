@@ -1163,6 +1163,7 @@ export const affiliateProgrammes = pgTable("affiliate_programmes", {
   lastImportAt: timestamp("last_import_at", { withTimezone: true }),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
+  isDemo: isDemo(),
 });
 
 export const affiliateProducts = pgTable(

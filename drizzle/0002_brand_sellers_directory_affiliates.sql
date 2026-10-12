@@ -28,7 +28,8 @@ CREATE TABLE "affiliate_programmes" (
 	"display_allowed_note" text,
 	"last_import_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"is_demo" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "brand_collections" (

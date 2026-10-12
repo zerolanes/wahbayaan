@@ -132,7 +132,14 @@ export function ImportFlow() {
                         {formatMoney(Math.min(...prices), "PKR")}
                         {Math.max(...prices) !== Math.min(...prices) ? ` – ${formatMoney(Math.max(...prices), "PKR")}` : ""}
                       </td>
-                      <td className="px-3 py-2 text-xs">{p.csv.status ?? (p.productId ? "unchanged" : "draft")}</td>
+                      <td className="px-3 py-2 text-xs">
+                        {p.patch.status === "published" ? "Live" : p.patch.status === "hidden" ? "Hidden" : "Draft"}
+                        {p.notes.map((n) => (
+                          <span key={n} className="block text-pending-700">
+                            {n}
+                          </span>
+                        ))}
+                      </td>
                     </tr>
                   );
                 })}

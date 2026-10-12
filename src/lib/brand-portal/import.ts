@@ -6,7 +6,7 @@ import { audit } from "@/lib/audit";
 import { slugify } from "@/lib/brands/adapters/normalize";
 import { hasRecordedPermission } from "@/lib/brands/permission";
 import { queueBrandAlerts } from "@/lib/brands/alerts";
-import { planBrandImport, productPatch, validateBrandCsv, variantPatch, type ExistingProduct, type ExistingVariant, type ImportPlan, type ValidatedCsv } from "./csv";
+import { planBrandImport, validateBrandCsv, variantPatch, type ExistingProduct, type ExistingVariant, type ImportPlan, type ValidatedCsv } from "./csv";
 
 /**
  * Brand portal CSV import. `previewBrandImport` validates and plans without
@@ -109,7 +109,7 @@ export async function runBrandImport(brandId: string, csvText: string, actorUser
     let published = false;
     for (const pp of plan.products) {
       if (pp.action === "unchanged") continue;
-      const patch = productPatch(pp.csv, pp.productId ? (byId.get(pp.productId) ?? null) : null);
+      const patch = pp.patch;
       const fields = {
         title: patch.title,
         description: patch.description,

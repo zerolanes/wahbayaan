@@ -16,7 +16,7 @@ import {
   verificationChecks,
 } from "@/lib/db/schema";
 import { isDemoMode } from "@/lib/settings";
-import { COMPARE_COOKIE, parseCompareCookie } from "@/lib/compare";
+import { COMPARE_BRAND_COOKIE, COMPARE_COOKIE, parseCompareCookie } from "@/lib/compare";
 import {
   getPublicCategories,
   getPublicProducts,
@@ -43,6 +43,12 @@ export async function getPublicProductsByIds(ids: string[]): Promise<ProductCard
 export const getCompareIds = cache(async () => {
   const jar = await cookies();
   return parseCompareCookie(jar.get(COMPARE_COOKIE)?.value);
+});
+
+/** Pakistani Brands products in the comparison (their own list). */
+export const getCompareBrandIds = cache(async () => {
+  const jar = await cookies();
+  return parseCompareCookie(jar.get(COMPARE_BRAND_COOKIE)?.value);
 });
 
 // ── Artisans ────────────────────────────────────────────────────────────────

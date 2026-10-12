@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Link2, PackageCheck, Truck } from "lucide-react";
 import { BrandProductCard } from "@/components/store/brands/brand-product-card";
 import { BrandTile } from "@/components/store/brands/brand-tile";
+import { PartnerLinkCard } from "@/components/store/brands/partner-link-card";
 import { ButtonLink } from "@/components/ui/button";
 import { Container, EmptyState, SectionHeading } from "@/components/ui/misc";
 import { getBuyerContext } from "@/lib/buyer-context";
 import { SHOP_BY_LINK_LINE } from "@/lib/brands/permission";
 import { featureFlags } from "@/lib/features";
 import { destinationName, isDomestic } from "@/lib/money/currency";
+import { getPartnerLinkCards } from "@/lib/queries/affiliates";
 import { getPublicBrandProducts, getPublicBrands } from "@/lib/queries/brands";
 
 export const metadata: Metadata = {
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
 export default async function BrandsPage() {
   const flags = await featureFlags();
   if (!flags.pakistaniBrands) notFound();
-  const [ctx, brands, products] = await Promise.all([getBuyerContext(), getPublicBrands(), getPublicBrandProducts()]);
+  const [ctx, brands, products, partnerCards] = await Promise.all([getBuyerContext(), getPublicBrands(), getPublicBrandProducts(), getPartnerLinkCards(8)]);
   const fresh = products.filter((p) => p.isNew).slice(0, 8);
   // Partner brands and self-listed labels together; a brand shows once it has something to buy.
   const shown = brands.filter((b) => b.productCount > 0);
@@ -105,6 +107,26 @@ export default async function BrandsPage() {
             <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
               {fresh.map((p) => (
                 <BrandProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {partnerCards.length ? (
+          <section aria-labelledby="partner-h">
+            <SectionHeading
+              eyebrow="Partner links"
+              title={<span id="partner-h">From partner stores</span>}
+              description="These open the store's own site. You buy from them directly."
+              action={
+                <Link href="/brands/partner-links" className="text-sm font-medium text-terracotta-600 hover:underline">
+                  See all
+                </Link>
+              }
+            />
+            <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+              {partnerCards.map((c) => (
+                <PartnerLinkCard key={c.id} card={c} />
               ))}
             </div>
           </section>

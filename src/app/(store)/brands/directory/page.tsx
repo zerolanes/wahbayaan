@@ -33,7 +33,7 @@ export default async function BrandDirectoryPage(props: PageProps<"/brands/direc
       <Breadcrumbs items={[{ label: "Pakistani Brands", href: "/brands" }, { label: "Directory" }]} />
       <div className="mt-6 max-w-2xl">
         <h1 className="font-display text-5xl text-umber-900">Brand directory</h1>
-        <p className="mt-3 text-lg text-umber-600">Pakistani brands, A to Z. Found something on their site? {flags.brandRequests ? "Send us the link and we'll buy it for you." : "Visit the brand's website."}</p>
+        <p className="mt-3 text-lg text-umber-600">Pakistani brands not on Wahbayaan yet. Found something on their site? {flags.brandRequests ? "Send us the link and we'll buy it for you." : "Visit the brand's website."}</p>
         <p className="mt-2 text-sm text-umber-500">These brands are not affiliated with Wahbayaan. Listed for reference only.</p>
       </div>
 
