@@ -1,0 +1,167 @@
+{
+  "_note": "Direction C (Modern Glass with Truck-Art Accents) homepage preview copy. Real Wahbayaan copy comes from theme-source/content.json (REAL items only) and existing site copy. [Add: …] and [Photo needed: …] mark things the owner must supply. Nothing here is WoodMart demo text.",
+  "promo": {
+    "text": "Handmade in Pakistan · delivered at home and abroad",
+    "link": { "label": "How it works", "href": "/how-importing-works" }
+  },
+  "nav": [
+    { "label": "Shop", "href": "/shop" },
+    { "label": "Marketplace", "href": "/artisans" },
+    { "label": "Brands", "href": "/brands", "flag": "pakistaniBrands" },
+    { "label": "Compare", "href": "/compare", "flag": "compare" },
+    { "label": "About us", "href": "/about" },
+    { "label": "Contact us", "href": "/contact" }
+  ],
+  "hero": {
+    "label": "Wahbayaan highlights",
+    "slides": [
+      {
+        "id": "shop",
+        "kind": "wordmark",
+        "line": "Crafted Heritage.",
+        "cta": { "label": "Shop now", "href": "/shop" }
+      },
+      {
+        "id": "sellers",
+        "kind": "photo",
+        "eyebrow": "Marketplace",
+        "title": "Shop by our sellers",
+        "line": "Every piece names its maker.",
+        "cta": { "label": "Marketplace", "href": "/artisans" },
+        "image": "/art/ajrak/12-surface.svg",
+        "photoNeeded": "[Photo needed: artisan workshop, wide, 2400×1000]"
+      },
+      {
+        "id": "stories",
+        "kind": "photo",
+        "eyebrow": "About",
+        "title": "Our stories",
+        "line": "Pakistan has soul — and it deserves to be seen.",
+        "cta": { "label": "About us", "href": "/about" },
+        "image": "/art/rug/33-surface.svg",
+        "photoNeeded": "[Photo needed: Pakistani landscape or bazaar, wide, 2400×1000]"
+      }
+    ]
+  },
+  "collections": {
+    "eyebrow": "Collections",
+    "title": "Our collections",
+    "urdu": "ہمارے مجموعے",
+    "line": "Handcrafted pieces across every craft.",
+    "order": ["calligraphy-art", "paintings", "rugs", "salt-art", "sculpture-stone", "bespoke", "wall-decor", "posters-prints"]
+  },
+  "bestsellers": {
+    "eyebrow": "Bestsellers",
+    "title": "Bestsellers",
+    "urdu": "مقبول ترین",
+    "line": "Ranked by orders, then our picks.",
+    "tabs": [
+      { "id": "all", "label": "All" },
+      { "id": "calligraphy-art", "label": "Calligraphy" },
+      { "id": "salt-art", "label": "Salt art" },
+      { "id": "sculpture-stone", "label": "Stone" },
+      { "id": "wall-decor", "label": "Wall décor" },
+      { "id": "bespoke", "label": "Customized" },
+      { "id": "brands", "label": "Pakistani brands", "flag": "pakistaniBrands" }
+    ],
+    "action": { "label": "Shop all", "href": "/shop" }
+  },
+  "makers": {
+    "eyebrow": "Marketplace",
+    "title": "Shop by artisans",
+    "urdu": "ہنرمندوں سے خریدیں",
+    "line": "Heritage work by makers across Pakistan.",
+    "tabs": { "artisans": "Artisans", "brands": "Brands" },
+    "action": { "label": "All artisans", "href": "/artisans" },
+    "brandsAction": { "label": "All brands", "href": "/brands" }
+  },
+  "heritage": {
+    "eyebrow": "Lookbook",
+    "title": "Crafted heritage",
+    "urdu": "ہنر کی وراثت",
+    "line": "Moments, textures and details of Pakistani craft.",
+    "banners": [
+      { "chip": "Lahore", "title": "Nastaliq on wasli", "href": "/category/calligraphy-art", "tone": "magenta" },
+      { "chip": "Khewra", "title": "Himalayan salt", "href": "/category/salt-art", "tone": "teal" }
+    ]
+  },
+  "week": {
+    "eyebrow": "Collection of the week",
+    "urdu": "ہفتے کا مجموعہ",
+    "action": "See the collection",
+    "featurePhotoNeeded": "[Photo needed: styled room with the collection, 1200×1500]"
+  },
+  "story": {
+    "eyebrow": "Our story",
+    "title": "Made with intention.",
+    "urdu": "ہماری کہانی",
+    "line": "Every piece here is made by a local artist.",
+    "points": ["Made by a local artist", "Not mass-produced", "Not rushed"],
+    "image": "/art/calligraphy/52-portrait.svg",
+    "photoNeeded": "[Photo needed: artisan's hands at work, 1200×1500]",
+    "cta": { "label": "About us", "href": "/about" },
+    "video": {
+      "subtitle": "Dive into diversity",
+      "title": "Explore the rich cultures of Pakistan",
+      "poster": "/art/truckart/21-surface.svg",
+      "posterNeeded": "[Photo needed: video poster, craft process, 1600×1000]",
+      "url": null,
+      "missing": "[Add: video URL]"
+    }
+  },
+  "journal": {
+    "eyebrow": "Journal",
+    "title": "From the journal",
+    "urdu": "روزنامچہ",
+    "line": "Stories from the workshops.",
+    "action": { "label": "Visit the journal", "href": "/journal" }
+  },
+  "trust": {
+    "items": [
+      { "icon": "calculator", "title": "Every cost up front", "text": "Shipping, duty and tax before you pay." },
+      { "icon": "shield", "title": "Protected payment", "text": "The artisan is paid once it arrives." },
+      { "icon": "badge", "title": "Verified artisans", "text": "Every workshop checked by us." },
+      { "icon": "truck", "title": "Tracked shipping", "text": "Insured, door to door." }
+    ],
+    "newsletter": { "title": "Stories from the workshops", "line": "New pieces and makers, now and then." }
+  },
+  "footer": {
+    "tagline": "Crafted Heritage.",
+    "columns": [
+      {
+        "title": "Useful links",
+        "links": [
+          { "label": "Shop", "href": "/shop" },
+          { "label": "Marketplace", "href": "/artisans" },
+          { "label": "Compare", "href": "/compare" },
+          { "label": "About us", "href": "/about" },
+          { "label": "Contact us", "href": "/contact" },
+          { "label": "Become a seller", "href": "/become-a-seller" }
+        ]
+      },
+      { "title": "Categories", "categories": true },
+      {
+        "title": "Help",
+        "links": [
+          { "label": "Track an order", "href": "/track" },
+          { "label": "How it works", "href": "/how-importing-works" },
+          { "label": "Buyer protection", "href": "/buyer-protection" },
+          { "label": "FAQ", "href": "/faq" },
+          { "label": "Terms", "href": "/terms" },
+          { "label": "Privacy", "href": "/privacy" }
+        ]
+      }
+    ],
+    "social": "Follow us"
+  },
+  "imagesNeeded": [
+    "Hero slide 2 — artisan workshop, wide, 2400×1000",
+    "Hero slide 3 — Pakistani landscape or bazaar, wide, 2400×1000",
+    "Story block — artisan's hands at work, 1200×1500",
+    "Story video poster — craft process still, 1600×1000",
+    "Collection of the week feature — styled room with the collection, 1200×1500",
+    "Artisan cards — one workshop photo per seller, 900×1500 (tall)",
+    "Category circles — one square product photo per craft, 600×600",
+    "Lookbook — studio/lifestyle photos of real products, 1200×1500"
+  ]
+}
