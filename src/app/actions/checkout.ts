@@ -69,10 +69,11 @@ export async function placeOrderAction(_prev: CheckoutState, formData: FormData)
   if (address.country !== ctx.destination) return { error: "Your delivery address must be in the country your costs were estimated for. Change the destination in your cart." };
 
   // A gift message typed at checkout replaces the one saved in the cart.
-  let cart = await loadCart();
+  // The delivery city prices domestic parcels by zone (one courier rate per seller).
+  let cart = await loadCart({ city: address.city });
   if (cart.cartId && cart.isGift && f.giftMessage !== undefined) {
     await d.update(carts).set({ giftMessage: f.giftMessage || null }).where(eq(carts.id, cart.cartId));
-    cart = await loadCart();
+    cart = await loadCart({ city: address.city });
   }
 
   // Referral from a /r/CODE link — never your own code.

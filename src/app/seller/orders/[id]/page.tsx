@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, Gift, MapPin, Package } from "lucide-react";
 import { SellerPrice } from "@/components/money/seller-price";
 import { OrderActions } from "@/components/seller/order-actions";
+import { BookCourierForm, HandOverForm, SendToHubForm } from "@/components/seller/fulfilment";
+import { bookingCouriers, hubAddressIsPlaceholder, sellerFulfilment } from "@/lib/fulfilment/service";
+import { getSetting } from "@/lib/settings";
 import { FUNDS_LABEL, VendorOrderBadge } from "@/components/seller/status";
 import { Badge, Breadcrumbs, Card, CardHeader, Notice, PageHeader } from "@/components/ui/misc";
 import { requireSeller } from "@/lib/auth/session";
@@ -31,6 +34,23 @@ export default async function SellerOrder(props: PageProps<"/seller/orders/[id]"
   const order = vo.order;
   const paid = order.paymentStatus === "paid" || order.paymentStatus === "partially_refunded";
   const addr = order.shippingAddress;
+  const ff = await sellerFulfilment(order.id, vo.id);
+  const hubMode = ff.mode === "hub" && !!ff.parcel;
+  const domestic = order.destinationCountry === "PK";
+  const live = paid && !["cancelled", "refunded"].includes(order.status) && order.status !== "disputed" && !["shipped", "delivered", "cancelled"].includes(vo.status);
+  const domesticCouriers = hubMode || domestic ? await bookingCouriers("PK") : { names: [], bookable: [] };
+  const dropOff = hubMode ? (await getSetting("fulfilment")).dropOffInstructions : null;
+  const HUB_STATUS: Record<string, string> = {
+    expected: "Waiting for you to send it",
+    in_transit: "On its way to the hub",
+    received: "Received at the hub — being checked",
+    qc_passed: "Checked at the hub",
+    qc_failed: "The hub found a problem — we'll contact you",
+    packed: "Packed for export",
+    shipped: "Shipped to the buyer",
+    returned_to_seller: "Sent back to you",
+    cancelled: "Cancelled",
+  };
 
   return (
     <div className="space-y-6">
@@ -122,9 +142,86 @@ export default async function SellerOrder(props: PageProps<"/seller/orders/[id]"
           <Card>
             <CardHeader title="Next step" />
             <div className="p-5">
-              <OrderActions vendorOrderId={vo.id} status={vo.status} orderPaid={paid && !["cancelled", "refunded"].includes(order.status)} disputed={order.status === "disputed"} couriers={await getShippingCouriers(order.destinationCountry)} />
+              <OrderActions
+                vendorOrderId={vo.id}
+                status={vo.status}
+                orderPaid={paid && !["cancelled", "refunded"].includes(order.status)}
+                disputed={order.status === "disputed"}
+                couriers={await getShippingCouriers(order.destinationCountry)}
+                hideShipForm={hubMode || domestic}
+              />
+              {live && !hubMode && domestic ? (
+                <div className="mt-5 space-y-4">
+                  {ff.shipment?.status === "booked" ? (
+                    <div className="space-y-3 rounded-2xl bg-sand-100/70 p-4 text-sm">
+                      <p className="font-medium text-umber-900">2. Print the label, 3. hand it over</p>
+                      <p className="text-umber-700">
+                        {ff.shipment.courierName} · <span className="font-mono">{ff.shipment.trackingNumber}</span>
+                      </p>
+                      <a href={`/labels/${ff.shipment.reference}`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-full border border-umber-300 px-4 font-medium text-umber-900">
+                        Print label
+                      </a>
+                      <HandOverForm shipmentId={ff.shipment.id} />
+                    </div>
+                  ) : domesticCouriers.names.length ? (
+                    <BookCourierForm vendorOrderId={vo.id} couriers={domesticCouriers.names} bookable={domesticCouriers.bookable} />
+                  ) : (
+                    <p className="text-sm text-umber-600">No domestic courier is set up yet — our team will arrange the pickup.</p>
+                  )}
+                </div>
+              ) : null}
             </div>
           </Card>
+
+          {hubMode && ff.parcel ? (
+            <Card>
+              <CardHeader title="Send to our hub" description="This order is checked and packed with the buyer's other pieces at our hub, then exported in one box." />
+              <div className="space-y-4 p-5 text-sm">
+                <div className="rounded-xl bg-sand-100/70 p-3">
+                  <p className="text-xs font-semibold tracking-wider text-umber-500 uppercase">Hub address</p>
+                  <p className="mt-1 text-umber-900">
+                    Wahbayaan — {ff.parcel.hub.name}
+                    <br />
+                    {ff.parcel.hub.address.line1}
+                    {ff.parcel.hub.address.line2 ? `, ${ff.parcel.hub.address.line2}` : ""}
+                    <br />
+                    {[ff.parcel.hub.city, ff.parcel.hub.address.postalCode].filter(Boolean).join(" ")}
+                    {ff.parcel.hub.contactPhone ? (
+                      <>
+                        <br />
+                        Tel {ff.parcel.hub.contactPhone}
+                      </>
+                    ) : null}
+                  </p>
+                  {hubAddressIsPlaceholder(ff.parcel.hub) ? <p className="mt-1 text-xs text-pending-600">Full address to be confirmed by Wahbayaan.</p> : null}
+                  {ff.parcel.hub.receivingHours ? <p className="mt-1 text-xs text-umber-600">Receiving: {ff.parcel.hub.receivingHours}{ff.parcel.hub.cutoffTime ? ` · cut-off ${ff.parcel.hub.cutoffTime}` : ""}</p> : null}
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    Parcel reference <span className="font-mono font-semibold text-umber-900">{ff.parcel.reference}</span>
+                  </span>
+                  <a href={`/labels/${ff.parcel.reference}`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-full border border-umber-300 px-4 font-medium text-umber-900">
+                    Print hub label
+                  </a>
+                </div>
+                <p className="flex items-center gap-2">
+                  <Badge tone={ff.parcel.status === "qc_failed" ? "danger" : ["received", "qc_passed", "packed", "shipped"].includes(ff.parcel.status) ? "success" : "neutral"}>{HUB_STATUS[ff.parcel.status] ?? ff.parcel.status}</Badge>
+                  {ff.parcel.trackingNumber ? (
+                    <span className="text-umber-600">
+                      {ff.parcel.courier} · <span className="font-mono">{ff.parcel.trackingNumber}</span>
+                    </span>
+                  ) : null}
+                </p>
+                {ff.parcel.status === "qc_failed" && ff.parcel.qcNotes ? <Notice tone="danger">{ff.parcel.qcNotes}</Notice> : null}
+                <ul className="list-disc space-y-1 pl-5 text-umber-700">
+                  <li>Write the parcel reference on the box and stick the label on top.</li>
+                  <li>Don&apos;t include prices or the buyer&apos;s address — the hub repacks for export.</li>
+                  {dropOff ? <li>{dropOff}</li> : null}
+                </ul>
+                {live && ff.parcel.status === "expected" ? <SendToHubForm vendorOrderId={vo.id} couriers={domesticCouriers.names} bookable={domesticCouriers.bookable} /> : null}
+              </div>
+            </Card>
+          ) : null}
 
           <Card>
             <CardHeader title="Your earnings" description="In Pakistani rupees" />
@@ -170,7 +267,9 @@ export default async function SellerOrder(props: PageProps<"/seller/orders/[id]"
           <Card>
             <CardHeader title="Delivery" />
             <div className="space-y-3 p-5 text-sm">
-              {paid ? (
+              {paid && hubMode ? (
+                <p className="text-umber-700">Our hub ships it to the buyer in {destinationName(order.destinationCountry)} — send your parcel to the hub (see above).</p>
+              ) : paid ? (
                 <p className="text-umber-700 flex gap-2">
                   <MapPin className="text-gold-600 mt-0.5 size-4 shrink-0" />
                   <span>

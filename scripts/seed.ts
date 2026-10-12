@@ -13,6 +13,7 @@ import { ROLE_PRESETS } from "../src/lib/auth/permissions";
 import { DESTINATIONS } from "../src/lib/money/currency";
 import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES } from "./seed-data";
 import { seedBrandsBase, seedBrandsDemo } from "./seed-brands";
+import { seedFulfilmentBase, seedFulfilmentDemo } from "./seed-fulfilment";
 
 const DEMO_PASSWORD = "wahbayaan-demo";
 const art = (kind: string, seed: number, size?: string) => `/art/${kind}/${seed}${size ? `-${size}` : ""}.svg`;
@@ -99,6 +100,7 @@ export async function seedBase(db: Db) {
   for (const p of POLICY_PAGES) await db.insert(t.pages).values(p).onConflictDoNothing({ target: t.pages.slug });
 
   await seedBrandsBase(db);
+  await seedFulfilmentBase(db);
 
   // Owner account from the environment (production bootstrap).
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
@@ -254,6 +256,7 @@ async function topUpDemo(db: Db) {
   if (!announcementCount) await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
   const usBuyer = await db.query.users.findFirst({ where: eq(t.users.email, "buyer@wahbayaan.test") });
   if (usBuyer) await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
+  await seedFulfilmentDemo(db);
   console.log(`Demo top-up: ${addedVendors} new artisans, ${addedProducts} new listings.`);
 }
 
@@ -965,6 +968,7 @@ export async function seedDemo(db: Db) {
 
   await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
   await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
+  await seedFulfilmentDemo(db);
 
   console.log(`Demo data: ${DEMO_VENDORS.length} artisans, ${DEMO_PRODUCTS.length} listings, ${reviewCount} sample reviews, ${specs.length} orders.`);
   console.log(`Demo logins (password "${DEMO_PASSWORD}"): admin@wahbayaan.test · buyer@wahbayaan.test · noor-calligraphy-atelier@artisans.wahbayaan.test`);

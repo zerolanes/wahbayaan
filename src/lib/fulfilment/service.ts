@@ -680,7 +680,7 @@ export async function declineFulfilmentQuote(quoteId: string, userId: string) {
   if (!q || q.order.userId !== userId) throw new OrderError("Not found");
   if (q.status !== "pending" && q.status !== "approved") throw new OrderError("This charge has already been answered.");
   await d.update(fulfilmentQuotes).set({ status: "declined", respondedAt: new Date() }).where(eq(fulfilmentQuotes.id, q.id));
-  await event(q.orderId, "extra_shipping_declined", q.kind === "partial_shipment" ? "You declined the extra shipping — we'll keep the rest of your order at our hub and send it together." : "You declined the extra shipping — nothing more is charged.", { actorUserId: userId });
+  await event(q.orderId, "extra_shipping_declined", "You declined the extra shipping — nothing more is charged. Our team will be in touch about the rest of your order.", { actorUserId: userId });
 }
 
 /** Buyer approves: start a payment for just the extra amount. Returns the provider redirect. */
@@ -850,7 +850,18 @@ export async function getOrderFulfilmentView(orderId: string) {
     d.query.returnRequests.findMany({ where: eq(returnRequests.orderId, orderId), orderBy: desc(returnRequests.createdAt), with: { returnHub: true } }),
   ]);
   const live = outbound.filter((s) => s.status !== "cancelled");
-  return { fulfilment: fulfilment ?? null, hub: fulfilment?.hub ?? null, parcels, shipments: live, quotes, returns, progress: consolidationProgress(parcels) };
+  // Per-seller "leaves by" date for direct parcels: paid date + that seller's slowest item.
+  const order = await d.query.orders.findFirst({ where: eq(orders.id, orderId), columns: { paidAt: true }, with: { items: { columns: { vendorOrderId: true }, with: { product: { columns: { availability: true, timeToMakeDays: true, dispatchDays: true } } } } } });
+  const sellerDispatch: Record<string, Date | null> = {};
+  if (order?.paidAt) {
+    const byVo = new Map<string, TimedItem[]>();
+    for (const i of order.items) byVo.set(i.vendorOrderId, [...(byVo.get(i.vendorOrderId) ?? []), { availability: i.product?.availability ?? "ready_to_ship", timeToMakeDays: i.product?.timeToMakeDays ?? null, dispatchDays: i.product?.dispatchDays ?? null }]);
+    for (const [vo, items] of byVo) {
+      const days = slowestItemDays(items);
+      sellerDispatch[vo] = days == null ? null : addDays(order.paidAt, days);
+    }
+  }
+  return { fulfilment: fulfilment ?? null, hub: fulfilment?.hub ?? null, parcels, shipments: live, quotes, returns, progress: consolidationProgress(parcels), sellerDispatch };
 }
 
 export type FulfilmentView = Awaited<ReturnType<typeof getOrderFulfilmentView>>;
@@ -898,6 +909,27 @@ export async function shippedBoxes(limit = 50) {
     .where(and(inArray(shipments.status, ["shipped", "delivered"]), or(eq(shipments.kind, "consolidated"), eq(shipments.kind, "partial"))))
     .orderBy(desc(shipments.shippedAt))
     .limit(limit);
+}
+
+/** Seller order page: how this artisan's parcel travels (no buyer amounts). */
+export async function sellerFulfilment(orderId: string, vendorOrderId: string) {
+  const d = await db();
+  const [fulfilment, parcel, shipment] = await Promise.all([
+    d.query.orderFulfilments.findFirst({ where: eq(orderFulfilments.orderId, orderId) }),
+    d.query.hubParcels.findFirst({ where: eq(hubParcels.vendorOrderId, vendorOrderId), with: { hub: true } }),
+    d.query.shipments.findFirst({ where: and(eq(shipments.vendorOrderId, vendorOrderId), eq(shipments.kind, "direct"), notInArray(shipments.status, ["cancelled"])), orderBy: desc(shipments.createdAt) }),
+  ]);
+  return { mode: fulfilment?.mode ?? "direct", parcel: parcel ?? null, shipment: shipment ?? null };
+}
+
+/** Courier names for a route and which of them can be booked through an integration. */
+export async function bookingCouriers(destinationCountry: string) {
+  const d = await db();
+  const rows = await d.select().from(couriers).orderBy(asc(couriers.name));
+  const fits = rows.filter((c) => (destinationCountry === "PK" ? c.domestic : c.international));
+  const ordered = [...fits.filter((c) => c.isActive), ...fits.filter((c) => !c.isActive)];
+  const { fulfilment } = await getSettings(["fulfilment"]);
+  return { names: ordered.map((c) => c.name), bookable: ordered.filter((c) => c.isActive && fulfilment.courierAdapters[c.id] && fulfilment.courierAdapters[c.id] !== "manual").map((c) => c.name) };
 }
 
 /** Sellers (by vendor) — used to email a late seller from the board. */

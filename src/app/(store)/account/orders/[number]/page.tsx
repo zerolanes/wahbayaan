@@ -16,6 +16,10 @@ import { getBuyerOrder } from "@/lib/queries/account";
 import { getSetting } from "@/lib/settings";
 import { formatDate, formatDateTime } from "@/lib/utils/format";
 import { payOrder } from "@/app/actions/checkout";
+import { ExtraShippingPanel, HubJourney, HubTracking, ShipsFrom } from "@/components/store/fulfilment";
+import { ReturnRequestForm } from "@/components/store/return-form";
+import { getOrderFulfilmentView, returnEligibility } from "@/lib/fulfilment/service";
+import { parcelsHeadline } from "@/lib/fulfilment/plan";
 
 export async function generateMetadata(props: PageProps<"/account/orders/[number]">): Promise<Metadata> {
   const { number } = await props.params;
@@ -34,7 +38,7 @@ const VO_STATUS: Record<string, string> = {
 
 export default async function OrderDetailPage(props: PageProps<"/account/orders/[number]">) {
   const { number } = await props.params;
-  const { done } = await props.searchParams;
+  const { done, extra } = await props.searchParams;
   const user = await requireUser(`/account/orders/${number}`);
   const order = await getBuyerOrder(user.id, number);
   if (!order) notFound();
@@ -52,6 +56,18 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
   const artisans = order.vendorOrders.map((v) => v.vendor.displayName).join(" and ");
   const provider = activeProvider();
   const reviewable = ["delivered", "completed"].includes(order.status);
+  const fv = await getOrderFulfilmentView(order.id);
+  const hubMode = fv.fulfilment?.mode === "hub";
+  const boxes = fv.shipments.filter((s) => s.kind !== "direct");
+  const pendingQuote = fv.quotes.find((q) => q.status === "pending" || q.status === "approved");
+  const protection = await getSetting("buyer_protection");
+  const returnCheck = returnEligibility(order, fv.fulfilment?.mode ?? null, protection);
+  const openReturn = fv.returns.find((r) => !["refunded", "rejected", "closed"].includes(r.status));
+  const journeyItems = order.items.map((i) => {
+    const parcel = fv.parcels.find((p) => p.vendorOrderId === i.vendorOrderId) ?? null;
+    const box = parcel?.shipmentId ? fv.shipments.find((s) => s.id === parcel.shipmentId) : null;
+    return { id: i.id, title: i.title, seller: order.vendorOrders.find((v) => v.id === i.vendorOrderId)?.vendor.displayName ?? "", parcelStatus: parcel?.status ?? null, shipmentStatus: box?.status ?? null };
+  });
 
   return (
     <div className="space-y-10">
@@ -79,6 +95,13 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
           {order.paymentStatus === "refunded" ? "Cancelled — your refund is on its way to your original payment method." : "Cancelled. Nothing was charged."}
         </p>
       ) : null}
+
+      {extra === "paid" ? (
+        <p className="rounded-2xl bg-success-50 px-5 py-4 text-sm text-success-700 ring-1 ring-success-600/20" role="status">
+          Thank you — the extra shipping is paid and held with the rest of your payment.
+        </p>
+      ) : null}
+      {pendingQuote ? <ExtraShippingPanel quote={pendingQuote} orderNumber={order.number} currency={currency} /> : null}
 
       {/* Action panel */}
       {actions.canPay ? (
@@ -138,8 +161,24 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
         <div className="space-y-10">
           {/* Parcels */}
           <section>
-            <h2 className="font-display text-2xl text-umber-900">{order.vendorOrders.length > 1 ? `${order.vendorOrders.length} parcels` : "Your parcel"}</h2>
-            <p className="mt-1 text-sm text-umber-500">Each artisan ships separately from their workshop.</p>
+            {hubMode ? (
+              <>
+                <h2 className="font-display text-2xl text-umber-900">Shipped together from our hub</h2>
+                <p className="mt-1 text-sm text-umber-500">
+                  {fv.progress.label}
+                  {boxes.length ? "" : fv.fulfilment?.estimatedDispatchAt ? ` · leaves our hub around ${formatDate(fv.fulfilment.estimatedDispatchAt)}` : " · dispatch date confirmed soon"}
+                </p>
+                <div className="mt-4 space-y-4 rounded-2xl bg-sand-50 p-5 ring-1 ring-umber-200/60">
+                  <HubTracking boxes={boxes} />
+                  <HubJourney items={journeyItems} />
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="font-display text-2xl text-umber-900">{order.vendorOrders.length > 1 ? parcelsHeadline(order.vendorOrders.length) : "Your parcel"}</h2>
+                <p className="mt-1 text-sm text-umber-500">{order.vendorOrders.length > 1 ? "Each seller ships theirs straight to you, with its own tracking." : "Shipped straight from the seller."}</p>
+              </>
+            )}
             <div className="mt-4 space-y-4">
               {order.vendorOrders.map((vo) => {
                 const items = order.items.filter((i) => i.vendorOrderId === vo.id);
@@ -150,12 +189,15 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
                         <span className="relative size-8 overflow-hidden rounded-full bg-sand-200">
                           {vo.vendor.profilePhotoUrl ? <Image src={vo.vendor.profilePhotoUrl} alt="" fill sizes="32px" unoptimized={isSvg(vo.vendor.profilePhotoUrl)} className="object-cover" /> : null}
                         </span>
-                        <span className="text-sm font-semibold text-umber-900">{vo.vendor.displayName}</span>
+                        <span>
+                          <span className="block text-sm font-semibold text-umber-900">{vo.vendor.displayName}</span>
+                          {hubMode ? null : <ShipsFrom city={vo.vendor.workshopCity} estimate={["shipped", "delivered", "cancelled"].includes(vo.status) ? null : fv.sellerDispatch[vo.id]} />}
+                        </span>
                       </Link>
                       <Badge tone={vo.status === "shipped" || vo.status === "delivered" ? "turquoise" : vo.status === "cancelled" ? "neutral" : "indigo"}>{VO_STATUS[vo.status] ?? vo.status}</Badge>
                     </header>
-                    {vo.trackingNumber ? (
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/60 px-5 py-3 text-sm">
+                    {vo.trackingNumber && !hubMode ? (
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-umber-200/60 px-5 py-3 text-sm" data-testid="parcel-tracking">
                         <span className="flex items-center gap-2 text-umber-700">
                           <Truck className="size-4 text-gold-600" aria-hidden />
                           {vo.courier} · <span className="font-mono text-umber-900">{vo.trackingNumber}</span>
@@ -230,6 +272,34 @@ export default async function OrderDetailPage(props: PageProps<"/account/orders/
               ))}
             </ol>
           </section>
+
+          {openReturn ? (
+            <section className="rounded-2xl bg-sand-50 p-5 text-sm ring-1 ring-umber-200/60" data-testid="return-status">
+              <p className="font-semibold text-umber-900">
+                Return {openReturn.number} · {openReturn.status === "requested" ? "being reviewed" : openReturn.status === "approved" ? "approved — please send it back" : openReturn.status.replace("_", " ")}
+              </p>
+              {openReturn.status === "approved" && openReturn.destination === "hub" && openReturn.returnHub ? (
+                <p className="mt-2 text-umber-700">
+                  Send to: Wahbayaan — {openReturn.returnHub.name}, {openReturn.returnHub.address.line1}, {openReturn.returnHub.city}. Write {openReturn.number} on the box.
+                </p>
+              ) : openReturn.status === "approved" ? (
+                <p className="mt-2 text-umber-700">We&apos;ll email you the return address and courier details.</p>
+              ) : null}
+            </section>
+          ) : returnCheck.ok ? (
+            <details className="group rounded-2xl bg-sand-50 ring-1 ring-umber-200/60" id="return">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
+                <span>
+                  <span className="font-semibold text-umber-900">Return an item</span>
+                  <span className="block text-sm text-umber-500">{returnCheck.windowEndsAt ? `Until ${formatDate(returnCheck.windowEndsAt)}.` : "While your payment is still held."}</span>
+                </span>
+                <span className="text-sm font-medium text-terracotta-600 group-open:hidden">Start</span>
+              </summary>
+              <div className="border-t border-umber-200/60 p-5">
+                <ReturnRequestForm orderNumber={order.number} items={order.items.map((i) => ({ id: i.id, title: i.title, qty: i.qty }))} />
+              </div>
+            </details>
+          ) : null}
 
           {actions.canOpenCase ? (
             <details className="group rounded-2xl bg-sand-50 ring-1 ring-umber-200/60" id="open-case">

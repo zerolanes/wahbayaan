@@ -8,13 +8,15 @@ const COURIERS = ["DHL Express", "FedEx International", "Aramex", "UPS", "TCS In
 
 /** The next step an artisan can take on a parcel. */
 /** `couriers`: names from Admin → Couriers (tracking links are built from their templates); falls back to a common list. */
-export function OrderActions({ vendorOrderId, status, orderPaid, disputed, couriers }: { vendorOrderId: string; status: string; orderPaid: boolean; disputed?: boolean; couriers?: string[] }) {
+/** `hideShipForm`: domestic and hub-consolidated parcels use the booking / send-to-hub panel instead of the plain ship form. */
+export function OrderActions({ vendorOrderId, status, orderPaid, disputed, couriers, hideShipForm }: { vendorOrderId: string; status: string; orderPaid: boolean; disputed?: boolean; couriers?: string[]; hideShipForm?: boolean }) {
   const courierNames = couriers?.length ? [...couriers, "Other"] : COURIERS;
   if (!orderPaid) return <p className="text-umber-500 text-sm">Waiting for the buyer&apos;s payment — nothing to do yet.</p>;
   // Fulfilment actions are refused while a case is open (see vendorOrderAction).
   if (disputed)
     return <p className="text-umber-600 text-sm">The buyer opened a case. Your payout is on hold until our team resolves it — reply if they message you.</p>;
   if (status === "shipped") return <p className="text-umber-600 text-sm">Shipped — delivery is confirmed by the courier or our team.</p>;
+  if (hideShipForm && status === "ready_to_ship") return null;
   if (status === "delivered")
     return <p className="text-success-700 text-sm">Delivered. Your payout is released when the buyer confirms or the protection window ends.</p>;
   if (status === "cancelled") return <p className="text-umber-500 text-sm">This order was cancelled.</p>;
@@ -39,7 +41,7 @@ export function OrderActions({ vendorOrderId, status, orderPaid, disputed, couri
       {status === "accepted" || status === "in_production"
         ? simple("ready", "Mark finished & ready to pack", "Our team will confirm courier booking.", "outline")
         : null}
-      {["accepted", "in_production", "ready_to_ship"].includes(status) ? (
+      {!hideShipForm && ["accepted", "in_production", "ready_to_ship"].includes(status) ? (
         <ActionForm action={sellerOrderAction} className="bg-sand-100/70 rounded-2xl p-4">
           <>
             <input type="hidden" name="vendorOrderId" value={vendorOrderId} />

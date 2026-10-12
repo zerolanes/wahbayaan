@@ -32,7 +32,7 @@ export async function SiteHeader({ overlay = false, tabBar = !overlay }: { overl
   const accountHref = user ? (user.role === "staff" ? "/admin" : user.vendorId ? "/seller" : "/account") : "/login";
   const icon = iconButtonClass("plain", "md");
   const priced = !!ctx.fx;
-  const emptyCart = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null };
+  const emptyCart = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null, plan: null };
 
   return (
     <>
