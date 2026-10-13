@@ -13,7 +13,7 @@ import { parseDirectorySeed } from "./directory";
 
 export const DIRECTORY_SEED_FILE = path.join("docs", "outreach", "pakistani-brands.csv");
 
-export async function seedDirectory(db: Db, file = path.join(process.cwd(), DIRECTORY_SEED_FILE)) {
+export async function seedDirectory(db: Db, file = path.join(/*turbopackIgnore: true*/ process.cwd(), DIRECTORY_SEED_FILE)) {
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(t.brandDirectoryEntries);
   if (n || !fs.existsSync(file)) return 0;
   const entries = parseDirectorySeed(fs.readFileSync(file, "utf8"));

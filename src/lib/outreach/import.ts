@@ -62,7 +62,7 @@ function affected(r: unknown) {
   return Number(x.count ?? x.affectedRows ?? 0);
 }
 
-export async function importOutreachSeedFile(db: Db, file = path.join(process.cwd(), OUTREACH_SEED_FILE)) {
+export async function importOutreachSeedFile(db: Db, file = path.join(/*turbopackIgnore: true*/ process.cwd(), OUTREACH_SEED_FILE)) {
   if (!fs.existsSync(file)) return null;
   return importOutreachCsv(db, fs.readFileSync(file, "utf8"), "csv_seed");
 }

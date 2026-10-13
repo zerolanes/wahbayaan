@@ -63,7 +63,7 @@ export const toggleDirectoryEntryAction = adminAction("brands.manage", z.object(
 /** Load the outreach CSV (name, category, website only) when the directory is empty. */
 export const seedDirectoryAction = adminAction("brands.manage", z.object({}), async ({ audit }) => {
   const d = await db();
-  const n = await seedDirectory(d, path.join(process.cwd(), DIRECTORY_SEED_FILE));
+  const n = await seedDirectory(d, path.join(/*turbopackIgnore: true*/ process.cwd(), DIRECTORY_SEED_FILE));
   if (!n) throw new AdminError("Nothing loaded — the directory already has entries, or the outreach file isn't in this deployment.");
   await audit({ action: "directory.seed", entity: "brand_directory", summary: `Loaded ${n} brands into the directory from ${DIRECTORY_SEED_FILE} (name, category and website only)` });
   return { message: `${n} brands loaded` };

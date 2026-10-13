@@ -16,6 +16,7 @@ Read this before adding pages. It is short on purpose.
 - Money is integer **minor units**. Seller-side columns end in `Pkr`. Buyer-side order amounts are in `orders.currency`.
 - Never write to the DB from scripts while `next dev` is running (single-process embedded Postgres).
 - Schema changes: edit `schema.ts`, run `npm run db:generate`, commit the migration.
+- Scheduled jobs (`/api/cron/<job>`: auto-release, fx-refresh, brands, analytics-cleanup): Vercel runs them from `vercel.json`; everywhere else (Railway) `src/instrumentation-node.ts` calls them from inside the server every 10 minutes with `?everyHours=`, and the route skips a job that ran too recently (`cron_last_run` setting), so deploys don't repeat daily jobs. Production only; `WB_JOBS=off` disables it, `WB_JOBS=auto-release,brands` limits it. Logs show `[jobs] …`.
 
 ## Currency surfaces (brief constraint)
 
