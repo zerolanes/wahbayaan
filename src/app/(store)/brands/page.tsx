@@ -15,6 +15,7 @@ import { getPartnerLinkCards } from "@/lib/queries/affiliates";
 import { getPublicBrandProducts, getPublicBrands } from "@/lib/queries/brands";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/brands" },
   title: "Pakistani Brands",
   description: "Fashion and lifestyle from Pakistani brands, ordered for you and delivered in Pakistan or abroad.",
 };

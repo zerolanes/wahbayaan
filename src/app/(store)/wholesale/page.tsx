@@ -8,6 +8,7 @@ import { getBuyerContext } from "@/lib/buyer-context";
 import { DESTINATIONS } from "@/lib/money/currency";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/wholesale" },
   title: "Trade & wholesale",
   description: "Trade accounts for interior designers, retailers, hotels and architects sourcing handmade Pakistani craft.",
 };

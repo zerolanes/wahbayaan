@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/misc";
 import { getCurrentUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/track" },
   title: "Track an order",
   description: "Check where your Wahbayaan order is — from the workshop to your door.",
   robots: { index: false },

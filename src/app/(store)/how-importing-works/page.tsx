@@ -26,6 +26,7 @@ import { getFaqGroups } from "@/lib/queries/storefront";
 import { cn } from "@/lib/utils/cn";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/how-importing-works" },
   title: "How importing works",
   description:
     "Buying a handmade piece from a workshop in Pakistan: the journey, who pays for what, timelines, customs and duties where you live, and how your payment is held until delivery.",

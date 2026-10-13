@@ -6,8 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { HeroWordmark } from "@/components/store/hero/hero-wordmark";
 import { cn } from "@/lib/utils/cn";
-import { PhoolStrip, PhotoNeeded } from "./motifs";
-import s from "./pc.module.css";
+import { PhoolStrip, PhotoNeeded } from "@/components/store/truck-art";
+import art from "@/components/store/truck-art.module.css";
+import s from "./home.module.css";
 
 export type HeroSlide = {
   id: string;
@@ -27,7 +28,7 @@ const INTERVAL = 9000;
  * slides, previous / next / dots / pause, swipe on touch. Autoplay pauses on
  * hover, focus and hidden tabs, and never starts under reduced motion.
  */
-export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: string }) {
+export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: string }) {
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [held, setHeld] = useState(false);
@@ -66,7 +67,7 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
       }}
     >
       <div
-        className="relative mx-auto h-[500px] max-w-[1400px] overflow-hidden rounded-[var(--radius-sheet)] bg-white shadow-[0_0_0_1px_var(--pc-line)] lg:h-[600px]"
+        className="relative mx-auto h-[500px] max-w-[1400px] overflow-hidden rounded-[var(--radius-sheet)] bg-white shadow-[0_0_0_1px_var(--wb-line)] lg:h-[600px]"
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (touchX.current == null) return;
@@ -92,14 +93,14 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
                 {slide.kind === "wordmark" ? (
                   <>
                     <div className={s.slideBg} style={{ transform: `translateX(${(i - active) * -30}%)` }} aria-hidden>
-                      <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,#ffffff_0%,#fbf8f3_60%,#f4ede2_100%)]" />
+                      <div className="absolute inset-0 bg-[var(--wb-cream)]" />
                     </div>
                     <div className={cn(s.slideContent, "relative flex h-full flex-col items-center justify-center px-4 pb-16 text-center")}>
                       <HeroWordmark className="max-w-4xl" />
-                      <p className="-mt-1 text-xl font-medium tracking-[-0.015em] text-[var(--pc-ink)] sm:text-2xl">{slide.line}</p>
+                      <p className="-mt-1 text-xl font-medium tracking-[-0.015em] text-[var(--wb-ink)] sm:text-2xl">{slide.line}</p>
                       <Link
                         href={slide.cta.href}
-                        className="pressable mt-6 inline-flex h-12 min-w-40 items-center justify-center gap-2 rounded-full bg-[var(--pc-ink)] px-7 text-[0.95rem] font-semibold text-white hover:bg-indigo-900"
+                        className="pressable mt-6 inline-flex h-12 min-w-40 items-center justify-center gap-2 rounded-full bg-[var(--wb-ink)] px-7 text-[0.95rem] font-semibold text-white hover:bg-indigo-900"
                       >
                         {slide.cta.label} <ArrowRight className="size-4" aria-hidden />
                       </Link>
@@ -114,11 +115,11 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
                     </div>
                     <div className={cn(s.slideContent, "relative flex h-full flex-col items-center justify-center px-6 pb-16 text-center text-white")}>
                       {slide.eyebrow ? <p className="text-sm font-medium text-white/80">{slide.eyebrow}</p> : null}
-                      <h2 className={cn(s.display, "mt-4 text-[2.6rem] text-white sm:text-6xl lg:text-7xl")}>{slide.title}</h2>
+                      <h2 className={cn(art.display, "mt-4 text-[2.6rem] text-white sm:text-6xl lg:text-7xl")}>{slide.title}</h2>
                       <p className="mt-3 max-w-md text-lg text-white/90">{slide.line}</p>
                       <Link
                         href={slide.cta.href}
-                        className="pressable mt-7 inline-flex h-12 min-w-40 items-center justify-center gap-2 rounded-full bg-white px-7 text-[0.95rem] font-semibold text-[var(--pc-ink)] hover:bg-sand-100"
+                        className="pressable mt-7 inline-flex h-12 min-w-40 items-center justify-center gap-2 rounded-full bg-white px-7 text-[0.95rem] font-semibold text-[var(--wb-ink)] hover:bg-sand-100"
                       >
                         {slide.cta.label} <ArrowRight className="size-4" aria-hidden />
                       </Link>
@@ -136,7 +137,7 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
         </div>
 
         <div className="absolute inset-x-0 bottom-5 z-10 flex justify-center">
-          <div className="glass flex items-center gap-0.5 rounded-full p-1 text-[var(--pc-ink)]">
+          <div className="glass flex items-center gap-0.5 rounded-full p-1 text-[var(--wb-ink)]">
             <button type="button" onClick={() => go(active - 1)} className="pressable grid size-10 place-items-center rounded-full hover:bg-black/[0.06]" aria-label="Previous slide">
               <ChevronLeft className="size-[18px]" aria-hidden />
             </button>
@@ -149,7 +150,7 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
                 aria-current={i === active ? "true" : undefined}
                 className="group grid h-10 w-7 place-items-center rounded-full"
               >
-                <span className={cn("h-2 rounded-full transition-all duration-300", i === active ? "w-5 bg-[var(--pc-ink)]" : "w-2 bg-[var(--pc-ink)]/35 group-hover:bg-[var(--pc-ink)]/60")} />
+                <span className={cn("h-2 rounded-full transition-all duration-300", i === active ? "w-5 bg-[var(--wb-ink)]" : "w-2 bg-[var(--wb-ink)]/35 group-hover:bg-[var(--wb-ink)]/60")} />
               </button>
             ))}
             <button type="button" onClick={() => go(active + 1)} className="pressable grid size-10 place-items-center rounded-full hover:bg-black/[0.06]" aria-label="Next slide">

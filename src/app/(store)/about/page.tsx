@@ -8,6 +8,7 @@ import { CRAFT_ATLAS } from "@/lib/heritage";
 import { getPublicCategories, getPublicVendors } from "@/lib/queries/catalog";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About Wahbayaan",
   description: "A marketplace for handmade Pakistani craft — verified artisans, honest landed costs, and payment held until your piece arrives.",
 };

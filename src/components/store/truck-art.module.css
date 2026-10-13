@@ -1,41 +1,8 @@
 /*
- * Direction C — "Modern Glass with Truck-Art Accents". Everything is scoped to
- * `.root` (the preview wrapper), so the shared tokens in globals.css stay
- * untouched. Truck-art appears only as accents: thin phool-patti strips, a
- * painted floral corner on card hover and small colour-pop chips.
- *
- * Accent text colours (AA on white / parchment): magenta-ink #9C1250 on its
- * tint 6.6:1, teal-ink #00665D on its tint 5.9:1, saffron-ink #7A4A00 on its
- * tint 6.6:1. Saffron itself is decorative only (never text on light).
+ * Truck-art accents for the storefront (design direction C). The colour tokens
+ * (--wb-*) live on `.storefront` in globals.css. Truck-art appears only as
+ * accents: thin phool-patti strips, a painted floral corner on card hover.
  */
-.root {
-  --pc-bg: #fbf8f3;
-  --pc-surface: #ffffff;
-  --pc-line: rgb(34 26 19 / 0.09);
-  --pc-ink: #221a13;
-  --pc-muted: #5e4f3e;
-  --pc-magenta: #b5175e;
-  --pc-magenta-ink: #9c1250;
-  --pc-magenta-tint: #fbe3ee;
-  --pc-teal: #00796f;
-  --pc-teal-ink: #00665d;
-  --pc-teal-tint: #ddf3f0;
-  --pc-saffron: #f2a007;
-  --pc-saffron-ink: #7a4a00;
-  --pc-saffron-tint: #fff0cc;
-  background: var(--pc-bg);
-  color: var(--pc-ink);
-  overflow-x: clip;
-}
-
-/* The preview carries its own theme-style header and footer: hide the shared
-   chrome on this route only. The phone tab bar and demo ribbon stay. */
-:global(.paper):has(.root) > :global(header),
-:global(.paper):has(.root) > :global(footer),
-:global(.paper):has(.root) > :global([aria-label="Announcement"]) {
-  display: none;
-}
-
 /* ── Phool-patti strip (repeating painted flowers and leaves) ───────────── */
 .phool {
   height: 14px;
@@ -60,7 +27,7 @@
   content: "";
   height: 1px;
   flex: 1;
-  background: var(--pc-line);
+  background: var(--wb-line);
 }
 
 /* ── Painted floral corner on card hover ────────────────────────────────── */
@@ -102,59 +69,8 @@
   font-family: var(--font-urdu);
   line-height: 1.9;
 }
-
-/* ── Hero slider (slow parallax) ────────────────────────────────────────── */
-.track {
-  display: flex;
-  height: 100%;
-  transition: transform 1100ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  will-change: transform;
-}
-.slide {
-  position: relative;
-  flex: 0 0 100%;
-  height: 100%;
-  overflow: hidden;
-}
-.slideBg {
-  position: absolute;
-  inset: 0 -12%;
-  transition: transform 1100ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  will-change: transform;
-}
-.slideContent {
-  transition:
-    opacity 700ms ease 250ms,
-    transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1) 250ms;
-}
-.slide[data-active="false"] .slideContent {
-  opacity: 0;
-  transform: translateY(14px);
-}
 @media (prefers-reduced-motion: reduce) {
-  .track,
-  .slideBg,
-  .slideContent,
   .corner {
     transition: none;
   }
-  .slide[data-active="false"] .slideContent {
-    transform: none;
-  }
-}
-
-/* ── Carousels ──────────────────────────────────────────────────────────── */
-.rail {
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-}
-.rail::-webkit-scrollbar {
-  display: none;
-}
-
-/* Lookbook pins: a soft glass ring that pulses once, then rests. */
-.pin {
-  box-shadow:
-    0 0 0 6px rgb(255 255 255 / 0.35),
-    0 6px 18px -6px rgb(34 26 19 / 0.5);
 }

@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import s from "./pc.module.css";
+import s from "./home.module.css";
 
 /**
  * Scroll-snap carousel over server-rendered items. Native swipe/scroll, plus
  * previous / next buttons that are disabled at either end. Respects reduced
  * motion (instant jumps instead of smooth scrolling).
  */
-export function PcCarousel({ items, label, itemClassName, className, bleed = true }: { items: ReactNode[]; label: string; itemClassName: string; className?: string; bleed?: boolean }) {
+export function Carousel({ items, label, itemClassName, className, bleed = true }: { items: ReactNode[]; label: string; itemClassName: string; className?: string; bleed?: boolean }) {
   const rail = useRef<HTMLUListElement>(null);
   const [edge, setEdge] = useState({ start: true, end: false });
 
@@ -40,7 +40,7 @@ export function PcCarousel({ items, label, itemClassName, className, bleed = tru
   };
 
   const btn =
-    "pressable grid size-11 place-items-center rounded-full bg-white text-[var(--pc-ink)] shadow-[0_0_0_1px_var(--pc-line),0_2px_6px_-2px_rgb(34_26_19/0.15)] hover:shadow-[0_0_0_1px_rgb(34_26_19/0.2)] disabled:opacity-40 disabled:shadow-none";
+    "pressable grid size-11 place-items-center rounded-full bg-white text-[var(--wb-ink)] shadow-[0_0_0_1px_var(--wb-line),0_2px_6px_-2px_rgb(34_26_19/0.15)] hover:shadow-[0_0_0_1px_rgb(34_26_19/0.2)] disabled:opacity-40 disabled:shadow-none";
 
   return (
     <div className={className} role="region" aria-roledescription="carousel" aria-label={label}>

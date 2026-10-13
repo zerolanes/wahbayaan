@@ -14,6 +14,7 @@ import { getDrops, getEditionSizes } from "@/lib/queries/storefront";
 import { formatDate } from "@/lib/utils/format";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/drops" },
   title: "Limited drops",
   description: "Small editions from Pakistani workshops, released on a set date. Join the waitlist to hear the moment a drop opens.",
 };

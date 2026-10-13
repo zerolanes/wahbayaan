@@ -5,11 +5,15 @@ import { DemoRibbon } from "@/components/store/demo-ribbon";
 import { SiteFooter } from "@/components/store/site-footer";
 import { SiteHeader } from "@/components/store/site-header";
 
-/** Buyer-facing storefront. Prices here are USD/GBP/CAD (PKR only via the switcher). */
+/**
+ * Buyer-facing storefront (design direction C): promo strip, shared glass header,
+ * page, light footer. Buyers in Pakistan see PKR, buyers abroad USD/GBP/CAD — always
+ * through `BuyerPrice` / the buyer context, never hard-coded.
+ */
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   return (
     <MaintenanceGate>
-      <div className="paper flex min-h-dvh flex-col">
+      <div className="storefront flex min-h-dvh flex-col">
         <DemoRibbon />
         <AnnouncementBar />
         <SiteHeader />

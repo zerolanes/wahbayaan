@@ -3,7 +3,7 @@ import { CmsPage, getPublishedPage } from "@/components/store/info-page";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPublishedPage("terms");
-  return { title: page?.title ?? "Terms of service", description: page?.seoDescription ?? undefined };
+  return { alternates: { canonical: "/terms" }, title: page?.title ?? "Terms of service", description: page?.seoDescription ?? undefined };
 }
 
 export default function TermsPage() {

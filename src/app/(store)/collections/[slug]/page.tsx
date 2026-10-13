@@ -17,7 +17,7 @@ export async function generateMetadata(props: PageProps<"/collections/[slug]">):
   const { slug } = await props.params;
   const c = await getPublicCollection(slug);
   if (!c) return { title: "Collection not found" };
-  return { title: c.title, description: c.description ?? undefined, openGraph: { images: c.coverImageUrl ? [c.coverImageUrl] : undefined } };
+  return { alternates: { canonical: `/collections/${slug}` }, title: c.title, description: c.description ?? undefined, openGraph: { images: c.coverImageUrl ? [c.coverImageUrl] : undefined } };
 }
 
 export default async function CollectionPage(props: PageProps<"/collections/[slug]">) {

@@ -11,6 +11,7 @@ import { parseShopQuery, shopHref } from "@/lib/shop-params";
 import { cn } from "@/lib/utils/cn";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/shop" },
   title: "Shop handmade heritage craft",
   description:
     "Browse calligraphy, hand-knotted rugs, Taxila stone, blue pottery, truck art and Khewra salt from verified Pakistani artisans — with shipping and import costs shown before you pay.",

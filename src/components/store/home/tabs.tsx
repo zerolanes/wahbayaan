@@ -2,15 +2,15 @@
 
 import { useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
-import s from "./pc.module.css";
+import s from "./home.module.css";
 
-export type PcTab = { id: string; label: string; count?: number; panel: ReactNode };
+export type Tab = { id: string; label: string; count?: number; panel: ReactNode };
 
 /**
  * Accessible tabs over server-rendered panels (WAI-ARIA tabs pattern: arrow
  * keys, Home/End, roving tabindex). The strip scrolls sideways on phones.
  */
-export function PcTabs({ tabs, label, className, align = "left" }: { tabs: PcTab[]; label: string; className?: string; align?: "left" | "center" }) {
+export function Tabs({ tabs, label, className, align = "left" }: { tabs: Tab[]; label: string; className?: string; align?: "left" | "center" }) {
   const [active, setActive] = useState(0);
   const base = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -24,7 +24,7 @@ export function PcTabs({ tabs, label, className, align = "left" }: { tabs: PcTab
   return (
     <div className={className}>
       <div className={cn(s.rail, "-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0")}>
-        <div role="tablist" aria-label={label} className={cn("flex w-max gap-1 rounded-full bg-[var(--pc-ink)]/[0.05] p-1", align === "center" && "sm:mx-auto")}>
+        <div role="tablist" aria-label={label} className={cn("flex w-max gap-1 rounded-full bg-[var(--wb-ink)]/[0.05] p-1", align === "center" && "sm:mx-auto")}>
           {tabs.map((t, i) => {
             const on = i === active;
             return (
@@ -50,11 +50,11 @@ export function PcTabs({ tabs, label, className, align = "left" }: { tabs: PcTab
                 }}
                 className={cn(
                   "pressable h-10 shrink-0 rounded-full px-4 text-sm font-medium whitespace-nowrap",
-                  on ? "bg-white text-[var(--pc-ink)] shadow-[0_1px_2px_rgb(34_26_19/0.08),0_0_0_0.5px_rgb(34_26_19/0.08)]" : "text-[var(--pc-muted)] hover:text-[var(--pc-ink)]",
+                  on ? "bg-white text-[var(--wb-ink)] shadow-[0_1px_2px_rgb(34_26_19/0.08),0_0_0_0.5px_rgb(34_26_19/0.08)]" : "text-[var(--wb-muted)] hover:text-[var(--wb-ink)]",
                 )}
               >
                 {t.label}
-                {t.count != null ? <span className="ml-1.5 text-xs text-[var(--pc-muted)] tabular-nums">{t.count}</span> : null}
+                {t.count != null ? <span className="ml-1.5 text-xs text-[var(--wb-muted)] tabular-nums">{t.count}</span> : null}
               </button>
             );
           })}

@@ -1,5 +1,5 @@
 {
-  "_note": "Direction C (Modern Glass with Truck-Art Accents) homepage preview copy. Real Wahbayaan copy comes from theme-source/content.json (REAL items only) and existing site copy. [Add: …] and [Photo needed: …] mark things the owner must supply. Nothing here is WoodMart demo text.",
+  "_note": "Homepage and shared header/footer copy (design direction C). Keep it short. [Add: …] and [Photo needed: …] notes show only when NEXT_PUBLIC_WB_QA_LABELS=1; customers see the artwork on its own.",
   "promo": {
     "text": "Handmade in Pakistan · delivered at home and abroad",
     "link": { "label": "How it works", "href": "/how-importing-works" }
@@ -81,8 +81,8 @@
     "urdu": "ہنر کی وراثت",
     "line": "Moments, textures and details of Pakistani craft.",
     "banners": [
-      { "chip": "Lahore", "title": "Nastaliq on wasli", "href": "/category/calligraphy-art", "tone": "magenta" },
-      { "chip": "Khewra", "title": "Himalayan salt", "href": "/category/salt-art", "tone": "teal" }
+      { "place": "Lahore", "title": "Nastaliq on wasli", "href": "/category/calligraphy-art", "tone": "magenta" },
+      { "place": "Khewra", "title": "Himalayan salt", "href": "/category/salt-art", "tone": "teal" }
     ]
   },
   "week": {
@@ -129,14 +129,14 @@
     "tagline": "Crafted Heritage.",
     "columns": [
       {
-        "title": "Useful links",
+        "title": "Shop",
         "links": [
           { "label": "Shop", "href": "/shop" },
           { "label": "Marketplace", "href": "/artisans" },
-          { "label": "Compare", "href": "/compare" },
-          { "label": "About us", "href": "/about" },
-          { "label": "Contact us", "href": "/contact" },
-          { "label": "Become a seller", "href": "/become-a-seller" }
+          { "label": "Pakistani brands", "href": "/brands", "flag": "pakistaniBrands" },
+          { "label": "Collections", "href": "/collections" },
+          { "label": "Compare", "href": "/compare", "flag": "compare" },
+          { "label": "Journal", "href": "/journal", "flag": "journal" }
         ]
       },
       { "title": "Categories", "categories": true },
@@ -147,8 +147,20 @@
           { "label": "How it works", "href": "/how-importing-works" },
           { "label": "Buyer protection", "href": "/buyer-protection" },
           { "label": "FAQ", "href": "/faq" },
+          { "label": "Contact us", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Wahbayaan",
+        "links": [
+          { "label": "About us", "href": "/about" },
+          { "label": "Become a seller", "href": "/become-a-seller" },
+          { "label": "Sell your brand", "href": "/brands/join", "flag": "pakistaniBrands" },
+          { "label": "Brand directory", "href": "/brands/directory", "flag": "pakistaniBrands" },
+          { "label": "Trade & wholesale", "href": "/wholesale", "flag": "wholesale" },
           { "label": "Terms", "href": "/terms" },
-          { "label": "Privacy", "href": "/privacy" }
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Cookie settings", "href": "#cookie-settings" }
         ]
       }
     ],

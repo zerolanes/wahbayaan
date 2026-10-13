@@ -10,6 +10,7 @@ import { getSetting } from "@/lib/settings";
 import { REGION_LABELS } from "@/lib/utils/format";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/become-a-seller" },
   title: "Sell on Wahbayaan",
   description: "Sell your handmade work to buyers in Pakistan and abroad. Price in rupees, get paid in rupees — we handle the buyer, the payment and the export paperwork.",
 };

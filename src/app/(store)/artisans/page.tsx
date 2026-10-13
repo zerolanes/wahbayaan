@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils/cn";
 import { REGION_LABELS } from "@/lib/utils/format";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/artisans" },
   title: "Meet the artisans",
   description: "Verified Pakistani artisans — calligraphers, weavers, carvers, potters and painters — each with their own workshop, story and record on Wahbayaan.",
 };

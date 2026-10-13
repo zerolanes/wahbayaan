@@ -18,6 +18,7 @@ export async function generateMetadata(props: PageProps<"/journal/[slug]">): Pro
   const p = await getJournalPost(slug);
   if (!p) return { title: "Story not found" };
   return {
+    alternates: { canonical: `/journal/${slug}` },
     title: p.seoTitle ?? p.title,
     description: p.seoDescription ?? p.excerpt ?? undefined,
     openGraph: { type: "article", title: p.title, description: p.excerpt ?? undefined, images: p.coverImageUrl ? [p.coverImageUrl] : undefined },

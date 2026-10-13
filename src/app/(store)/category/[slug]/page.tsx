@@ -22,6 +22,7 @@ export async function generateMetadata(props: PageProps<"/category/[slug]">): Pr
   const c = await getPublicCategory(slug);
   if (!c) return { title: "Craft not found" };
   return {
+    alternates: { canonical: `/category/${slug}` },
     title: c.name,
     description: c.description ?? c.tagline ?? undefined,
     openGraph: { title: `${c.name} — handmade in Pakistan`, description: c.tagline ?? undefined, images: c.coverImageUrl ? [c.coverImageUrl] : undefined },

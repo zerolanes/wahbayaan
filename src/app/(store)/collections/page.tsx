@@ -10,6 +10,7 @@ import { getPublicCollections } from "@/lib/queries/storefront";
 import { cn } from "@/lib/utils/cn";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/collections" },
   title: "Collections & bundles",
   description: "Curated sets of handmade Pakistani craft — pieces chosen to sit together, and bundles for a whole corner of a room.",
 };

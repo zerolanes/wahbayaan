@@ -5,16 +5,19 @@ import "@fontsource-variable/inter/index.css";
 import "@fontsource/noto-nastaliq-urdu/400.css";
 import "@fontsource/noto-nastaliq-urdu/700.css";
 import "./globals.css";
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 // Every page reads the database or the buyer's cookies; render on request.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
-  title: { default: "Wahbayaan — Heritage craft from Pakistan, carried home", template: "%s · Wahbayaan" },
-  description:
-    "A cross-border marketplace for Pakistani heritage craft — calligraphy, hand-knotted rugs, Taxila stone, Himalayan salt and more, with landed cost shown up front and payment held until delivery.",
-  openGraph: { type: "website", siteName: "Wahbayaan" },
+  title: { default: `${SITE_NAME} — Pakistani heritage craft and brands`, template: `%s · ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  // The share image is app/opengraph-image.tsx (applies to every page without its own image).
+  openGraph: { type: "website", siteName: SITE_NAME, locale: "en" },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

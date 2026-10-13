@@ -14,6 +14,7 @@ import { brandSellerApplications } from "@/lib/db/schema";
 import { featureFlags } from "@/lib/features";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/brands/join" },
   title: "Sell your brand on Wahbayaan",
   description: "For Pakistani labels, designers and Instagram boutiques: list your collection, we sell it in Pakistan and abroad.",
 };

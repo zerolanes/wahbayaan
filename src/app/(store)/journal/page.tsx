@@ -6,6 +6,7 @@ import { Container, EmptyState } from "@/components/ui/misc";
 import { getJournalPosts } from "@/lib/queries/storefront";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/journal" },
   title: "Heritage journal",
   description: "Stories from the workshops — how a hand-knotted rug is made, why Nastaliq hangs, the blue of Multan and the carvers of Taxila.",
 };

@@ -2,17 +2,18 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, Float, Lightformer, Text3D } from "@react-three/drei";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Group, Mesh } from "three";
-import { createPhoolTexture } from "./phool-texture";
 import { wordmarkTypeface } from "./wordmark-typeface";
 
 /**
  * The hero's 3D wordmark: real extruded glyph geometry (Fraunces outlines via
- * drei <Text3D>), a lacquered face painted with procedural phool-patti, and
- * gold-leaf sides and bevels. Floats and sways gently, leans a little toward
- * the pointer, and rests on a soft contact shadow. Rendered at device pixel
- * ratio (capped at 2.5) with antialiasing, so it is sharp at any zoom.
+ * drei <Text3D>) in solid deep navy, with a darker ink extrusion for depth —
+ * the same look as the static fallback (`.wordmark-static`), only with real
+ * depth. No gold, no texture: plain materials stay crisp at any size. Floats
+ * and sways gently, leans a little toward the pointer, and rests on a soft
+ * contact shadow. Rendered at device pixel ratio (capped at 2.5) with
+ * antialiasing, so it is sharp at any zoom.
  */
 export default function Wordmark3D({ onReady, running }: { onReady: () => void; running: boolean }) {
   return (
@@ -24,16 +25,15 @@ export default function Wordmark3D({ onReady, running }: { onReady: () => void; 
       aria-hidden
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[-4, 5, 6]} intensity={1.6} color="#fff4df" />
-      <directionalLight position={[5, -2, 4]} intensity={0.5} color="#ffd9a8" />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[-4, 5, 6]} intensity={1.05} color="#ffffff" />
+      <directionalLight position={[5, -2, 4]} intensity={0.35} color="#eef1f8" />
       <Environment resolution={256} frames={1}>
-        {/* Warm cream surroundings, so the gold reflects the page rather than black. */}
-        <color attach="background" args={["#efe2c6"]} />
-        <Lightformer form="rect" intensity={2.4} color="#fff3dc" position={[0, 4, 4]} scale={[10, 2, 1]} />
-        <Lightformer form="rect" intensity={1.2} color="#ffd7a0" position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
-        <Lightformer form="rect" intensity={0.9} color="#e9dcc4" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} />
-        <Lightformer form="circle" intensity={1.5} color="#ffffff" position={[2, 2, 6]} scale={2} />
+        {/* Neutral surroundings: soft white highlights on the navy, never a gold or warm cast. */}
+        <color attach="background" args={["#e9e9ec"]} />
+        <Lightformer form="rect" intensity={1.6} color="#ffffff" position={[0, 4, 4]} scale={[10, 2, 1]} />
+        <Lightformer form="rect" intensity={0.7} color="#f2f4fa" position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
+        <Lightformer form="rect" intensity={0.5} color="#f2f4fa" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} />
       </Environment>
       <Wordmark onReady={onReady} />
     </Canvas>
@@ -47,12 +47,6 @@ function Wordmark({ onReady }: { onReady: () => void }) {
   const text = useRef<Mesh>(null);
   const [box, setBox] = useState<{ width: number; height: number } | null>(null);
   const { viewport, pointer, invalidate } = useThree();
-  const face = useMemo(() => {
-    const t = createPhoolTexture();
-    t.repeat.set(0.5, 0.5);
-    return t;
-  }, []);
-  useEffect(() => () => face.dispose(), [face]);
   useEffect(() => invalidate(), [box, invalidate]);
   // Measure the glyph geometry once and centre it (in its own units, so the fit scale can't feed back).
   useLayoutEffect(() => {
@@ -90,7 +84,7 @@ function Wordmark({ onReady }: { onReady: () => void }) {
                 font={wordmarkTypeface as never}
                 size={1}
                 height={0.32}
-                curveSegments={14}
+                curveSegments={24}
                 bevelEnabled
                 bevelThickness={0.06}
                 bevelSize={0.028}
@@ -98,10 +92,10 @@ function Wordmark({ onReady }: { onReady: () => void }) {
                 letterSpacing={0.01}
               >
                 Wahbayaan
-                {/* Group 0: front/back faces — lacquered phool-patti painting. */}
-                <meshPhysicalMaterial attach="material-0" map={face} roughness={0.42} metalness={0.05} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={0.5} />
-                {/* Group 1: sides and bevels — burnished gold leaf. */}
-                <meshPhysicalMaterial attach="material-1" color="#d9a845" emissive="#5a3a0c" emissiveIntensity={0.25} metalness={0.85} roughness={0.3} clearcoat={0.5} clearcoatRoughness={0.18} envMapIntensity={1.4} />
+                {/* Group 0: front/back faces — solid deep navy (indigo-800/900). */}
+                <meshPhysicalMaterial attach="material-0" color="#141c3c" roughness={0.4} metalness={0} clearcoat={0.45} clearcoatRoughness={0.22} envMapIntensity={0.18} />
+                {/* Group 1: sides and bevels — darker ink, so the depth reads without any colour. */}
+                <meshStandardMaterial attach="material-1" color="#080c1d" roughness={0.8} metalness={0} envMapIntensity={0.04} />
               </Text3D>
           </group>
         </Float>
@@ -113,7 +107,7 @@ function Wordmark({ onReady }: { onReady: () => void }) {
         blur={2.8}
         far={2.2}
         resolution={1024}
-        color="#4a3d30"
+        color="#15192e"
       />
     </>
   );
