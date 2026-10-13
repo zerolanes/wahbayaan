@@ -299,7 +299,11 @@ try {
     check(`admin ${name} renders`, r?.status() === 200);
     await staff.screenshot({ path: path.join(SHOTS, `admin-${name}.png`), fullPage: true });
   }
-  check("map slot on statistics + live", (await staff.goto(`${BASE}/admin/analytics`).then(() => staff.locator("[data-visitor-map-slot]").count())) === 1);
+  for (const url of ["/admin/analytics", "/admin/analytics/live"]) {
+    await staff.goto(`${BASE}${url}`);
+    const mounted = await staff.locator("[data-visitor-map]").first().waitFor({ timeout: 30000 }).then(() => true, () => false);
+    check(`visitor map mounted on ${url}`, mounted);
+  }
   const map = await staff.request.get(`${BASE}/admin/api/analytics/map?range=24h&live=1`);
   const mapJson = await map.json();
   check("map API returns the contract", map.status() === 200 && Array.isArray(mapJson.places) && Array.isArray(mapJson.countries) && "latest" in mapJson);

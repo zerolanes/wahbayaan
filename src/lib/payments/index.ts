@@ -23,6 +23,8 @@ export type CheckoutRequest = {
   description: string;
   successUrl: string;
   cancelUrl: string;
+  /** Extra provider metadata (e.g. `fulfilmentQuoteId` for an approved extra-shipping charge). */
+  metadata?: Record<string, string>;
 };
 
 export type CheckoutStart = { provider: ProviderId; mode: "live" | "test"; redirectUrl: string; providerRef: string };
@@ -62,7 +64,7 @@ export async function startCheckout(req: CheckoutRequest): Promise<CheckoutStart
       ],
       success_url: req.successUrl,
       cancel_url: req.cancelUrl,
-      metadata: { orderId: req.orderId, orderNumber: req.orderNumber },
+      metadata: { orderId: req.orderId, orderNumber: req.orderNumber, ...(req.metadata ?? {}) },
     });
     return { provider: "stripe", mode: provider.mode, redirectUrl: session.url!, providerRef: session.id };
   }

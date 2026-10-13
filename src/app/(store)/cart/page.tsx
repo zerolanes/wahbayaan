@@ -7,6 +7,7 @@ import { CheckoutSteps } from "@/components/store/checkout-steps";
 import { DestinationPicker } from "@/components/store/destination-picker";
 import { isSvg } from "@/components/store/illustration-tag";
 import { DeliveryEstimateLine, LandedCostBreakdown } from "@/components/store/landed-cost";
+import { FulfilmentPlanNote } from "@/components/store/fulfilment";
 import { ProductGrid } from "@/components/store/product-grid";
 import { BuyerProtectionBox } from "@/components/store/protection";
 import { ButtonLink } from "@/components/ui/button";
@@ -217,6 +218,7 @@ export default async function CartPage() {
               <>
                 <LandedCostBreakdown landed={landed} title="Landed cost" />
                 <DeliveryEstimateLine delivery={landed.delivery} />
+                {cart.plan ? <FulfilmentPlanNote plan={cart.plan} /> : null}
                 {!landed.complete ? (
                   <div className="rounded-[var(--radius-card)] bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
                     <p className="font-semibold">Some costs are confirmed before you&apos;re charged</p>

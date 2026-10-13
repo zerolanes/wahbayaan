@@ -20,6 +20,7 @@ import { SelectInput, TextArea, TextInput, Toggle } from "@/components/admin/con
 import { AuditTrail, NotesPanel } from "@/components/admin/notes-panel";
 import { QuoteForm } from "@/components/admin/quote-form";
 import { BrandOrderAdmin } from "@/components/admin/brands/brand-order-admin";
+import { FulfilmentPanel } from "@/components/admin/fulfilment-panel";
 import { getShippingCouriers } from "@/lib/couriers";
 import { DemoBadge, DetailGrid, KV, OrderAmount, Panel, PendingBadge, StatusBadge, Thumb } from "@/components/admin/ui";
 import { SellerPrice } from "@/components/money/seller-price";
@@ -181,6 +182,8 @@ export default async function OrderDetailPage(props: PageProps<"/admin/orders/[n
           ) : null}
         </Panel>
       </div>
+
+      <FulfilmentPanel orderId={order.id} orderNumber={order.number} currency={order.currency} canOperate={can("hub.operate")} />
 
       <Panel title={`Parcels (${order.vendorOrders.length})`} description="Each artisan ships separately from their workshop. Artisan amounts in PKR." bodyClassName="p-0">
         <div className="divide-y divide-umber-200/60">

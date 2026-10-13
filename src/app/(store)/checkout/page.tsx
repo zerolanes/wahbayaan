@@ -6,6 +6,7 @@ import { CheckoutForm } from "@/components/store/checkout-form";
 import { CheckoutSteps } from "@/components/store/checkout-steps";
 import { isSvg } from "@/components/store/illustration-tag";
 import { DeliveryEstimateLine, LandedCostBreakdown } from "@/components/store/landed-cost";
+import { FulfilmentPlanNote } from "@/components/store/fulfilment";
 import { BuyerProtectionBox } from "@/components/store/protection";
 import { joinCostLabels } from "@/lib/commerce/order-view";
 import { Container } from "@/components/ui/misc";
@@ -42,6 +43,7 @@ function Summary({ cart }: { cart: CartView }) {
       </ul>
       <LandedCostBreakdown landed={landed} title="Landed cost" />
       <DeliveryEstimateLine delivery={landed.delivery} />
+      {cart.plan ? <FulfilmentPlanNote plan={cart.plan} /> : null}
       {!landed.complete ? (
         <div className="flex gap-3 rounded-[var(--radius-card)] bg-pending-50 p-4 text-sm text-umber-800 ring-1 ring-pending-600/20">
           <ClipboardCheck className="mt-0.5 size-5 shrink-0 text-pending-600" aria-hidden />
@@ -59,10 +61,13 @@ function Summary({ cart }: { cart: CartView }) {
 }
 
 export default async function CheckoutPage() {
-  const [ctx, cart, user] = await Promise.all([getBuyerContext(), loadCart(), getCurrentUser()]);
+  const [ctx, user] = await Promise.all([getBuyerContext(), getCurrentUser()]);
+  const addresses = user ? await getAddresses(user.id) : [];
+  // Domestic delivery is priced per seller by city zone: estimate with the saved address's city.
+  const saved = addresses.find((a) => a.isDefault && a.country === ctx.destination) ?? addresses.find((a) => a.country === ctx.destination);
+  const cart = await loadCart({ city: saved?.city ?? null });
   if (!cart.lines.length || !cart.landed || cart.lines.some((l) => l.unavailableReason)) redirect("/cart");
   const landed = cart.landed;
-  const addresses = user ? await getAddresses(user.id) : [];
   const provider = activeProvider();
   const total = formatMoney(landed.knownTotal, landed.currency, { cents: true });
 

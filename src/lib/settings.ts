@@ -10,6 +10,7 @@ import { DEFAULT_PAYMENT_METHODS, type PaymentMethodsSetting } from "@/lib/payme
 import { DEFAULT_CONSENT_BANNER, type ConsentBannerSetting } from "@/lib/consent/banner-settings";
 import { DEFAULT_ANALYTICS, type AnalyticsSetting } from "@/lib/analytics/settings-shape";
 import type { SocialLinks } from "@/lib/db/schema";
+import { DEFAULT_FULFILMENT, type FulfilmentSetting } from "@/lib/fulfilment/settings";
 
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
@@ -65,6 +66,8 @@ export type SettingsShape = {
   visitor_map: { googleMapsKey: string | null };
   /** Site social profiles (footer, mobile menu). Only networks with a URL are shown. */
   social_links: SocialLinks;
+  /** Hubs, consolidation, courier booking adapters (Admin → Hubs). */
+  fulfilment: FulfilmentSetting;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -112,6 +115,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   analytics_maintenance: { lastCleanupAt: null, lastSummary: null },
   visitor_map: { googleMapsKey: null },
   social_links: {},
+  fulfilment: DEFAULT_FULFILMENT,
 };
 
 export type SettingKey = keyof SettingsShape;

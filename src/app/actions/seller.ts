@@ -20,6 +20,7 @@ import {
 import { requireSeller } from "@/lib/auth/session";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { OrderError, vendorOrderAction, type VendorAction } from "@/lib/commerce/orders";
+import { bookDirectParcel, handOverDirectParcel, sendParcelToHub } from "@/lib/fulfilment/service";
 import { saveUpload, saveUploads } from "@/lib/storage";
 import { slugify } from "@/lib/ids";
 import { sendEmail } from "@/lib/email";
@@ -72,6 +73,55 @@ export async function sellerOrderAction(_prev: ActionState, fd: FormData): Promi
   }
   refresh();
   return { ok: true, message: action.type === "ship" ? "Marked as shipped — the buyer can now track the parcel." : "Order updated." };
+}
+
+// ── Fulfilment: book courier / hand over / send to hub ──────────────────────
+
+/** Domestic order: book the courier for this parcel (integration or manual tracking). */
+export async function sellerBookCourierAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireSeller();
+  const method = String(fd.get("method") ?? "manual");
+  try {
+    const sh = await bookDirectParcel(String(fd.get("vendorOrderId")), { userId: user.id, vendorId: user.vendorId }, {
+      courierName: String(fd.get("courier") ?? ""),
+      useAdapter: method === "book",
+      trackingNumber: String(fd.get("trackingNumber") ?? "").trim() || null,
+    });
+    refresh();
+    return { ok: true, message: `Courier booked — tracking ${sh.trackingNumber}. Print the label, then hand the parcel over.` };
+  } catch (e) {
+    return { error: e instanceof OrderError ? e.message : "Something went wrong. Please try again." };
+  }
+}
+
+/** The booked parcel has been handed to the courier: the buyer gets the tracking number. */
+export async function sellerHandOverAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireSeller();
+  try {
+    await handOverDirectParcel(String(fd.get("shipmentId")), { userId: user.id, vendorId: user.vendorId });
+  } catch (e) {
+    return { error: e instanceof OrderError ? e.message : "Something went wrong. Please try again." };
+  }
+  refresh();
+  return { ok: true, message: "Handed over — the buyer can now track the parcel." };
+}
+
+/** International order consolidated at the hub: send the parcel there. */
+export async function sellerSendToHubAction(_prev: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await requireSeller();
+  const method = String(fd.get("method") ?? "manual") as "book" | "manual" | "drop_off";
+  if (!["book", "manual", "drop_off"].includes(method)) return { error: "Choose how the parcel reaches the hub." };
+  try {
+    await sendParcelToHub(String(fd.get("vendorOrderId")), { userId: user.id, vendorId: user.vendorId }, {
+      method,
+      courierName: String(fd.get("courier") ?? "").trim() || null,
+      trackingNumber: String(fd.get("trackingNumber") ?? "").trim() || null,
+    });
+  } catch (e) {
+    return { error: e instanceof OrderError ? e.message : "Something went wrong. Please try again." };
+  }
+  refresh();
+  return { ok: true, message: method === "drop_off" ? "Noted — bring it to the hub with the label." : "On its way to the hub. We'll update you when it arrives." };
 }
 
 // ── Listings ────────────────────────────────────────────────────────────────

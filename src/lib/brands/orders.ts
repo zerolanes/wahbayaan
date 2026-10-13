@@ -411,7 +411,9 @@ export async function advanceBrandFulfilment(orderId: string, fulfilmentId: stri
   if (!ids.length) return;
   const { escrow } = await getSettings(["escrow"]);
   await d.update(brandFulfilments).set(patch).where(inArray(brandFulfilments.id, ids));
-  const all = await d.select().from(brandFulfilments).where(eq(brandFulfilments.orderId, orderId));
+  // Orders routed through a hub: keep the hub's inbound parcels in step with the checklist.
+  await (await import("@/lib/fulfilment/sync")).syncBrandParcels(orderId);
+  const all =await d.select().from(brandFulfilments).where(eq(brandFulfilments.orderId, orderId));
   const statuses = all.map((f) => f.status).filter((x) => x !== "cancelled");
   let status = order.status;
   if (statuses.every((x) => x === "delivered")) status = "delivered";

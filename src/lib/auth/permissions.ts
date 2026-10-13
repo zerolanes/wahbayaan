@@ -40,6 +40,8 @@ export const PERMISSIONS = {
   "payments.manage": "Payment methods (card, JazzCash, Easypaisa) — non-secret settings only",
   "analytics.view": "Visitor statistics, live visitors, journeys, consent log and their CSV exports",
   "analytics.manage": "Cookie banner, privacy & tracking settings, consent version, deleting visitor data",
+  "hub.operate": "Hub operations: receive and QC parcels, storage, consolidation decisions, pack & ship",
+  "hubs.manage": "Hubs, consolidation settings and courier booking adapters",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -66,6 +68,7 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "brands.view",
       "couriers.manage",
       "analytics.view",
+      "hub.operate",
     ],
   },
   {

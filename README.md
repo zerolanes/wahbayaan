@@ -15,6 +15,7 @@ This repository is a from-scratch rebuild (the previous site was WordPress + Woo
 | Artisan dashboard | `src/app/seller` | Listings, orders, custom requests, payouts. Always PKR. |
 | Company admin | `src/app/admin` | Orders, quotes, escrow, disputes, refunds, payouts, shipments; artisans, applications, listings, reviews; customers, inbox, commissions; coupons, referrals, trade, waitlists, newsletter; homepage, pages, journal, announcements; rates and fees; reports; settings, feature flags, staff & roles, audit log, health, redirects, media, emails, launch readiness. Neutral dashboard theme shared with the artisan dashboard. |
 | Cookie consent & visitor statistics | `src/components/consent`, `src/lib/consent`, `src/lib/analytics` | Neutral privacy banner (Accept all / Continue without consent, individual settings), proof-of-consent log, first-party statistics only after consent, IP location (Cloudflare headers or ipapi.co / ipinfo.io / IP2Location.io), daily retention cleanup. Admin under Insights. E2E: `node scripts/e2e-consent.mjs`. |
+| Fulfilment | `src/lib/fulfilment`, `src/app/admin/hub*`, `src/app/admin/returns` | One order, one parcel per seller. Domestic orders ship direct from each seller ("Arrives in 2 parcels"); international orders consolidate at a configurable hub (receive → QC with photos → storage → one box, one tracking number), with partial shipments, extra-shipping approvals, labels, commercial invoice + packing list and returns. Courier booking adapters (manual, sandbox; real providers as extension points). |
 | Landed-cost engine | `src/lib/commerce/landed-cost.ts` | Pure function; pending rates are shown as pending, never as zero. |
 | Trust guards | `src/lib/trust/visibility.ts` | Categories without covers, unverified or template-banner artisans and demo rows never reach the storefront. |
 | 3D | `src/components/three` | The haveli and its procedural heritage objects, built in Three.js. |
@@ -59,6 +60,7 @@ Internal QA labels ("Illustration", "Demo content", sample-review chips, demo lo
 | `npm run db:reset -- --demo` | Rebuild the embedded dev database with demo data |
 | `npm run db:seed` | Base data (taxonomy, roles, FAQ, pending rate tables) |
 | `npm run db:generate` | Generate a migration after editing `src/lib/db/schema.ts` |
+| `BASE=… node scripts/e2e-fulfilment.mjs` | Fulfilment end to end (domestic parcels, hub consolidation, partial shipment, return) against a running dev server |
 
 ## Business inputs still needed
 
@@ -72,4 +74,5 @@ The software is complete enough to run, but these numbers are business decisions
 - Stripe / PayPal accounts (without keys, checkout runs in a clearly labelled test mode)
 - Legal review of terms and privacy policy
 - Real product and artisan photography (the launch-readiness page lists every illustration still in use)
+- Fulfilment: the hub site(s) — address, receiving hours, cut-off, handling days, contact (the demo hub is fictional and switched off); domestic and international courier contracts, rate cards and API credentials (TCS, Leopards, M&P, PostEx, Trax, DHL, FedEx, Aramex — env names in Admin → Hubs & booking); the volumetric divisor in the owner's contract; the return window; customs-broker answers on HS codes and how a consolidated multi-seller export is declared (exporter of record, invoice values)
 - Pakistani Brands: each brand's written permission / partnership (nothing syncs and no brand catalogue is public until it is recorded and the brand is authorised); domestic courier contracts, city zones and rate cards (Admin → Couriers, Domestic zones); the international service fee and the domestic fee outside the owner's Rs 3,000–4,000 starting band (Admin → Service fee); JazzCash / Easypaisa merchant accounts and their integration documents (Admin → Payment methods)

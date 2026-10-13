@@ -435,7 +435,7 @@ async function fullyDeliver({ buyer, admin, seller }) {
   await seller.getByRole("link", { name: number }).click();
   await seller.getByRole("button", { name: /accept order/i }).click();
   await waitText(seller, /Accepted/i);
-  await seller.getByLabel("Courier").selectOption("TCS International");
+  await seller.getByLabel("Courier").selectOption("DHL Express");
   await seller.getByLabel("Tracking number").fill("TCS778812345");
   await seller.getByRole("button", { name: /mark as shipped/i }).click();
   await waitText(seller, /Shipped — delivery is confirmed/);

@@ -2,7 +2,7 @@ import {
   Activity, BadgePercent, ChartLine, Cookie, Radio, Route, ShieldCheck, SlidersHorizontal, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
   HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Link2, Mail, Megaphone, MessagesSquare, Package,
   PackageSearch, Palette, Receipt, Scale, ScrollText, Settings, Shield, ShieldAlert, Ship, Sparkles, Star, Store, Tags,
-  Truck, UserCheck, Users, Wallet, Waypoints, Wrench,
+  Truck, UserCheck, Users, Wallet, Waypoints, Wrench, Warehouse, Undo2, Building,
 } from "lucide-react";
 import type { NavGroup } from "@/components/dashboard/nav-types";
 
@@ -16,6 +16,8 @@ export type AdminCounts = {
   newRequests: number;
   brandQueue: number;
   brandApplications: number;
+  hubInbound: number;
+  openReturns: number;
 };
 
 /** Company admin navigation. Items are hidden when the staff role lacks the permission. */
@@ -71,6 +73,14 @@ export function adminNav(c: AdminCounts): NavGroup[] {
         { href: "/admin/couriers", label: "Couriers & rate cards", icon: <Truck />, permission: "couriers.manage" },
         { href: "/admin/rates/domestic", label: "Domestic zones", icon: <MapPinned />, permission: "couriers.manage" },
         { href: "/admin/payment-methods", label: "Payment methods", icon: <CreditCard />, permission: "payments.manage" },
+      ],
+    },
+    {
+      label: "Fulfilment",
+      items: [
+        { href: "/admin/hub", label: "Hub operations", icon: <Warehouse />, permission: "hub.operate", badge: c.hubInbound },
+        { href: "/admin/returns", label: "Returns", icon: <Undo2 />, permission: "orders.manage", badge: c.openReturns },
+        { href: "/admin/hubs", label: "Hubs & booking", icon: <Building />, permission: "hubs.manage" },
       ],
     },
     {
