@@ -16,6 +16,9 @@ export default async function BrandCheckoutPage() {
   const quote = bag.quote;
   const payment = await paymentOptionsFor(quote.currency);
   const total = formatMoney(quote.knownTotal, quote.currency, { cents: true });
+  // Domestic delivery is priced from the city typed below, so when delivery is the only
+  // pending cost the next step may be payment or a confirmed-total email: don't promise either.
+  const next = quote.complete ? "pay" : quote.pendingLines.every((l) => l.key === "shipping") && bag.shipTo === "PK" ? "city" : "confirm";
   return (
     <Container className="py-10 md:py-14">
       <Breadcrumbs items={[{ label: "Pakistani Brands", href: "/brands" }, { label: "Bag", href: "/brands/bag" }, { label: "Checkout" }]} />
@@ -30,8 +33,8 @@ export default async function BrandCheckoutPage() {
           gift={bag.giftToPakistan}
           defaults={{ email: user?.email ?? "", name: user?.name ?? "" }}
           payment={payment}
-          complete={quote.complete}
-          submitLabel={quote.complete ? `Continue to pay ${total}` : "Place order — confirm costs first"}
+          next={next}
+          submitLabel={next === "pay" ? `Continue to pay ${total}` : next === "city" ? "Continue" : "Place order — confirm costs first"}
         />
         <aside className="space-y-4">
           <ul className="space-y-2 text-sm">

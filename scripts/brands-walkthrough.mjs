@@ -124,7 +124,7 @@ await pk.fill("#city", "Lahore");
 await pk.fill("#region", "Punjab");
 await pk.fill("#phone", "+92 300 0000001");
 await shot(pk, "pk-checkout");
-await pk.click('button[type="submit"]:has-text("Place order"), button[type="submit"]:has-text("Continue to pay")');
+await pk.click('button[type="submit"]:has-text("Place order"), button[type="submit"]:has-text("Continue to pay"), button[type="submit"]:has-text("Continue")');
 await pk.waitForURL(/test-payment|order-placed/, { timeout: 60000 });
 await shot(pk, "pk-after-checkout");
 if (pk.url().includes("test-payment")) {
@@ -173,7 +173,7 @@ await us.fill("#region", "Sindh");
 await us.fill("#phone", "+92 321 0000000");
 await us.fill("#giftMessage", "Eid Mubarak, Ammi!");
 await shot(us, "us-gift-checkout");
-await us.click('button[type="submit"]:has-text("Place order"), button[type="submit"]:has-text("Continue to pay")');
+await us.click('button[type="submit"]:has-text("Place order"), button[type="submit"]:has-text("Continue to pay"), button[type="submit"]:has-text("Continue")');
 await us.waitForURL(/test-payment|order-placed/, { timeout: 60000 });
 await shot(us, "us-gift-payment");
 if (us.url().includes("test-payment")) {
