@@ -17,8 +17,11 @@ export async function POST(req: Request) {
     return new Response("Invalid signature", { status: 400 });
   }
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as { id: string; metadata?: { orderId?: string } | null; payment_status?: string };
-    if (session.metadata?.orderId && session.payment_status === "paid") {
+    const session = event.data.object as { id: string; metadata?: { orderId?: string; fulfilmentQuoteId?: string } | null; payment_status?: string };
+    if (session.metadata?.fulfilmentQuoteId && session.payment_status === "paid") {
+      // An approved extra-shipping charge on an already-paid order.
+      await (await import("@/lib/fulfilment/service")).markFulfilmentQuotePaid(session.metadata.fulfilmentQuoteId);
+    } else if (session.metadata?.orderId && session.payment_status === "paid") {
       await markPaid(session.metadata.orderId, session.id);
     }
   }

@@ -5,7 +5,8 @@ import { PrintButton } from "@/components/admin/client-bits";
 import { Breadcrumbs, Notice } from "@/components/ui/misc";
 import { requireStaff } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
-import { orders, products, users } from "@/lib/db/schema";
+import { hubParcels, orders, products, shipments, users } from "@/lib/db/schema";
+import { ConsolidatedInvoice } from "@/components/admin/consolidated-invoice";
 import { orderMoney } from "@/lib/admin/money";
 import { destinationName } from "@/lib/money/currency";
 import { formatDate, regionLabel } from "@/lib/utils/format";
@@ -18,6 +19,8 @@ export async function generateMetadata(props: PageProps<"/admin/orders/[number]/
 /**
  * Printable commercial invoice, one per artisan parcel: shipper = the artisan's
  * workshop in Pakistan, consignee = the buyer. Generated from order data.
+ * `?shipment=<reference>`: the consolidated export box shipped from a hub
+ * (exporter = the hub) with its packing list.
  */
 export default async function InvoicePage(props: PageProps<"/admin/orders/[number]/invoice">) {
   await requireStaff("orders.view");
@@ -28,6 +31,24 @@ export default async function InvoicePage(props: PageProps<"/admin/orders/[numbe
     with: { items: true, vendorOrders: { with: { vendor: true } } },
   });
   if (!order) notFound();
+
+  // Consolidated export box (hub): one invoice + packing list for the whole box.
+  const sp = await props.searchParams;
+  const boxRef = typeof sp.shipment === "string" ? sp.shipment.toUpperCase() : null;
+  const box = boxRef ? await d.query.shipments.findFirst({ where: eq(shipments.reference, boxRef), with: { fromHub: true } }) : null;
+  if (boxRef && (!box || box.orderId !== order.id)) notFound();
+  if (box?.fromHub) {
+    const boxParcels = await d.select().from(hubParcels).where(eq(hubParcels.shipmentId, box.id));
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+          <Breadcrumbs items={[{ label: "Orders", href: "/admin/orders" }, { label: order.number, href: `/admin/orders/${order.number}` }, { label: `Invoice ${box.reference}` }]} />
+          <PrintButton>Print invoice & packing list</PrintButton>
+        </div>
+        <ConsolidatedInvoice order={order} hub={box.fromHub} shipment={box} parcels={boxParcels} />
+      </div>
+    );
+  }
   const productIds = order.items.map((i) => i.productId).filter((x): x is string => !!x);
   const prods = productIds.length ? await d.query.products.findMany({ where: inArray(products.id, productIds), with: { category: true } }) : [];
   const vendorUserIds = order.vendorOrders.map((v) => v.vendor.userId);

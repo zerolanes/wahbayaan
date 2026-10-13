@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
+import type { SocialLinks } from "@/lib/social";
+import { SocialLinksList } from "./social-links";
 import { cn } from "@/lib/utils/cn";
 
 export type MenuCategory = { slug: string; name: string; tagline: string | null; coverImageUrl: string };
@@ -20,14 +22,20 @@ export function MenuOverlay({
   signedIn,
   isSeller,
   isStaff,
+  isBrandSeller = false,
   hidden = [],
+  social,
 }: {
   categories: MenuCategory[];
   signedIn: boolean;
   isSeller: boolean;
   isStaff: boolean;
+  /** A self-listed brand's account (brand portal). */
+  isBrandSeller?: boolean;
   /** Links to features switched off in Admin → Feature flags. */
   hidden?: string[];
+  /** Site social profiles; only those with a URL render. */
+  social?: SocialLinks;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -39,6 +47,7 @@ export function MenuOverlay({
     { href: "/artisans", label: "Meet the artisans" },
     { href: "/brands", label: "Pakistani Brands" },
     { href: "/brands/request", label: "Shop any brand by link" },
+    { href: "/brands/directory", label: "Brand directory" },
     { href: "/collections", label: "Collections & bundles" },
     { href: "/drops", label: "Limited drops" },
     { href: "/custom", label: "Commission a piece" },
@@ -55,6 +64,7 @@ export function MenuOverlay({
     { href: "/about", label: "About Wahbayaan" },
     { href: "/wholesale", label: "Trade & wholesale" },
     { href: "/become-a-seller", label: "Sell on Wahbayaan" },
+    { href: "/brands/join", label: "Sell your brand" },
   ].filter((l) => !hidden.includes(l.href));
 
   const group = "text-xs font-semibold tracking-[0.08em] text-umber-700 uppercase";
@@ -138,6 +148,11 @@ export function MenuOverlay({
                     Artisan dashboard
                   </Link>
                 ) : null}
+                {isBrandSeller ? (
+                  <Link href="/brand-portal" className="pressable rounded-full px-3 py-2.5 font-medium text-umber-900 hover:bg-umber-900/[0.06]">
+                    Brand portal
+                  </Link>
+                ) : null}
                 {isStaff ? (
                   <Link href="/admin" className="pressable rounded-full px-3 py-2.5 font-medium text-umber-900 hover:bg-umber-900/[0.06]">
                     Company admin
@@ -153,6 +168,7 @@ export function MenuOverlay({
               ہنر کی قدر
             </span>
           </div>
+          <SocialLinksList links={social} owner="Wahbayaan" className="mt-4 -ml-2.5" linkClassName="text-umber-800 hover:bg-umber-900/[0.06] hover:text-umber-900" />
         </div>
       </Sheet>
     </>

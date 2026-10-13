@@ -5,6 +5,8 @@ import { SHOW_QA_LABELS } from "@/lib/qa";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Expand, Film, Images, X, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { ConsentEmbed } from "@/components/consent/consent-embed";
+import { parseVideoUrl } from "@/lib/consent/embeds";
 
 export type GalleryImage = { url: string; alt: string | null; kind: "photo" | "illustration" };
 type Mode = "photos" | "video";
@@ -82,7 +84,7 @@ export function ProductGallery({
                   fill
                   priority={i === 0}
                   sizes="(min-width: 1024px) 55vw, 100vw"
-                  unoptimized={isSvg(img.url)}
+                  unoptimized={isSvg(img.url) || /^https?:/.test(img.url)}
                   style={i === index && origin ? { transformOrigin: origin } : undefined}
                   className={cn(
                     "object-cover transition-[opacity,transform] duration-500 ease-[var(--ease-out-expo)]",
@@ -113,7 +115,9 @@ export function ProductGallery({
           </>
         ) : null}
 
-        {mode === "video" && videoUrl ? (
+        {mode === "video" && videoUrl && parseVideoUrl(videoUrl) ? (
+          <ConsentEmbed url={videoUrl} title={`${title} — process video`} fill />
+        ) : mode === "video" && videoUrl ? (
           <video src={videoUrl} controls playsInline preload="metadata" className="absolute inset-0 h-full w-full bg-black object-contain">
             <track kind="captions" />
           </video>
@@ -137,7 +141,7 @@ export function ProductGallery({
                 mode === "photos" && i === index ? "ring-2 ring-indigo-900 ring-offset-2 ring-offset-parchment" : "opacity-80 ring-1 ring-umber-900/10 hover:opacity-100",
               )}
             >
-              <Image src={img.url} alt="" fill sizes="96px" unoptimized={isSvg(img.url)} className="object-cover" />
+              <Image src={img.url} alt="" fill sizes="96px" unoptimized={isSvg(img.url) || /^https?:/.test(img.url)} className="object-cover" />
             </button>
           ))}
           {videoUrl ? (
@@ -219,7 +223,7 @@ function Lightbox({ images, index, setIndex, title, onClose }: { images: Gallery
           alt={img.alt ?? title}
           fill
           sizes="100vw"
-          unoptimized={isSvg(img.url)}
+          unoptimized={isSvg(img.url) || /^https?:/.test(img.url)}
           style={zoom ? { transformOrigin: zoom } : undefined}
           className={cn("object-contain transition-transform duration-300", zoom ? "scale-[2.2]" : "scale-100")}
         />

@@ -96,7 +96,8 @@ export async function requireUser(next = "/account") {
 export async function requireSeller() {
   const user = await getCurrentUser();
   if (!user) redirect(`/login?next=${encodeURIComponent("/seller")}`);
-  if (!user.vendorId) redirect("/become-a-seller");
+  // Self-listed brand accounts are sellers without an artisan workshop: they use the brand portal.
+  if (!user.vendorId) redirect(user.role === "seller" ? "/brand-portal" : "/become-a-seller");
   return user as CurrentUser & { vendorId: string; vendorSlug: string };
 }
 

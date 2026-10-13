@@ -5,14 +5,18 @@
  * Idempotent for base data; demo data is only inserted into an empty catalogue.
  */
 import "./env";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { closeDb, getDb, type Db } from "../src/lib/db/connect";
 import * as t from "../src/lib/db/schema";
 import { hashPassword } from "../src/lib/auth/password";
 import { ROLE_PRESETS } from "../src/lib/auth/permissions";
 import { DESTINATIONS } from "../src/lib/money/currency";
-import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES } from "./seed-data";
+import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES, PRIVACY_POLICY_BODY, PRIVACY_POLICY_OLD_BODY } from "./seed-data";
 import { seedBrandsBase, seedBrandsDemo } from "./seed-brands";
+import { seedDirectory } from "../src/lib/directory-seed";
+import { seedOutreachTemplates } from "../src/lib/outreach/import";
+import { seedGrowthDemo } from "./seed-growth";
+import { seedFulfilmentBase, seedFulfilmentDemo } from "./seed-fulfilment";
 
 const DEMO_PASSWORD = "wahbayaan-demo";
 const art = (kind: string, seed: number, size?: string) => `/art/${kind}/${seed}${size ? `-${size}` : ""}.svg`;
@@ -97,8 +101,15 @@ export async function seedBase(db: Db) {
   if (!faqCount) for (const [i, q] of FAQS.entries()) await db.insert(t.faqs).values({ ...q, sort: i });
 
   for (const p of POLICY_PAGES) await db.insert(t.pages).values(p).onConflictDoNothing({ target: t.pages.slug });
+  // Top-up: a privacy page still holding the first draft gets the policy covering cookies and visitor statistics.
+  // Staff-edited text is left alone.
+  await db.update(t.pages).set({ body: PRIVACY_POLICY_BODY, updatedAt: new Date() }).where(and(eq(t.pages.slug, "privacy"), eq(t.pages.body, PRIVACY_POLICY_OLD_BODY)));
 
   await seedBrandsBase(db);
+  await seedDirectory(db);
+  // Brand outreach: the two editable default templates (contacts are imported from the admin).
+  await seedOutreachTemplates(db);
+  await seedFulfilmentBase(db);
 
   // Owner account from the environment (production bootstrap).
   if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
@@ -254,6 +265,8 @@ async function topUpDemo(db: Db) {
   if (!announcementCount) await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
   const usBuyer = await db.query.users.findFirst({ where: eq(t.users.email, "buyer@wahbayaan.test") });
   if (usBuyer) await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
+  await seedGrowthDemo(db, { ownerId: ownerUser.id });
+  await seedFulfilmentDemo(db);
   console.log(`Demo top-up: ${addedVendors} new artisans, ${addedProducts} new listings.`);
 }
 
@@ -965,6 +978,8 @@ export async function seedDemo(db: Db) {
 
   await db.insert(t.announcements).values(DEMO_ANNOUNCEMENT);
   await seedBrandsDemo(db, { ownerId: ownerUser.id, usBuyerId: usBuyer.id, passwordHash: pw });
+  await seedGrowthDemo(db, { ownerId: ownerUser.id });
+  await seedFulfilmentDemo(db);
 
   console.log(`Demo data: ${DEMO_VENDORS.length} artisans, ${DEMO_PRODUCTS.length} listings, ${reviewCount} sample reviews, ${specs.length} orders.`);
   console.log(`Demo logins (password "${DEMO_PASSWORD}"): admin@wahbayaan.test · buyer@wahbayaan.test · noor-calligraphy-atelier@artisans.wahbayaan.test`);

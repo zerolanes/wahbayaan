@@ -34,6 +34,9 @@ export default async function BrandsLayout({ children }: LayoutProps<"/brands">)
               Shop by link
             </Link>
           ) : null}
+          <Link href="/brands/directory" className={link}>
+            Directory
+          </Link>
           <Link href="/brands/bag" className={`${link} ml-auto inline-flex items-center gap-1.5`} aria-label={`Brand bag (${count})`}>
             <ShoppingBag className="size-4" aria-hidden /> Bag{count ? ` (${count})` : ""}
           </Link>

@@ -57,6 +57,7 @@ export async function dashboardData() {
       union all select 'requests', count(*)::int from custom_requests where status = 'new'
       union all select 'payouts', count(*)::int from payouts where status in ('pending','scheduled')
       union all select 'emails_failed', count(*)::int from email_outbox where status = 'failed'
+      union all select 'outreach_due', count(*)::int from outreach_contacts where next_follow_up_at <= now() and status not in ('agreed','declined','do_not_contact')
       union all select 'wholesale', count(*)::int from wholesale_applications where status = 'new'
       union all select 'awaiting_payment', count(*)::int from orders where status in ('quote_sent','awaiting_payment') and created_at < now() - interval '7 days'`),
     scalar(sql`select count(*)::int as n from orders where ${PAID_ORDER} and fx_source ilike '%placeholder%'`),

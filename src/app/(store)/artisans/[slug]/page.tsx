@@ -5,6 +5,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BadgeCheck, CheckCircle2, Clock, Languages, MapPin, MessageCircle, Palmtree, PenTool, Star } from "lucide-react";
 import { ScallopDivider } from "@/components/brand/logo";
+import { ConsentEmbed } from "@/components/consent/consent-embed";
+import { parseVideoUrl } from "@/lib/consent/embeds";
 import { responseTimeLabel } from "@/components/store/artisan-feature";
 import { IllustrationTag, isSvg } from "@/components/store/illustration-tag";
 import { Eyebrow } from "@/components/store/page-hero";
@@ -194,9 +196,13 @@ export default async function ArtisanPage(props: PageProps<"/artisans/[slug]">) 
             {vendor.storyVideoUrl ? (
               <div className="mt-12">
                 <p className="text-umber-900 mb-3 text-sm font-semibold">Inside the workshop</p>
-                <video src={vendor.storyVideoUrl} controls playsInline preload="metadata" className="aspect-video w-full rounded-[var(--radius-card)] bg-black">
-                  <track kind="captions" />
-                </video>
+                {parseVideoUrl(vendor.storyVideoUrl) ? (
+                  <ConsentEmbed url={vendor.storyVideoUrl} title={`${vendor.displayName} — inside the workshop`} />
+                ) : (
+                  <video src={vendor.storyVideoUrl} controls playsInline preload="metadata" className="aspect-video w-full rounded-[var(--radius-card)] bg-black">
+                    <track kind="captions" />
+                  </video>
+                )}
               </div>
             ) : null}
           </div>

@@ -35,11 +35,27 @@ export const CSV_COLUMNS = [
 
 /** RFC 4180 CSV: quoted fields, doubled quotes, CRLF or LF. */
 export function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
+  return parseCsvRows(text).map((r) => r.cells);
+}
+
+/**
+ * The same parser, keeping the file line each record starts on (1-based) so
+ * validation errors can point at the spreadsheet row. Blank records are skipped.
+ */
+export function parseCsvRows(text: string): { line: number; cells: string[] }[] {
+  const rows: { line: number; cells: string[] }[] = [];
   let row: string[] = [];
   let field = "";
   let quoted = false;
+  let line = 1;
+  let start = 1;
   const src = text.replace(/^﻿/, "");
+  const end = () => {
+    row.push(field);
+    if (row.some((v) => v.trim() !== "")) rows.push({ line: start, cells: row });
+    row = [];
+    field = "";
+  };
   for (let i = 0; i < src.length; i++) {
     const c = src[i];
     if (quoted) {
@@ -47,7 +63,10 @@ export function parseCsv(text: string): string[][] {
         field += '"';
         i++;
       } else if (c === '"') quoted = false;
-      else field += c;
+      else {
+        if (c === "\n") line++;
+        field += c;
+      }
       continue;
     }
     if (c === '"' && field === "") quoted = true;
@@ -56,15 +75,13 @@ export function parseCsv(text: string): string[][] {
       field = "";
     } else if (c === "\n" || c === "\r") {
       if (c === "\r" && src[i + 1] === "\n") i++;
-      row.push(field);
-      if (row.some((v) => v.trim() !== "")) rows.push(row);
-      row = [];
-      field = "";
+      end();
+      line++;
+      start = line;
     } else field += c;
   }
   if (quoted) throw new AdapterError("The CSV has an unclosed quote.");
-  row.push(field);
-  if (row.some((v) => v.trim() !== "")) rows.push(row);
+  end();
   return rows;
 }
 

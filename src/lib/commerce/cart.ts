@@ -10,7 +10,15 @@ import { computeBundleSavings } from "./bundles";
 import { computeLandedCost, buyerUnitPrice, type LandedCost, type LcItem } from "./landed-cost";
 import { getRateContext } from "./rates";
 import { getSetting } from "@/lib/settings";
-import { applyBps, convert } from "@/lib/money/currency";
+import { applyBps, convert, convertFromPkr, isDomestic } from "@/lib/money/currency";
+import { getSettings } from "@/lib/settings";
+import { getBrandPricingContext } from "@/lib/brands/rates";
+import { estimateConsolidatedBox } from "@/lib/fulfilment/consolidation";
+import { quoteDomesticParcels } from "@/lib/fulfilment/domestic-parcels";
+import { buildPlan, type FulfilmentPlan } from "@/lib/fulfilment/plan";
+import { routeOrder } from "@/lib/fulfilment/settings";
+import { getActiveOriginHub } from "@/lib/fulfilment/service";
+import type { ShipmentQuote } from "./landed-cost";
 
 export async function getOrCreateCart(ownerKey: string) {
   const d = await db();
@@ -47,6 +55,7 @@ export type CartLine = {
   vendorId: string;
   vendorName: string;
   vendorSlug: string;
+  vendorCity: string | null;
   categoryName: string;
   qty: number;
   maxQty: number;
@@ -70,12 +79,18 @@ export type CartView = {
   isGift: boolean;
   giftWrap: boolean;
   giftMessage: string | null;
+  /** How the order travels: one parcel per seller, or together from our hub. */
+  plan: FulfilmentPlan | null;
 };
 
-/** Full cart with prices in the buyer's currency and the itemised landed cost. */
-export async function loadCart(): Promise<CartView> {
+/**
+ * Full cart with prices in the buyer's currency and the itemised landed cost.
+ * `city`: the delivery city once known (checkout) — domestic delivery is one
+ * courier rate per seller, priced by city zone.
+ */
+export async function loadCart(opts: { city?: string | null } = {}): Promise<CartView> {
   const ctx = await getBuyerContext();
-  const empty: CartView = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null };
+  const empty: CartView = { cartId: null, lines: [], landed: null, couponCode: null, couponError: null, isGift: false, giftWrap: false, giftMessage: null, plan: null };
   if (!ctx.ownerKey) return empty;
   const d = await db();
   const found = await d.query.carts.findFirst({ where: eq(carts.ownerKey, ctx.ownerKey) });
@@ -90,6 +105,7 @@ export async function loadCart(): Promise<CartView> {
       p: products,
       vendorName: vendors.displayName,
       vendorSlug: vendors.slug,
+      vendorCity: vendors.workshopCity,
       categoryName: categories.name,
       hsCode: categories.hsCode,
     })
@@ -106,7 +122,7 @@ export async function loadCart(): Promise<CartView> {
   const publicVendors = await getPublicVendorIds();
   const fx = ctx.fx;
 
-  const lines: CartLine[] = rows.map(({ item, p, vendorName, vendorSlug, categoryName }) => {
+  const lines: CartLine[] = rows.map(({ item, p, vendorName, vendorSlug, vendorCity, categoryName }) => {
     const extra = p.customizationOptions
       .filter((o) => o.extraPricePkr && item.customization[o.id])
       .reduce((a, o) => a + (o.extraPricePkr ?? 0), 0);
@@ -131,6 +147,7 @@ export async function loadCart(): Promise<CartView> {
       vendorId: p.vendorId,
       vendorName,
       vendorSlug,
+      vendorCity,
       categoryName,
       qty: item.qty,
       maxQty: p.availability === "made_to_order" ? 10 : Math.max(1, p.stockQty),
@@ -181,8 +198,47 @@ export async function loadCart(): Promise<CartView> {
   }
 
   let landed: LandedCost | null = null;
+  let plan: FulfilmentPlan | null = null;
   if (fx && available.length) {
     const rates = await getRateContext(ctx.destination);
+    // Fulfilment plan: domestic → one parcel per seller; international → our hub when one is active.
+    const { fulfilment } = await getSettings(["fulfilment"]);
+    const hub = isDomestic(ctx.destination) ? null : await getActiveOriginHub();
+    const route = routeOrder({ destination: ctx.destination, setting: fulfilment, activeOriginHubId: hub?.id ?? null });
+    plan = buildPlan({
+      mode: route.mode,
+      destination: ctx.destination,
+      items: available.map((l) => ({ sellerKey: l.vendorId, sellerName: l.vendorName, sellerCity: l.vendorCity, qty: l.qty, availability: l.availability, timeToMakeDays: l.timeToMakeDays, dispatchDays: l.dispatchDays })),
+      hub: hub ? { city: hub.city, handlingDays: hub.handlingDays } : null,
+      start: new Date(),
+    });
+    let consolidate: { weightG: number | null; reason?: string } | undefined;
+    let shipmentsOverride: ShipmentQuote[] | undefined;
+    if (route.mode === "hub") {
+      const box = estimateConsolidatedBox(
+        available.map((l) => {
+          const p = rows.find((r) => r.item.id === l.id)!.p;
+          return { weightG: p.weightG, qty: l.qty, widthCm: p.widthCm ? Number(p.widthCm) : null, heightCm: p.heightCm ? Number(p.heightCm) : null, depthCm: p.depthCm ? Number(p.depthCm) : null };
+        }),
+        fulfilment.volumetricDivisor,
+      );
+      consolidate = box.status === "known" ? { weightG: box.chargeableG } : { weightG: null, reason: `Shipping weight not listed for every item` };
+    } else if (isDomestic(ctx.destination)) {
+      const dom = (await getBrandPricingContext("PK")).domestic;
+      const byVendor = new Map<string, { label: string; city: string | null; weightG: number | null }>();
+      for (const l of available) {
+        const w = rows.find((r) => r.item.id === l.id)!.p.weightG;
+        const cur = byVendor.get(l.vendorId) ?? { label: l.vendorName, city: l.vendorCity, weightG: 0 };
+        cur.weightG = cur.weightG == null || !w ? null : cur.weightG + w * l.qty;
+        byVendor.set(l.vendorId, cur);
+      }
+      const q = quoteDomesticParcels(dom.setting, dom.rates, opts.city ?? null, [...byVendor].map(([key, v]) => ({ key, label: v.label, originCity: v.city, weightG: v.weightG })));
+      shipmentsOverride = q.parcels.map((p) =>
+        p.status === "known"
+          ? { vendorId: p.key, weightG: p.weightG, status: "known", courier: p.courier, serviceName: p.serviceName, amount: convertFromPkr(p.amountPkr, fx), transitDaysMin: p.transitDaysMin, transitDaysMax: p.transitDaysMax }
+          : { vendorId: p.key, weightG: p.weightG, status: "pending", reason: p.reason },
+      );
+    }
     const lcItems: LcItem[] = [];
     for (const l of available) {
       const p = rows.find((r) => r.item.id === l.id)!;
@@ -210,6 +266,9 @@ export async function loadCart(): Promise<CartView> {
       handling: rates.handling,
       giftWrap: cart.isGift ? { selected: cart.giftWrap, setting: rates.giftWrap } : undefined,
       discount,
+      consolidate,
+      shipmentsOverride,
+      shippingNote: route.mode === "hub" ? "Shipped together in one box from our hub" : undefined,
     });
   }
 
@@ -222,6 +281,7 @@ export async function loadCart(): Promise<CartView> {
     isGift: cart.isGift,
     giftWrap: cart.giftWrap,
     giftMessage: cart.giftMessage,
+    plan,
   };
 }
 

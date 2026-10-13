@@ -16,6 +16,7 @@ Read this before adding pages. It is short on purpose.
 - Money is integer **minor units**. Seller-side columns end in `Pkr`. Buyer-side order amounts are in `orders.currency`.
 - Never write to the DB from scripts while `next dev` is running (single-process embedded Postgres).
 - Schema changes: edit `schema.ts`, run `npm run db:generate`, commit the migration.
+- Scheduled jobs (`/api/cron/<job>`: auto-release, fx-refresh, brands, analytics-cleanup): Vercel runs them from `vercel.json`; everywhere else (Railway) `src/instrumentation-node.ts` calls them from inside the server every 10 minutes with `?everyHours=`, and the route skips a job that ran too recently (`cron_last_run` setting), so deploys don't repeat daily jobs. Production only; `WB_JOBS=off` disables it, `WB_JOBS=auto-release,brands` limits it. Logs show `[jobs] …`.
 
 ## Currency surfaces (brief constraint)
 
@@ -44,11 +45,31 @@ Read this before adding pages. It is short on purpose.
 - Payment methods (`src/lib/payments/methods.ts`): card / JazzCash / Easypaisa per market. Only non-secret config in settings; secrets are env vars. No cash on delivery.
 - Recorded adapter fixtures (FICTIONAL brands) live in `tests/fixtures/brands/`; `fixture:<name>` source URLs work outside production only.
 
+## Cookie consent & visitor statistics
+
+- The banner (`src/components/consent`) is mounted by the storefront layouts via `<ConsentRoot />`. Bots get no markup; `/privacy` never auto-opens it; any link to `#cookie-settings` reopens the settings.
+- Third-party scripts or embeds load only after consent: `window.Consent.whenAllowed("functional", fn)` or `useConsent()`; videos use `<ConsentEmbed url=… />` (no third-party request before consent).
+- Add a new third-party service to `SERVICES` in `src/lib/consent/services.ts` (the banner, footnotes and privacy cookie list follow), then raise the consent version in Admin → Privacy & tracking.
+- Statistics are stored only by `/api/collect`, which re-checks the consent cookie (Statistics + current version). Look: `consent_banner` setting → `--consent-*` CSS variables. Tables: `analytics_visits`, `analytics_page_views`, `consent_records`, `ip_geo_cache`.
+
+## Fulfilment (`src/lib/fulfilment`)
+
+- One cart, one payment, one order; behind the scenes one parcel per seller. `ensureFulfilment` (called from `markPaid`) routes the order: **domestic** (`PK`) → `direct` (each seller books a courier and ships to the buyer; one `shipments` row per artisan sub-order); **international** → `hub` when an origin hub is active and consolidation is on (Admin → Hubs & booking), else `direct`. Brand orders use the hub whenever one is active. Orders without an `order_fulfilments` row are older direct orders.
+- Tables: `hubs` (origin / city / forwarder; `[Add: …]` address placeholders until the owner picks a site), `order_fulfilments`, `hub_parcels` (seller → hub, statuses expected → in_transit → received → qc_passed/qc_failed → shipped), `shipments` (+ `shipment_items`; `direct`, `consolidated`, `partial`), `fulfilment_quotes` (extra shipping after payment), `return_requests`.
+- Escrow and payouts are untouched: everything still moves artisan sub-orders through `vendorOrderAction`. Hub boxes call it with `{ quiet: true }` so the buyer gets one event + one email per box, not per parcel.
+- Pure rules live in `consolidation.ts` (x of y arrived, slowest item + hub handling days, lateness, partial-shipment check, volumetric / chargeable weight), `domestic-parcels.ts` (one zoned rate per seller; same city → `same_city` zone; any parcel unpriced → the whole line is pending), `reference.ts` (`WB-XXXXXX-P1K` parcel / `-S1M` box references with a check character), `barcode.ts` (Code 128 SVG), `label.ts`, `journey.ts`, `plan.ts`.
+- **Never charge more silently.** A second box (partial shipment) or a heavier packed box is a `fulfilment_quotes` row the buyer approves and pays; declining charges nothing. "Ship ready items now" is only allowed when a seller is late past the threshold.
+- Couriers are booked through adapters (`couriers/`): `manual` (type the tracking number; link from the courier's URL template) and `sandbox` (demo/tests, `SBX…` numbers, refused in production). Real providers are listed in `couriers/providers.ts` with the env var names they will read — no courier API is called until an integration is written against the courier's own documentation. The adapter per courier is chosen in Admin → Hubs & booking.
+- Printable labels: `/labels/<reference>` (staff, or the seller who owns the parcel). Consolidated commercial invoice + packing list: `/admin/orders/<n>/invoice?shipment=<reference>`.
+- Returns: requested from the order page inside `buyer_protection.returnWindowDays` (while that is pending: until funds are released). Opening one pauses escrow auto-release; refunds go through `refundOrder`.
+- Permissions: `hub.operate` (hub screens), `hubs.manage` (hub configuration, booking adapters).
+- E2E: `scripts/e2e-fulfilment.mjs` switches the fictional "Demo Hub (Lahore)" on for its run and off again afterwards.
+
 ## Auth
 
 - Buyer pages: `await requireUser("/account/...")`.
 - Seller pages: `await requireSeller()` (layout already does it; actions must re-check and scope every query by `user.vendorId`).
-- Admin pages: `await requireStaff("orders.view")`; admin server actions: `const user = await assertStaff("orders.manage")` then `await audit({...})`.
+- Admin pages: `await requireStaff("orders.view")` (visitor statistics: `analytics.view` / `analytics.manage`); admin server actions: `const user = await assertStaff("orders.manage")` then `await audit({...})`.
 
 ## UI kit
 
@@ -79,9 +100,39 @@ Read this before adding pages. It is short on purpose.
 - Tap targets are at least 40–44px. On phones, primary actions sit at the bottom: the tab bar, the product buy bar and the cart checkout bar dock above it (the tab bar is hidden during checkout).
 - Pages from new sections (e.g. `/brands`) pick the theme up automatically by using `Container`, `PageHero`/`InfoHeader`, the UI kit and `ProductGrid`.
 
+## Admin visitor map
+
+- `<VisitorMapSlot mode="background" | "card" tableFilterParam="place" />` from `@/components/admin/visitor-map` (also re-exported at `@/components/admin/visitor-map-slot`). It polls `GET /admin/api/analytics/map?range=&live=&hideDc=` (the `VisitorMapData` contract in `visitor-map/types.ts`); pass `dataUrl` to point it elsewhere and `compact` on table-heavy screens.
+- Pinning a cross writes `?place=GB` (country) or `?place=GB:London` (place) with `router.replace`; the host page filters its table from that param. Esc clears it.
+- `mode="background"` fixes the map behind the page and, scoped with `body:has([data-vm-background])`, makes that page's cards translucent. It keeps Wahbayaan's brand colours inside the neutral admin theme on purpose.
+- Built-in map: Natural Earth countries from `world-atlas`; states/provinces from `public/geo/admin1.json`, generated by `node scripts/build-admin1.mjs` (Natural Earth 1:10m admin-1, filtered to the main visitor countries — no npm package ships admin-1 for Pakistan). Google Maps is used only when a browser key is saved in Admin → Settings → Visitor map.
+- Demo on fixture data: `/admin/visitor-map` (dev only; `tests/fixtures/visitor-map.json` via `/admin/api/visitor-map/fixture`, a temporary route). Checks: `node scripts/e2e-visitor-map.mjs`, screenshots: `node scripts/shots-visitor-map.mjs` (both take `BASE`).
+
 ## Verification
 
 - `npx tsc --noEmit`, `npx vitest run`.
 - Screenshots: `node scripts/shot.mjs http://localhost:3000/path screenshots/name.png 1440 900 true`.
 - Accessibility: run an axe-core WCAG 2 A/AA scan (`runOnly: ["wcag2a", "wcag2aa"]`) on changed storefront pages at 1440px and 390px, and check there's no horizontal scroll at 390px.
 - 3D wordmark glyphs: `python3 scripts/wordmark-typeface.py` regenerates `src/components/store/hero/wordmark-typeface.ts`.
+
+## Brand sellers, directory, partner links (`/brands/join`, `/brand-portal`)
+
+- **Self-signup brands.** `/brands/join` records the application and a `brand_terms_acceptances` row (who, when, `BRAND_SELLER_TERMS_VERSION`; audited). Admin → Applications → Brands approves; `approveBrandApplication` (`src/lib/brand-portal/onboarding.ts`) creates the brand (or claims an unclaimed draft with that slug), the `brand_members` login and applies `permissionFromAcceptance` → `partnership = "authorised"` with the acceptance as the permission record. No acceptance / stale version → never authorised. Bump the terms version when `BRAND_SELLER_TERMS` changes.
+- **Brand portal** (`src/app/brand-portal`, `src/components/brand-portal`): `.admin-theme`, PKR only (`SellerPrice`; covered by `tests/currency-surfaces.test.ts`). Pages call `requireBrandMember()`, actions `assertBrandMember()`, and every query is scoped by `brandId`. Brand accounts are `role = "seller"` without a vendor; `requireSeller()` sends them to the portal.
+- **CSV upload** (`src/lib/brand-portal/csv.ts`, pure; `import.ts` writes): one row per variant, SKU identifies the variant, handle groups a product. Validate → preview → import; products with row errors are skipped, re-uploads are idempotent, photo-less "published" rows stay drafts. Refused without a recorded permission (logged as a `brand_sync_runs` row, trigger `portal`).
+- **Fulfil hook**: the brand marks paid items ready (`markBrandItemsReady`, `brand_item_readiness`, staff-only order event). Shipping/hub logic subscribes with `onBrandItemsReady(fn)` in `src/lib/brand-portal/fulfil.ts` — don't add courier logic to the portal.
+- **Directory** (`/brands/directory`, `brand_directory_entries`): text only — name, category, one factual line, nofollow website link, "Shop with Wahbayaan" → `/brands/request?brand=…`. The table has no contact columns; the seed reads only `brand`, `category`, `website` from `docs/outreach/pakistani-brands.csv`. Never imply a relationship. `ShopAnyBrandStrip` (`src/components/store/brands/shop-any-brand-strip.tsx`) is the homepage strip.
+- **Affiliate programmes** (Admin → Affiliate programmes): CSV upload / CSV feed URL / manual entry only. Feed products and images show only when `affiliateDisplayGate` passes (recorded "terms allow display" + active + valid `{url}` template). Cards (`PartnerLinkCard`) link out with `rel="sponsored nofollow noopener noreferrer"`, are labelled "Partner link", show no Wahbayaan price and never enter the bag.
+- **Social links**: `social_links` setting (Admin → Settings → Social links), validated per network (`src/lib/social.ts`); `SocialLinksList` renders monochrome inline SVG icons only for links that are set. Brand pages use `brand_profiles.socials`. No embeds or third-party scripts.
+- **Compare**: brand products use their own cookie (`wb_compare_brands`) and table (`BrandCompareTable`): price range, sizes in stock, colours, fabric, delivery and service fee (pending stays pending).
+
+## Brand outreach (`/admin/outreach`)
+
+- Admin-only CRM for asking Pakistani brands for permission to list them: `outreach_contacts` (pipeline `new → contacted → replied → call_booked → negotiating → agreed | declined | do_not_contact`, owner, follow-up date), `outreach_templates`, `outreach_messages` (timeline: emails + manual events + status changes), `outreach_suppressions` (opted-out addresses). Permissions `outreach.view` / `outreach.manage` (Owner by default).
+- **Contact details never leave the admin.** Only `src/app/admin`, `src/app/actions/admin`, `src/components/admin`, `src/lib/outreach`, the schema, the dashboard count and the opt-out page may touch outreach tables or modules — `tests/outreach-no-public-leak.test.ts` fails otherwise. The public directory still reads only brand/category/website from `docs/outreach/pakistani-brands.csv`.
+- Import (button for the CSV in `docs/outreach`, or upload with the same columns) matches on the normalised brand name and is idempotent; contacts staff edited (`staffEditedAt`) only get blank fields filled. Pure logic: `src/lib/outreach/csv.ts`.
+- Templates use `{brand}`, `{name}` (contact name or "{brand} team"), `{sender_name}`, `{sender_phone}`, `{site_url}`; sender details are the `outreach` setting (Templates screen). Sending is blocked until a sender name is set and on unknown `{fields}`.
+- Every email goes through `sendEmail` (logged to the outbox when no provider is set — the screens say so) and ends with a fixed footer: business identity + one-click opt-out `/outreach/unsubscribe?t=…` (HMAC token, `src/lib/outreach/token.ts`). That page only marks the contact do-not-contact and suppresses the address.
+- Skip rules (`src/lib/outreach/skip.ts`): do not contact, suppressed, no/invalid email are hard blocks; emailed in the last 5 days skips in bulk (max 20, sent sequentially) and needs an explicit "send anyway" for a single email.
+- **Agreed ≠ authorised.** Marking a contact agreed only shows a prompt that opens the brand's permission form (creating a draft brand if none is linked) with a suggested note; the brand's recorded permission stays the single source of truth.
+- Walkthrough: `BASE=http://localhost:3121 OUT=dir node scripts/e2e-outreach.mjs` (fresh demo seed, no email provider).

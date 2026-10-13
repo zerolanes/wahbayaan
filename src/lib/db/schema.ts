@@ -16,6 +16,7 @@ import {
   bigint,
   boolean,
   date,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -1003,6 +1004,546 @@ export const brandFulfilments = pgTable(
   (t) => [uniqueIndex("brand_fulfilment_order_brand_idx").on(t.orderId, t.brandLabel)],
 );
 
+// ── Brand sellers: self-signup brands and their portal ──────────────────────
+//
+// A Pakistani label applies itself (/brands/join), accepts the brand seller
+// terms (recorded below — who, when, which version), and on approval gets a
+// row in `brands` plus a `brand_members` login. The acceptance is the brand's
+// permission record, so the brand is `authorised` without a separate manual
+// permission. Everything here is self-contained; brand products, variants and
+// orders reuse the Pakistani Brands tables above.
+
+/** Public social profile links. Only links with a URL are ever rendered. */
+export type SocialLinks = Partial<Record<"instagram" | "facebook" | "tiktok" | "youtube" | "x" | "pinterest" | "whatsapp" | "linkedin", string>>;
+
+/** Extra brand page content: banner and social links (any brand), and whether the brand listed itself. */
+export const brandProfiles = pgTable("brand_profiles", {
+  brandId: uuid("brand_id")
+    .primaryKey()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  bannerUrl: text("banner_url"),
+  socials: jsonb("socials").$type<SocialLinks>().notNull().default({}),
+  /** True for brands that signed up themselves and manage their own catalogue. */
+  selfListed: boolean("self_listed").notNull().default(false),
+  updatedAt: updatedAt(),
+});
+
+export const brandSellerApplications = pgTable("brand_seller_applications", {
+  id: id(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  brandName: text("brand_name").notNull(),
+  contactName: text("contact_name").notNull(),
+  /** The applicant's role at the brand (owner, designer, e-commerce lead…). */
+  contactRole: text("contact_role"),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  websiteUrl: text("website_url"),
+  instagram: text("instagram"),
+  city: text("city"),
+  audiences: jsonb("audiences").$type<("women" | "men" | "kids" | "unisex")[]>().notNull().default([]),
+  /** What they sell, in their words (e.g. "lawn, pret, bridal"). */
+  productTypes: text("product_types"),
+  catalogueSize: text("catalogue_size"),
+  about: text("about"),
+  status: applicationStatus("status").notNull().default("submitted"),
+  reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+  reviewerNotes: text("reviewer_notes"),
+  brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+});
+
+/** Acceptance of the brand seller terms: who, when, which version. Never edited — a new acceptance is a new row. */
+export const brandTermsAcceptances = pgTable(
+  "brand_terms_acceptances",
+  {
+    id: id(),
+    applicationId: uuid("application_id").references(() => brandSellerApplications.id, { onDelete: "set null" }),
+    brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+    /** The account that accepted (set at approval when the applicant was signed out). */
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    termsVersion: text("terms_version").notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }).notNull().defaultNow(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+  },
+  (t) => [index("brand_terms_brand_idx").on(t.brandId)],
+);
+
+/** Logins that manage a brand in the brand portal. One brand per account. */
+export const brandMembers = pgTable("brand_members", {
+  id: id(),
+  brandId: uuid("brand_id")
+    .notNull()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role").notNull().default("owner"),
+  createdAt: createdAt(),
+});
+
+/** A brand's own collections. Products carry the collection name in `brand_products.collection` (storefront filters use it). */
+export const brandCollections = pgTable(
+  "brand_collections",
+  {
+    id: id(),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("brand_collections_name_idx").on(t.brandId, t.name)],
+);
+
+/** Fulfil hook: the brand marks an ordered item ready for Wahbayaan to collect. Shipping/hub logic lives elsewhere. */
+export const brandItemReadiness = pgTable("brand_item_readiness", {
+  orderItemId: uuid("order_item_id")
+    .primaryKey()
+    .references(() => brandOrderItems.id, { onDelete: "cascade" }),
+  brandId: uuid("brand_id")
+    .notNull()
+    .references(() => brands.id, { onDelete: "cascade" }),
+  readyAt: timestamp("ready_at", { withTimezone: true }).notNull().defaultNow(),
+  markedById: uuid("marked_by_id").references(() => users.id, { onDelete: "set null" }),
+  note: text("note"),
+});
+
+// ── Brand directory (text only) ─────────────────────────────────────────────
+//
+// Pakistani brands that are NOT on Wahbayaan: name, category, a one-line factual
+// description and the brand's website. No logos, photos, products or contact
+// details — the table has no column for them.
+
+export const brandDirectoryEntries = pgTable("brand_directory_entries", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  /** women | men | women_men | kids | footwear | accessories | home | other */
+  category: text("category").notNull().default("other"),
+  description: text("description"),
+  websiteUrl: text("website_url"),
+  isHidden: boolean("is_hidden").notNull().default(false),
+  sort: integer("sort").notNull().default(0),
+  /** `seed` (docs/outreach CSV: name, category, website only) or `admin`. */
+  source: text("source").notNull().default("admin"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+// ── Affiliate programmes ────────────────────────────────────────────────────
+//
+// Outbound "Shop at {Brand}" partner links. Feed products are shown only when an
+// admin recorded that the programme's terms allow displaying feed products and
+// images (who, when, note — audited). Never added to the Wahbayaan cart.
+
+export const affiliateProgrammes = pgTable("affiliate_programmes", {
+  id: id(),
+  name: text("name").notNull(),
+  /** The store the links go to, shown as "Shop at {brandName}". */
+  brandName: text("brand_name").notNull(),
+  network: text("network"),
+  termsUrl: text("terms_url"),
+  /** draft | active | paused | ended */
+  status: text("status").notNull().default("draft"),
+  notes: text("notes"),
+  /** e.g. https://network.example/click?id=123&u={url} — `{url}` is replaced by the encoded product URL. */
+  trackingTemplate: text("tracking_template"),
+  feedUrl: text("feed_url"),
+  displayAllowed: boolean("display_allowed").notNull().default(false),
+  displayAllowedAt: timestamp("display_allowed_at", { withTimezone: true }),
+  displayAllowedById: uuid("display_allowed_by_id").references(() => users.id, { onDelete: "set null" }),
+  displayAllowedNote: text("display_allowed_note"),
+  lastImportAt: timestamp("last_import_at", { withTimezone: true }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  isDemo: isDemo(),
+});
+
+export const affiliateProducts = pgTable(
+  "affiliate_products",
+  {
+    id: id(),
+    programmeId: uuid("programme_id")
+      .notNull()
+      .references(() => affiliateProgrammes.id, { onDelete: "cascade" }),
+    externalId: text("external_id").notNull(),
+    title: text("title").notNull(),
+    productUrl: text("product_url").notNull(),
+    imageUrl: text("image_url"),
+    /** As listed in the feed (PKR minor units), for staff reference. Not shown as a Wahbayaan price. */
+    pricePkr: money("price_pkr"),
+    category: text("category"),
+    isHidden: boolean("is_hidden").notNull().default(false),
+    lastImportedAt: timestamp("last_imported_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("affiliate_products_external_idx").on(t.programmeId, t.externalId)],
+);
+
+// ── Brand outreach (admin only) ─────────────────────────────────────────────
+//
+// A small CRM for asking Pakistani brands for permission to list them. Contact
+// details live ONLY here — never in brand_directory_entries, never on a public
+// route or API (tests/outreach-no-public-leak.test.ts). Agreeing in outreach
+// never authorises a brand: permission is still recorded on the brand itself.
+
+export const outreachStatus = pgEnum("outreach_status", ["new", "contacted", "replied", "call_booked", "negotiating", "agreed", "declined", "do_not_contact"]);
+export const outreachEventKind = pgEnum("outreach_event_kind", [
+  "email",
+  "replied",
+  "call_booked",
+  "phone_call",
+  "instagram_dm",
+  "whatsapp",
+  "note",
+  "status",
+  "unsubscribed",
+]);
+
+export const outreachContacts = pgTable(
+  "outreach_contacts",
+  {
+    id: id(),
+    brandName: text("brand_name").notNull(),
+    /** Normalised brand name (slug) — the import matches on it. */
+    nameKey: text("name_key").notNull(),
+    /** Person to address; `{name}` falls back to "{brand} team". */
+    contactName: text("contact_name"),
+    brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+    directoryEntryId: uuid("directory_entry_id").references(() => brandDirectoryEntries.id, { onDelete: "set null" }),
+    websiteUrl: text("website_url"),
+    email: text("email"),
+    emailType: text("email_type"),
+    phone: text("phone"),
+    instagram: text("instagram"),
+    city: text("city"),
+    category: text("category"),
+    shipsInternationally: text("ships_internationally"),
+    sourceUrl: text("source_url"),
+    notes: text("notes"),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    status: outreachStatus("status").notNull().default("new"),
+    lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+    nextFollowUpAt: timestamp("next_follow_up_at", { withTimezone: true }),
+    /** csv_seed | csv_upload | admin */
+    source: text("source").notNull().default("admin"),
+    /** Set when staff edit the contact: re-imports then only fill blank fields. */
+    staffEditedAt: timestamp("staff_edited_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    uniqueIndex("outreach_contacts_name_key_idx").on(t.nameKey),
+    index("outreach_contacts_status_idx").on(t.status),
+    index("outreach_contacts_follow_up_idx").on(t.nextFollowUpAt),
+  ],
+);
+
+export const outreachTemplates = pgTable("outreach_templates", {
+  id: id(),
+  /** Seeded templates carry a key (pitch, follow_up) so seeding stays idempotent. */
+  key: text("key").unique(),
+  name: text("name").notNull(),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  isArchived: boolean("is_archived").notNull().default(false),
+  sort: integer("sort").notNull().default(0),
+  updatedById: uuid("updated_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** Timeline: emails sent (or only logged), manual events (reply, call booked, DM, WhatsApp) and status changes. */
+export const outreachMessages = pgTable(
+  "outreach_messages",
+  {
+    id: id(),
+    contactId: uuid("contact_id")
+      .notNull()
+      .references(() => outreachContacts.id, { onDelete: "cascade" }),
+    kind: outreachEventKind("kind").notNull(),
+    toEmail: text("to_email"),
+    subject: text("subject"),
+    body: text("body"),
+    templateId: uuid("template_id").references(() => outreachTemplates.id, { onDelete: "set null" }),
+    outboxId: uuid("outbox_id").references(() => emailOutbox.id, { onDelete: "set null" }),
+    /** Emails: sent | logged (no provider configured) | failed. */
+    deliveryStatus: text("delivery_status"),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("outreach_messages_contact_idx").on(t.contactId, t.createdAt)],
+);
+
+/** Addresses that must never be emailed again (opt-out link, manual). Checked before every send. */
+export const outreachSuppressions = pgTable(
+  "outreach_suppressions",
+  {
+    id: id(),
+    email: text("email").notNull(),
+    /** unsubscribe | manual */
+    source: text("source").notNull().default("manual"),
+    reason: text("reason"),
+    contactId: uuid("contact_id").references(() => outreachContacts.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("outreach_suppressions_email_idx").on(sql`lower(${t.email})`)],
+);
+
+// ── Fulfilment: hubs, inbound parcels, outbound shipments, returns ─────────
+//
+// One cart, one payment, one order; behind the scenes one parcel per seller.
+// - Domestic orders (buyer in Pakistan) ship DIRECT from each seller: one
+//   `shipments` row (kind `direct`) per artisan sub-order.
+// - International orders CONSOLIDATE at an origin hub when one is active: each
+//   seller sends a `hub_parcels` row to the hub, the hub receives + QC-checks +
+//   stores it, then packs everything into one `shipments` row (kind
+//   `consolidated`, or `partial` when staff ship the ready items early).
+// The artisan sub-order (`vendor_orders`) stays the source of truth for the
+// order status, escrow and payouts — shipments only drive it.
+
+/** `origin`: hub in Pakistan that consolidates exports. `city`: optional domestic city hub (later phase). `forwarder`: partner in the destination country. */
+export const hubType = pgEnum("hub_type", ["origin", "city", "forwarder"]);
+export const fulfilmentMode = pgEnum("fulfilment_mode", ["direct", "hub"]);
+export const hubParcelStatus = pgEnum("hub_parcel_status", [
+  "expected", // seller hasn't sent it yet
+  "in_transit", // on its way to the hub
+  "received", // scanned in at the hub, waiting for QC
+  "qc_passed", // checked and stored
+  "qc_failed", // problem found — staff contact the seller
+  "packed", // inside an outbound box
+  "shipped", // the outbound box left the hub
+  "returned_to_seller",
+  "cancelled",
+]);
+export const shipmentKind = pgEnum("shipment_kind", ["direct", "consolidated", "partial", "forwarder_leg"]);
+export const shipmentStatus = pgEnum("shipment_status", ["draft", "booked", "shipped", "delivered", "cancelled"]);
+export const returnStatus = pgEnum("return_status", ["requested", "approved", "rejected", "in_transit", "received", "refunded", "closed"]);
+export const fulfilmentQuoteStatus = pgEnum("fulfilment_quote_status", ["pending", "approved", "declined", "paid", "withdrawn"]);
+
+export type HubAddress = {
+  line1: string;
+  line2?: string | null;
+  city: string;
+  region?: string | null;
+  postalCode?: string | null;
+  country: string;
+};
+
+export const hubs = pgTable("hubs", {
+  id: id(),
+  name: text("name").notNull(),
+  type: hubType("type").notNull().default("origin"),
+  city: text("city").notNull(),
+  /** ISO country. Origin and city hubs are in PK; a forwarder is in the destination country. */
+  country: text("country").notNull().default("PK"),
+  /** Street address — `[Add: …]` placeholders until the owner chooses a real site. */
+  address: jsonb("address").$type<HubAddress>().notNull(),
+  contactName: text("contact_name"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  receivingHours: text("receiving_hours"),
+  /** Local cut-off for same-day handling, e.g. "15:00". */
+  cutoffTime: text("cutoff_time"),
+  /** Days the hub needs to check, pack and dispatch once everything has arrived. Null = pending. */
+  handlingDays: integer("handling_days"),
+  /** Forwarders: the courier used for the local last mile, with its own rate card. */
+  onwardCourierId: uuid("onward_courier_id").references(() => couriers.id, { onDelete: "set null" }),
+  /** Forwarders: how often they consolidate (e.g. "weekly air cargo"). */
+  consolidationCadence: text("consolidation_cadence"),
+  notes: text("notes"),
+  isActive: boolean("is_active").notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  isDemo: isDemo(),
+});
+
+/** One row per order once it is paid: how it is fulfilled and when it is expected to leave. */
+export const orderFulfilments = pgTable("order_fulfilments", {
+  orderId: uuid("order_id")
+    .primaryKey()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  mode: fulfilmentMode("mode").notNull(),
+  hubId: uuid("hub_id").references(() => hubs.id, { onDelete: "set null" }),
+  /** Later phase: the buyer opted to receive a domestic order in one delivery (via a city hub). */
+  oneDelivery: boolean("one_delivery").notNull().default(false),
+  /** Slowest item's making/dispatch time + hub handling. Null when a time is not stated. */
+  estimatedDispatchAt: timestamp("estimated_dispatch_at", { withTimezone: true }),
+  /** Staff decision when a seller is late: wait for everything, or ship the ready items now. */
+  decision: text("decision"), // wait | ship_partial
+  decisionNote: text("decision_note"),
+  decisionAt: timestamp("decision_at", { withTimezone: true }),
+  decisionById: uuid("decision_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** A seller's parcel on its way to (and through) a hub. */
+export const hubParcels = pgTable(
+  "hub_parcels",
+  {
+    id: id(),
+    /** Printed on the inbound label and scanned at the hub. */
+    reference: text("reference").notNull().unique(),
+    hubId: uuid("hub_id")
+      .notNull()
+      .references(() => hubs.id, { onDelete: "restrict" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "cascade" }),
+    brandFulfilmentId: uuid("brand_fulfilment_id").references(() => brandFulfilments.id, { onDelete: "cascade" }),
+    /** Label shown on hub screens ("Multan Blue Kiln", "Noor Lawn House"). */
+    senderLabel: text("sender_label").notNull(),
+    senderCity: text("sender_city"),
+    status: hubParcelStatus("status").notNull().default("expected"),
+    /** Seller → hub leg. */
+    courier: text("courier"),
+    trackingNumber: text("tracking_number"),
+    trackingUrl: text("tracking_url"),
+    provider: text("provider"),
+    /** When the seller is expected to hand it over (from the slowest making/dispatch time). */
+    expectedBy: timestamp("expected_by", { withTimezone: true }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    receivedAt: timestamp("received_at", { withTimezone: true }),
+    receivedById: uuid("received_by_id").references(() => users.id, { onDelete: "set null" }),
+    measuredWeightG: integer("measured_weight_g"),
+    qcNotes: text("qc_notes"),
+    qcPhotos: jsonb("qc_photos").$type<string[]>().notNull().default([]),
+    qcAt: timestamp("qc_at", { withTimezone: true }),
+    qcById: uuid("qc_by_id").references(() => users.id, { onDelete: "set null" }),
+    /** Storage location at the hub, e.g. "A-03". */
+    bin: text("bin"),
+    shipmentId: uuid("shipment_id"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("hub_parcels_order_idx").on(t.orderId), index("hub_parcels_hub_status_idx").on(t.hubId, t.status)],
+);
+
+export type ShipmentDocItem = { title: string; qty: number; hsCode: string | null; unitValue: number; weightG: number | null; origin: string; sender: string };
+
+/** An outbound parcel to the buyer (or to a forwarder). */
+export const shipments = pgTable(
+  "shipments",
+  {
+    id: id(),
+    reference: text("reference").notNull().unique(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    kind: shipmentKind("kind").notNull(),
+    status: shipmentStatus("status").notNull().default("draft"),
+    /** Direct parcels: the artisan sub-order. */
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "cascade" }),
+    fromHubId: uuid("from_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    /** Forwarder legs: the forwarder hub receiving the box. */
+    toHubId: uuid("to_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    courierId: uuid("courier_id").references(() => couriers.id, { onDelete: "set null" }),
+    courierName: text("courier_name"),
+    serviceName: text("service_name"),
+    /** Booking adapter: manual | sandbox | a real provider id. */
+    provider: text("provider").notNull().default("manual"),
+    bookingRef: text("booking_ref"),
+    trackingNumber: text("tracking_number"),
+    trackingUrl: text("tracking_url"),
+    weightG: integer("weight_g"),
+    lengthCm: numeric("length_cm"),
+    widthCm: numeric("width_cm"),
+    heightCm: numeric("height_cm"),
+    volumetricWeightG: integer("volumetric_weight_g"),
+    chargeableWeightG: integer("chargeable_weight_g"),
+    /** What the rate card says this box costs Wahbayaan (PKR). Null = pending. */
+    rateCostPkr: money("rate_cost_pkr"),
+    /** Snapshot for the commercial invoice / packing list. */
+    documentItems: jsonb("document_items").$type<ShipmentDocItem[]>().notNull().default([]),
+    notes: text("notes"),
+    createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+    bookedAt: timestamp("booked_at", { withTimezone: true }),
+    shippedAt: timestamp("shipped_at", { withTimezone: true }),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("shipments_order_idx").on(t.orderId)],
+);
+
+export const shipmentItems = pgTable("shipment_items", {
+  id: id(),
+  shipmentId: uuid("shipment_id")
+    .notNull()
+    .references(() => shipments.id, { onDelete: "cascade" }),
+  orderItemId: uuid("order_item_id").references(() => orderItems.id, { onDelete: "cascade" }),
+  brandOrderItemId: uuid("brand_order_item_id").references(() => brandOrderItems.id, { onDelete: "cascade" }),
+  hubParcelId: uuid("hub_parcel_id").references(() => hubParcels.id, { onDelete: "set null" }),
+  qty: integer("qty").notNull(),
+});
+
+/**
+ * Extra charges after payment (a second box for a partial shipment, or a packed
+ * box that costs more than estimated). Never charged without the buyer's approval.
+ */
+export const fulfilmentQuotes = pgTable("fulfilment_quotes", {
+  id: id(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), // partial_shipment | final_weight
+  /** Buyer currency (the order's currency). */
+  amount: money("amount").notNull(),
+  currency: text("currency").notNull(),
+  note: text("note"),
+  status: fulfilmentQuoteStatus("status").notNull().default("pending"),
+  paymentRef: text("payment_ref"),
+  createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  respondedAt: timestamp("responded_at", { withTimezone: true }),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  createdAt: createdAt(),
+});
+
+export type ReturnItem = { orderItemId?: string | null; brandOrderItemId?: string | null; title: string; qty: number };
+
+export const returnRequests = pgTable(
+  "return_requests",
+  {
+    id: id(),
+    number: text("number").notNull().unique(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    vendorOrderId: uuid("vendor_order_id").references(() => vendorOrders.id, { onDelete: "set null" }),
+    items: jsonb("items").$type<ReturnItem[]>().notNull().default([]),
+    reason: text("reason").notNull(),
+    description: text("description").notNull(),
+    photos: jsonb("photos").$type<string[]>().notNull().default([]),
+    status: returnStatus("status").notNull().default("requested"),
+    /** Where the item goes back to: the seller (domestic), the origin hub, or a forwarder. */
+    destination: text("destination").notNull(), // seller | hub | forwarder
+    returnHubId: uuid("return_hub_id").references(() => hubs.id, { onDelete: "set null" }),
+    courier: text("courier"),
+    trackingNumber: text("tracking_number"),
+    refundId: uuid("refund_id"),
+    staffNote: text("staff_note"),
+    decidedById: uuid("decided_by_id").references(() => users.id, { onDelete: "set null" }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    receivedAt: timestamp("received_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("return_requests_order_idx").on(t.orderId)],
+);
+
 // ── Cross-border rates (business data; pending until supplied) ──────────────
 
 export const fxRates = pgTable("fx_rates", {
@@ -1320,6 +1861,8 @@ export const emailOutbox = pgTable("email_outbox", {
   subject: text("subject").notNull(),
   body: text("body").notNull(),
   template: text("template"),
+  /** Optional Reply-To (brand outreach uses the sender's address). */
+  replyTo: text("reply_to"),
   status: text("status").notNull().default("queued"), // queued | sent | failed | logged
   error: text("error"),
   createdAt: createdAt(),
@@ -1348,6 +1891,81 @@ export const adminNotes = pgTable("admin_notes", {
   body: text("body").notNull(),
   authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: createdAt(),
+});
+
+// ── Visitor statistics & proof of consent ───────────────────────────────────
+// Rows are written only after the visitor allowed "Statistics" in the cookie
+// banner (the server re-checks the consent cookie). No raw IP is stored: visits
+// carry a coarse location, consent records an IP shortened to /24 (IPv6 /48).
+
+export const analyticsVisits = pgTable(
+  "analytics_visits",
+  {
+    id: id(),
+    consentId: text("consent_id").notNull(),
+    /** Value of the 30-minute `wb_visit` cookie. */
+    visitKey: text("visit_key").notNull().unique(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    landingPath: text("landing_path").notNull(),
+    referrer: text("referrer"),
+    countryCode: text("country_code"),
+    country: text("country"),
+    region: text("region"),
+    city: text("city"),
+    latitude: doublePrecision("latitude"),
+    longitude: doublePrecision("longitude"),
+    device: text("device"),
+    browser: text("browser"),
+    os: text("os"),
+    screen: text("screen"),
+    language: text("language"),
+    isDatacenter: boolean("is_datacenter").notNull().default(false),
+    pageCount: integer("page_count").notNull().default(0),
+  },
+  (t) => [
+    index("analytics_visits_last_seen_idx").on(t.lastSeenAt),
+    index("analytics_visits_started_idx").on(t.startedAt),
+    index("analytics_visits_consent_idx").on(t.consentId),
+  ],
+);
+
+export const analyticsPageViews = pgTable(
+  "analytics_page_views",
+  {
+    id: id(),
+    visitId: uuid("visit_id")
+      .notNull()
+      .references(() => analyticsVisits.id, { onDelete: "cascade" }),
+    path: text("path").notNull(),
+    title: text("title"),
+    referrer: text("referrer"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("analytics_page_views_visit_idx").on(t.visitId), index("analytics_page_views_created_idx").on(t.createdAt)],
+);
+
+export const consentRecords = pgTable(
+  "consent_records",
+  {
+    id: id(),
+    consentId: text("consent_id").notNull(),
+    /** accept_all | essentials | custom | revoke */
+    decision: text("decision").notNull(),
+    categories: jsonb("categories").notNull(),
+    rev: integer("rev").notNull(),
+    ipShort: text("ip_short"),
+    userAgent: text("user_agent"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("consent_records_created_idx").on(t.createdAt), index("consent_records_consent_idx").on(t.consentId)],
+);
+
+/** IP-location lookups, cached for 24 hours. Keyed by a salted hash, never the IP. */
+export const ipGeoCache = pgTable("ip_geo_cache", {
+  ipHash: text("ip_hash").primaryKey(),
+  data: jsonb("data").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // ── Relations (for the relational query API) ────────────────────────────────
@@ -1415,6 +2033,11 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   payments: many(payments),
   refunds: many(refunds),
   disputes: many(disputes),
+  fulfilment: one(orderFulfilments),
+  hubParcels: many(hubParcels),
+  shipments: many(shipments),
+  fulfilmentQuotes: many(fulfilmentQuotes),
+  returnRequests: many(returnRequests),
 }));
 
 export const vendorOrdersRelations = relations(vendorOrders, ({ one, many }) => ({
@@ -1556,7 +2179,96 @@ export const brandFulfilmentsRelations = relations(brandFulfilments, ({ one }) =
   brand: one(brands, { fields: [brandFulfilments.brandId], references: [brands.id] }),
 }));
 
+export const hubsRelations = relations(hubs, ({ one, many }) => ({
+  onwardCourier: one(couriers, { fields: [hubs.onwardCourierId], references: [couriers.id] }),
+  parcels: many(hubParcels),
+}));
+
+export const orderFulfilmentsRelations = relations(orderFulfilments, ({ one }) => ({
+  order: one(orders, { fields: [orderFulfilments.orderId], references: [orders.id] }),
+  hub: one(hubs, { fields: [orderFulfilments.hubId], references: [hubs.id] }),
+}));
+
+export const hubParcelsRelations = relations(hubParcels, ({ one }) => ({
+  hub: one(hubs, { fields: [hubParcels.hubId], references: [hubs.id] }),
+  order: one(orders, { fields: [hubParcels.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [hubParcels.vendorOrderId], references: [vendorOrders.id] }),
+  brandFulfilment: one(brandFulfilments, { fields: [hubParcels.brandFulfilmentId], references: [brandFulfilments.id] }),
+  shipment: one(shipments, { fields: [hubParcels.shipmentId], references: [shipments.id] }),
+}));
+
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  order: one(orders, { fields: [shipments.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [shipments.vendorOrderId], references: [vendorOrders.id] }),
+  fromHub: one(hubs, { fields: [shipments.fromHubId], references: [hubs.id] }),
+  items: many(shipmentItems),
+}));
+
+export const shipmentItemsRelations = relations(shipmentItems, ({ one }) => ({
+  shipment: one(shipments, { fields: [shipmentItems.shipmentId], references: [shipments.id] }),
+  orderItem: one(orderItems, { fields: [shipmentItems.orderItemId], references: [orderItems.id] }),
+  hubParcel: one(hubParcels, { fields: [shipmentItems.hubParcelId], references: [hubParcels.id] }),
+}));
+
+export const fulfilmentQuotesRelations = relations(fulfilmentQuotes, ({ one }) => ({
+  order: one(orders, { fields: [fulfilmentQuotes.orderId], references: [orders.id] }),
+}));
+
+export const returnRequestsRelations = relations(returnRequests, ({ one }) => ({
+  order: one(orders, { fields: [returnRequests.orderId], references: [orders.id] }),
+  vendorOrder: one(vendorOrders, { fields: [returnRequests.vendorOrderId], references: [vendorOrders.id] }),
+  returnHub: one(hubs, { fields: [returnRequests.returnHubId], references: [hubs.id] }),
+}));
+
 export const brandAlertsRelations = relations(brandAlerts, ({ one }) => ({
   brand: one(brands, { fields: [brandAlerts.brandId], references: [brands.id] }),
   product: one(brandProducts, { fields: [brandAlerts.productId], references: [brandProducts.id] }),
+}));
+
+export const analyticsVisitsRelations = relations(analyticsVisits, ({ many }) => ({
+  pageViews: many(analyticsPageViews),
+}));
+
+export const analyticsPageViewsRelations = relations(analyticsPageViews, ({ one }) => ({
+  visit: one(analyticsVisits, { fields: [analyticsPageViews.visitId], references: [analyticsVisits.id] }),
+}));
+
+export const brandProfilesRelations = relations(brandProfiles, ({ one }) => ({
+  brand: one(brands, { fields: [brandProfiles.brandId], references: [brands.id] }),
+}));
+
+export const brandSellerApplicationsRelations = relations(brandSellerApplications, ({ one, many }) => ({
+  brand: one(brands, { fields: [brandSellerApplications.brandId], references: [brands.id] }),
+  acceptances: many(brandTermsAcceptances),
+}));
+
+export const brandTermsAcceptancesRelations = relations(brandTermsAcceptances, ({ one }) => ({
+  application: one(brandSellerApplications, { fields: [brandTermsAcceptances.applicationId], references: [brandSellerApplications.id] }),
+  brand: one(brands, { fields: [brandTermsAcceptances.brandId], references: [brands.id] }),
+}));
+
+export const brandMembersRelations = relations(brandMembers, ({ one }) => ({
+  brand: one(brands, { fields: [brandMembers.brandId], references: [brands.id] }),
+  user: one(users, { fields: [brandMembers.userId], references: [users.id] }),
+}));
+
+export const affiliateProgrammesRelations = relations(affiliateProgrammes, ({ many }) => ({
+  products: many(affiliateProducts),
+}));
+
+export const affiliateProductsRelations = relations(affiliateProducts, ({ one }) => ({
+  programme: one(affiliateProgrammes, { fields: [affiliateProducts.programmeId], references: [affiliateProgrammes.id] }),
+}));
+
+export const outreachContactsRelations = relations(outreachContacts, ({ one, many }) => ({
+  brand: one(brands, { fields: [outreachContacts.brandId], references: [brands.id] }),
+  directoryEntry: one(brandDirectoryEntries, { fields: [outreachContacts.directoryEntryId], references: [brandDirectoryEntries.id] }),
+  owner: one(users, { fields: [outreachContacts.ownerId], references: [users.id] }),
+  messages: many(outreachMessages),
+}));
+
+export const outreachMessagesRelations = relations(outreachMessages, ({ one }) => ({
+  contact: one(outreachContacts, { fields: [outreachMessages.contactId], references: [outreachContacts.id] }),
+  template: one(outreachTemplates, { fields: [outreachMessages.templateId], references: [outreachTemplates.id] }),
+  actor: one(users, { fields: [outreachMessages.actorUserId], references: [users.id] }),
 }));

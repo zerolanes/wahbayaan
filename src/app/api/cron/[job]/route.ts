@@ -2,6 +2,8 @@ import { runAutoReleases } from "@/lib/commerce/orders";
 import { refreshFxFromProvider } from "@/lib/commerce/fx-provider";
 import { audit } from "@/lib/audit";
 import { runScheduledBrandSyncs } from "@/lib/brands/sync";
+import { runCleanup, summarizeCleanup } from "@/lib/analytics/store";
+import { getSetting, setSetting } from "@/lib/settings";
 
 /**
  * Scheduled jobs. Call with `Authorization: Bearer $CRON_SECRET` (Vercel Cron
@@ -10,11 +12,28 @@ import { runScheduledBrandSyncs } from "@/lib/brands/sync";
  *   /api/cron/fx-refresh   — pull live exchange rates from the provider
  *   /api/cron/brands       — sync Pakistani Brands catalogues whose sync is on
  *                            (each brand's recorded permission is re-checked)
+ *   /api/cron/analytics-cleanup — visitor statistics retention (also runs by
+ *                            itself at most once a day from the ingest route,
+ *                            so it works on hosts without a scheduler)
+ *
+ * `?everyHours=N` skips the job when it last ran less than N hours ago. The
+ * in-app scheduler (src/instrumentation-node.ts) uses it so a redeploy doesn't
+ * re-run the daily jobs.
  */
+const JOBS = new Set(["auto-release", "fx-refresh", "brands", "analytics-cleanup"]);
+
 export async function GET(req: Request, ctx: RouteContext<"/api/cron/[job]">) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return new Response("Unauthorized", { status: 401 });
   const { job } = await ctx.params;
+  if (!JOBS.has(job)) return new Response("Unknown job", { status: 404 });
+  const everyHours = Number(new URL(req.url).searchParams.get("everyHours") ?? 0);
+  const lastRun = await getSetting("cron_last_run");
+  const now = new Date();
+  if (everyHours > 0 && lastRun[job] && now.getTime() - new Date(lastRun[job]).getTime() < everyHours * 3_600_000 - 60_000) {
+    return Response.json({ skipped: true, lastRun: lastRun[job] });
+  }
+  await setSetting("cron_last_run", { ...lastRun, [job]: now.toISOString() });
   if (job === "auto-release") {
     const released = await runAutoReleases();
     if (released) await audit({ actorUserId: null, action: "cron.auto_release", entity: "orders", summary: `Auto-released funds for ${released} orders` });
@@ -28,6 +47,13 @@ export async function GET(req: Request, ctx: RouteContext<"/api/cron/[job]">) {
   if (job === "brands") {
     const results = await runScheduledBrandSyncs();
     return Response.json({ brands: results.length, results });
+  }
+  if (job === "analytics-cleanup") {
+    const result = await runCleanup(now);
+    const summary = summarizeCleanup(result);
+    await setSetting("analytics_maintenance", { ...(await getSetting("analytics_maintenance")), lastCleanupAt: now.toISOString(), lastSummary: summary });
+    await audit({ actorUserId: null, action: "cron.analytics_cleanup", entity: "analytics", summary: `Visitor statistics cleanup: ${summary}`, data: result });
+    return Response.json(result);
   }
   return new Response("Unknown job", { status: 404 });
 }

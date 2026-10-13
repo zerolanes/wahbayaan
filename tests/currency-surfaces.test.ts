@@ -15,7 +15,13 @@ function files(dir: string): string[] {
 }
 
 const root = path.resolve(__dirname, "..");
-const sellerSurfaces = [...files(path.join(root, "src/app/seller")), ...files(path.join(root, "src/components/seller"))];
+const sellerSurfaces = [
+  ...files(path.join(root, "src/app/seller")),
+  ...files(path.join(root, "src/components/seller")),
+  // Self-listed brands' portal: PKR only, like the artisan dashboard.
+  ...files(path.join(root, "src/app/brand-portal")),
+  ...files(path.join(root, "src/components/brand-portal")),
+];
 const buyerSurfaces = [
   ...files(path.join(root, "src/app/(store)")),
   ...files(path.join(root, "src/app/(home)")),
@@ -48,12 +54,21 @@ describe("currency surfaces", () => {
     expect(offenders).toEqual([]);
   });
 
+  it("the brand portal exists and is covered by the seller rule", () => {
+    const portal = [...files(path.join(root, "src/app/brand-portal")), ...files(path.join(root, "src/components/brand-portal"))];
+    expect(portal.length).toBeGreaterThan(0);
+    for (const f of portal) expect(sellerSurfaces).toContain(f);
+  });
+
   it("admin brand pages show PKR or labelled order currency, never the buyer context", () => {
     const adminBrand = [
       ...files(path.join(root, "src/app/admin/brands")),
       ...files(path.join(root, "src/app/admin/brand-products")),
       ...files(path.join(root, "src/app/admin/brand-requests")),
       ...files(path.join(root, "src/components/admin/brands")),
+      ...files(path.join(root, "src/app/admin/brand-directory")),
+      ...files(path.join(root, "src/app/admin/affiliates")),
+      ...files(path.join(root, "src/app/admin/applications/brand")),
     ];
     expect(adminBrand.length).toBeGreaterThan(0);
     const offenders = adminBrand.filter((f) => /buyer-price|getBuyerContext|buyer-context/.test(fs.readFileSync(f, "utf8")));

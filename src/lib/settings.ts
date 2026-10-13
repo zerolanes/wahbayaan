@@ -7,6 +7,22 @@ import type { GiftWrapSetting, HandlingFeeSetting } from "@/lib/commerce/landed-
 import { DEFAULT_BRAND_MARGIN, type BrandMarginSetting } from "@/lib/brands/margin";
 import { DEFAULT_DOMESTIC_DELIVERY, type DomesticDeliverySetting } from "@/lib/brands/domestic";
 import { DEFAULT_PAYMENT_METHODS, type PaymentMethodsSetting } from "@/lib/payments/methods";
+import { DEFAULT_CONSENT_BANNER, type ConsentBannerSetting } from "@/lib/consent/banner-settings";
+import { DEFAULT_ANALYTICS, type AnalyticsSetting } from "@/lib/analytics/settings-shape";
+import type { SocialLinks } from "@/lib/db/schema";
+import { DEFAULT_FULFILMENT, type FulfilmentSetting } from "@/lib/fulfilment/settings";
+
+/** Brand outreach sender (admin only). Used by src/lib/outreach; kept here so settings never import outreach code. */
+export type OutreachSenderSetting = {
+  /** Who signs the email ({sender_name}). Sending is blocked until it is set. */
+  senderName: string | null;
+  senderPhone: string | null;
+  /** Replies go here (Reply-To). */
+  replyTo: string | null;
+  /** Business identity line in the footer, e.g. "Lahore, Pakistan". */
+  businessAddress: string | null;
+};
+const DEFAULT_OUTREACH_SENDER: OutreachSenderSetting = { senderName: null, senderPhone: null, replyTo: null, businessAddress: null };
 
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
@@ -50,6 +66,24 @@ export type SettingsShape = {
   domestic_delivery: DomesticDeliverySetting;
   /** Card, JazzCash, Easypaisa — non-secret config only; secrets are env vars. */
   payment_methods: PaymentMethodsSetting;
+  /** Cookie banner look, texts, layout preset and the floating privacy button. */
+  consent_banner: ConsentBannerSetting;
+  /** Visitor statistics: consent version, IP-location provider, retention. */
+  analytics: AnalyticsSetting;
+  /** IP-location API keys. Server-only: never passed to a client component; the admin shows set / not set. */
+  analytics_secrets: { ipinfoToken: string | null; ip2locationKey: string | null };
+  /** Last daily cleanup run (written by the ingest route or /api/cron/analytics-cleanup). */
+  analytics_maintenance: { lastCleanupAt: string | null; lastSummary: string | null };
+  /** When each scheduled job last ran (ISO), so the in-app scheduler doesn't re-run daily jobs on every deploy. */
+  cron_last_run: Record<string, string>;
+  /** Admin visitor map: optional Google Maps browser key (public by design — restrict it by HTTP referrer). */
+  visitor_map: { googleMapsKey: string | null };
+  /** Site social profiles (footer, mobile menu). Only networks with a URL are shown. */
+  social_links: SocialLinks;
+  /** Hubs, consolidation, courier booking adapters (Admin → Hubs). */
+  fulfilment: FulfilmentSetting;
+  /** Brand outreach sender: fills {sender_name} / {sender_phone}, the Reply-To and the email footer. */
+  outreach: OutreachSenderSetting;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -91,6 +125,15 @@ export const SETTING_DEFAULTS: SettingsShape = {
   brand_margin: DEFAULT_BRAND_MARGIN,
   domestic_delivery: DEFAULT_DOMESTIC_DELIVERY,
   payment_methods: DEFAULT_PAYMENT_METHODS,
+  consent_banner: DEFAULT_CONSENT_BANNER,
+  analytics: DEFAULT_ANALYTICS,
+  analytics_secrets: { ipinfoToken: null, ip2locationKey: null },
+  analytics_maintenance: { lastCleanupAt: null, lastSummary: null },
+  cron_last_run: {},
+  visitor_map: { googleMapsKey: null },
+  social_links: {},
+  fulfilment: DEFAULT_FULFILMENT,
+  outreach: DEFAULT_OUTREACH_SENDER,
 };
 
 export type SettingKey = keyof SettingsShape;

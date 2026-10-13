@@ -1,8 +1,8 @@
 import {
-  Activity, BadgePercent, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
-  HandCoins, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Mail, Megaphone, MessagesSquare, Package,
+  Activity, BadgePercent, ChartLine, Cookie, Radio, Route, ShieldCheck, SlidersHorizontal, BarChart3, BookOpen, Boxes, CircleDollarSign, ClipboardCheck, CreditCard, FileText, Flag, Gauge, Gift, Globe2, MapPinned,
+  HandCoins, Handshake, Home, Image as ImageIcon, Inbox, Landmark, Layers, LayoutDashboard, Link2, Mail, Megaphone, MessagesSquare, Package,
   PackageSearch, Palette, Receipt, Scale, ScrollText, Settings, Shield, ShieldAlert, Ship, Sparkles, Star, Store, Tags,
-  Truck, UserCheck, Users, Wallet, Waypoints, Wrench,
+  Truck, UserCheck, Users, Wallet, Waypoints, Wrench, Warehouse, Undo2, Building,
 } from "lucide-react";
 import type { NavGroup } from "@/components/dashboard/nav-types";
 
@@ -15,6 +15,10 @@ export type AdminCounts = {
   newMessages: number;
   newRequests: number;
   brandQueue: number;
+  brandApplications: number;
+  hubInbound: number;
+  openReturns: number;
+  outreachDue: number;
 };
 
 /** Company admin navigation. Items are hidden when the staff role lacks the permission. */
@@ -58,6 +62,10 @@ export function adminNav(c: AdminCounts): NavGroup[] {
         { href: "/admin/brands", label: "Brands", icon: <Tags />, permission: "brands.view" },
         { href: "/admin/brand-products", label: "Brand products", icon: <Boxes />, permission: "brands.view" },
         { href: "/admin/brand-requests", label: "Brand orders & requests", icon: <PackageSearch />, permission: "orders.view", badge: c.brandQueue },
+        { href: "/admin/applications?type=brand", label: "Brand applications", icon: <UserCheck />, permission: "vendors.view", badge: c.brandApplications },
+        { href: "/admin/brand-directory", label: "Brand directory", icon: <BookOpen />, permission: "brands.view" },
+        { href: "/admin/outreach", label: "Brand outreach", icon: <Handshake />, permission: "outreach.view", badge: c.outreachDue },
+        { href: "/admin/affiliates", label: "Affiliate programmes", icon: <Link2 />, permission: "brands.view" },
         { href: "/admin/rates/service-fee", label: "Service fee", icon: <BadgePercent />, permission: "rates.view" },
       ],
     },
@@ -67,6 +75,14 @@ export function adminNav(c: AdminCounts): NavGroup[] {
         { href: "/admin/couriers", label: "Couriers & rate cards", icon: <Truck />, permission: "couriers.manage" },
         { href: "/admin/rates/domestic", label: "Domestic zones", icon: <MapPinned />, permission: "couriers.manage" },
         { href: "/admin/payment-methods", label: "Payment methods", icon: <CreditCard />, permission: "payments.manage" },
+      ],
+    },
+    {
+      label: "Fulfilment",
+      items: [
+        { href: "/admin/hub", label: "Hub operations", icon: <Warehouse />, permission: "hub.operate", badge: c.hubInbound },
+        { href: "/admin/returns", label: "Returns", icon: <Undo2 />, permission: "orders.manage", badge: c.openReturns },
+        { href: "/admin/hubs", label: "Hubs & booking", icon: <Building />, permission: "hubs.manage" },
       ],
     },
     {
@@ -113,6 +129,12 @@ export function adminNav(c: AdminCounts): NavGroup[] {
       label: "Insights",
       items: [
         { href: "/admin/reports", label: "Reports", icon: <BarChart3 />, permission: "reports.view" },
+        { href: "/admin/analytics", label: "Visitor statistics", icon: <ChartLine />, exact: true, permission: "analytics.view" },
+        { href: "/admin/analytics/live", label: "Live now", icon: <Radio />, permission: "analytics.view" },
+        { href: "/admin/analytics/visits", label: "Visitor journeys", icon: <Route />, permission: "analytics.view" },
+        { href: "/admin/analytics/consent", label: "Consent log", icon: <ShieldCheck />, permission: "analytics.view" },
+        { href: "/admin/privacy/banner", label: "Cookie banner", icon: <Cookie />, permission: "analytics.manage" },
+        { href: "/admin/analytics/settings", label: "Privacy & tracking", icon: <SlidersHorizontal />, permission: "analytics.manage" },
         { href: "/admin/health", label: "System health", icon: <Gauge />, permission: "settings.manage" },
       ],
     },

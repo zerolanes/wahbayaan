@@ -38,6 +38,12 @@ export const PERMISSIONS = {
   "brands.permission": "Record or revoke a brand's permission and set the partnership status",
   "couriers.manage": "Couriers, service levels, domestic zones and rate cards",
   "payments.manage": "Payment methods (card, JazzCash, Easypaisa) — non-secret settings only",
+  "analytics.view": "Visitor statistics, live visitors, journeys, consent log and their CSV exports",
+  "analytics.manage": "Cookie banner, privacy & tracking settings, consent version, deleting visitor data",
+  "outreach.view": "Brand outreach: contacts (emails, phone numbers), pipeline and message history",
+  "outreach.manage": "Brand outreach: import contacts, edit templates and sender details, send outreach emails",
+  "hub.operate": "Hub operations: receive and QC parcels, storage, consolidation decisions, pack & ship",
+  "hubs.manage": "Hubs, consolidation settings and courier booking adapters",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -63,6 +69,8 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
       "reports.view",
       "brands.view",
       "couriers.manage",
+      "analytics.view",
+      "hub.operate",
     ],
   },
   {
@@ -104,7 +112,7 @@ export const ROLE_PRESETS: { name: string; description: string; permissions: Per
   {
     name: "Content editor",
     description: "Journal, pages, collections and homepage",
-    permissions: ["dashboard.view", "content.manage", "marketing.manage", "media.manage", "products.view", "categories.manage"],
+    permissions: ["dashboard.view", "content.manage", "marketing.manage", "media.manage", "products.view", "categories.manage", "analytics.view"],
   },
   {
     name: "Support",

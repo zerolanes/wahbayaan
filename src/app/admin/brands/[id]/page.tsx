@@ -12,7 +12,9 @@ import {
   updateSourceAction,
   uploadFeedAction,
 } from "@/app/actions/admin/brands";
+import { saveBrandProfileAction } from "@/app/actions/admin/brand-profiles";
 import { ActionButton, ActionForm, SubmitButton } from "@/components/admin/action-form";
+import { ImageInput } from "@/components/admin/client-bits";
 import { FieldRow, SelectInput, TextArea, TextInput, Toggle } from "@/components/admin/controls";
 import { SwitchSubmit } from "@/components/admin/switch";
 import { DemoBadge, DetailGrid, KV, Panel, StatusBadge } from "@/components/admin/ui";
@@ -22,7 +24,8 @@ import { can, requireStaff } from "@/lib/auth/session";
 import { canEnableSync, catalogueDisplayGate, hasRecordedPermission, PARTNERSHIP_LABEL } from "@/lib/brands/permission";
 import { sizeGuideToText } from "@/lib/brands/size-guide";
 import { db } from "@/lib/db/client";
-import { brandAlerts, brands, brandSyncRuns, users } from "@/lib/db/schema";
+import { brandAlerts, brandMembers, brandProfiles, brands, brandSyncRuns, users } from "@/lib/db/schema";
+import { SOCIAL_NETWORKS } from "@/lib/social";
 import { query } from "@/lib/admin/sql";
 import { formatDate, formatDateTime } from "@/lib/utils/format";
 
@@ -32,9 +35,16 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
   const user = await requireStaff("brands.view");
   const { id } = await props.params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  // Brand outreach links here with a suggested permission note once a brand agrees; staff edit it before recording.
+  const suggested = (await props.searchParams).permissionNote;
+  const suggestedNote = typeof suggested === "string" ? suggested.slice(0, 2000) : null;
   const d = await db();
   const brand = await d.query.brands.findFirst({ where: eq(brands.id, id), with: { source: true } });
   if (!brand) notFound();
+  const [profile, members] = await Promise.all([
+    d.query.brandProfiles.findFirst({ where: eq(brandProfiles.brandId, id) }),
+    d.select({ name: users.name, email: users.email }).from(brandMembers).innerJoin(users, eq(users.id, brandMembers.userId)).where(eq(brandMembers.brandId, id)),
+  ]);
   const [runs, grantedBy, counts, alerts] = await Promise.all([
     d.select().from(brandSyncRuns).where(eq(brandSyncRuns.brandId, id)).orderBy(desc(brandSyncRuns.startedAt)).limit(20),
     brand.permissionGrantedById ? d.query.users.findFirst({ where: eq(users.id, brand.permissionGrantedById), columns: { name: true, email: true } }) : null,
@@ -76,7 +86,12 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
       <DetailGrid
         main={
           <>
-            <Panel title="Permission & partnership" description="Who gave permission, when, and a note — every change is audited. Sync and the public catalogue both need it.">
+            <Panel id="permission" className="scroll-mt-24" title="Permission & partnership" description="Who gave permission, when, and a note — every change is audited. Sync and the public catalogue both need it.">
+              {suggestedNote && !permitted ? (
+                <Notice tone="indigo" title="From brand outreach" className="mb-4">
+                  The brand agreed in outreach. The note below is a suggestion — check it, add the date and evidence, then record the permission. Authorising the partnership stays a separate step.
+                </Notice>
+              ) : null}
               {permitted ? (
                 <KV
                   items={[
@@ -99,7 +114,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                     <input type="hidden" name="id" value={brand.id} />
                     <p className="text-sm font-semibold text-umber-900">{permitted ? "Update the permission record" : "Record permission"}</p>
                     <FieldRow label="Who granted it and how (note)" htmlFor="note">
-                      <TextArea id="note" name="note" required placeholder="e.g. Email from the brand's e-commerce head, Ms X, allowing us to list and sync their catalogue." defaultValue={brand.permissionNote ?? ""} />
+                      <TextArea id="note" name="note" required placeholder="e.g. Email from the brand's e-commerce head, Ms X, allowing us to list and sync their catalogue." defaultValue={brand.permissionNote ?? (permitted ? "" : (suggestedNote ?? ""))} />
                     </FieldRow>
                     <div className="grid grid-cols-2 gap-3">
                       <FieldRow label="Date given" htmlFor="grantedOn">
@@ -134,6 +149,39 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                     ) : null}
                   </div>
                 </div>
+              ) : null}
+            </Panel>
+
+            <Panel
+              title="Banner and social links"
+              description={
+                profile?.selfListed
+                  ? `Self-listed brand — managed in its brand portal by ${members.map((m) => `${m.name} (${m.email})`).join(", ") || "its account"}. Edit here only to correct something.`
+                  : "Shown on the public brand page. Only links with a URL appear."
+              }
+            >
+              {canManage ? (
+                <ActionForm action={saveBrandProfileAction} className="space-y-3" key={profile?.updatedAt.toISOString() ?? "none"}>
+                  <input type="hidden" name="id" value={brand.id} />
+                  <div className="flex flex-wrap items-center gap-4">
+                    {profile?.bannerUrl ? (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={profile.bannerUrl} alt={`${brand.name} banner`} className="h-16 w-40 rounded-lg object-cover ring-1 ring-umber-200" />
+                        <Toggle name="removeBanner" label="Remove banner" />
+                      </>
+                    ) : null}
+                    <ImageInput name="banner" label={profile?.bannerUrl ? "Replace banner" : "Banner photo"} />
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {SOCIAL_NETWORKS.map((n) => (
+                      <FieldRow key={n.key} label={n.label} htmlFor={`bs-${n.key}`}>
+                        <TextInput id={`bs-${n.key}`} name={`social_${n.key}`} defaultValue={profile?.socials[n.key] ?? ""} placeholder={n.placeholder} />
+                      </FieldRow>
+                    ))}
+                  </div>
+                  <SubmitButton variant="outline">Save banner and links</SubmitButton>
+                </ActionForm>
               ) : null}
             </Panel>
 

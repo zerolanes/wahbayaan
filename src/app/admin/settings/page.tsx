@@ -10,6 +10,8 @@ import {
   saveReferralSettingsAction,
   saveSeoSettingsAction,
   saveSiteSettingsAction,
+  saveVisitorMapSettingsAction,
+  saveSocialLinksAction,
 } from "@/app/actions/admin/settings";
 import { ActionForm, SubmitButton } from "@/components/admin/action-form";
 import { FieldRow, SelectInput, TextArea, TextInput, Toggle } from "@/components/admin/controls";
@@ -19,6 +21,7 @@ import { requireStaff } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
 import { auditLog, users, vendors } from "@/lib/db/schema";
 import { getSettings, type SettingKey } from "@/lib/settings";
+import { SOCIAL_NETWORKS } from "@/lib/social";
 import { minorToInput } from "@/lib/admin/money";
 import { formatDateTime, timeAgo } from "@/lib/utils/format";
 
@@ -26,12 +29,14 @@ export const metadata = { title: "Settings" };
 
 const SECTIONS = [
   { id: "store", label: "Store info", keys: ["site"] },
+  { id: "social", label: "Social links", keys: ["social_links"] },
   { id: "seo", label: "Search & sharing", keys: ["seo"] },
   { id: "home", label: "Homepage hero", keys: ["home"] },
   { id: "protection", label: "Escrow & buyer protection", keys: ["escrow", "buyer_protection"] },
   { id: "payouts", label: "Payout schedule", keys: ["payouts"] },
   { id: "programmes", label: "Referrals & loyalty", keys: ["referral", "loyalty"] },
   { id: "maintenance", label: "Maintenance mode", keys: ["maintenance"] },
+  { id: "visitor-map", label: "Visitor map", keys: ["visitor_map"] },
 ] as const;
 
 const KEYS = [...new Set(SECTIONS.flatMap((s) => s.keys))] as SettingKey[];
@@ -45,7 +50,7 @@ export default async function SettingsPage() {
   const canRates = user.permissions.has("rates.manage");
   const d = await db();
   const [s, allVendors, history] = await Promise.all([
-    getSettings(["site", "seo", "home", "escrow", "buyer_protection", "payouts", "referral", "loyalty", "maintenance"]),
+    getSettings(["site", "social_links", "seo", "home", "escrow", "buyer_protection", "payouts", "referral", "loyalty", "maintenance", "visitor_map"]),
     d.select({ id: vendors.id, name: vendors.displayName, status: vendors.status }).from(vendors).orderBy(asc(vendors.displayName)),
     d
       .select({ entityId: auditLog.entityId, createdAt: auditLog.createdAt, actor: users.name, summary: auditLog.summary })
@@ -102,14 +107,30 @@ export default async function SettingsPage() {
                 <FieldRow label="WhatsApp" hint="International format, e.g. +92 300 1234567">
                   <TextInput name="whatsapp" defaultValue={s.site.whatsapp ?? ""} />
                 </FieldRow>
-                <FieldRow label="Instagram URL">
-                  <TextInput name="instagram" defaultValue={s.site.instagram ?? ""} placeholder="https://instagram.com/…" />
-                </FieldRow>
-                <FieldRow label="Pinterest URL">
-                  <TextInput name="pinterest" defaultValue={s.site.pinterest ?? ""} placeholder="https://pinterest.com/…" />
-                </FieldRow>
                 <div className="md:col-span-2">
                   <SubmitButton>Save store info</SubmitButton>
+                </div>
+              </ActionForm>
+            </Panel>
+          </section>
+
+          <section id="social" className="scroll-mt-24">
+            <Panel
+              title={sec("social").label}
+              description="Monochrome icons in the storefront footer and mobile menu. Only networks with a link are shown. Plain links — no embeds or tracking scripts."
+              action={lastSaved(sec("social").keys)}
+            >
+              <ActionForm action={saveSocialLinksAction} className="grid gap-4 md:grid-cols-2">
+                {SOCIAL_NETWORKS.map((n) => {
+                  const legacy = n.key === "instagram" ? s.site.instagram : n.key === "pinterest" ? s.site.pinterest : null;
+                  return (
+                    <FieldRow key={n.key} label={n.label} htmlFor={`social-${n.key}`}>
+                      <TextInput id={`social-${n.key}`} name={n.key} defaultValue={s.social_links[n.key] ?? (Object.keys(s.social_links).length ? "" : (legacy ?? ""))} placeholder={n.placeholder} />
+                    </FieldRow>
+                  );
+                })}
+                <div className="md:col-span-2">
+                  <SubmitButton>Save social links</SubmitButton>
                 </div>
               </ActionForm>
             </Panel>
@@ -292,6 +313,17 @@ export default async function SettingsPage() {
                   <TextInput name="message" defaultValue={s.maintenance.message} required />
                 </FieldRow>
                 <SubmitButton variant={s.maintenance.enabled ? "primary" : "outline"}>Save maintenance mode</SubmitButton>
+              </ActionForm>
+            </Panel>
+          </section>
+
+          <section id="visitor-map" className="scroll-mt-24">
+            <Panel title={sec("visitor-map").label} description="The visitor map uses its built-in world map unless a Google Maps key is saved." action={lastSaved(sec("visitor-map").keys)}>
+              <ActionForm action={saveVisitorMapSettingsAction} className="space-y-3">
+                <FieldRow label="Google Maps JavaScript API key" hint="A browser key: it is sent to staff browsers, so restrict it to this site's address in Google Cloud. Leave empty for the built-in map.">
+                  <TextInput name="googleMapsKey" defaultValue={s.visitor_map.googleMapsKey ?? ""} placeholder="AIza…" autoComplete="off" spellCheck={false} className="max-w-md font-mono" />
+                </FieldRow>
+                <SubmitButton>Save visitor map</SubmitButton>
               </ActionForm>
             </Panel>
           </section>

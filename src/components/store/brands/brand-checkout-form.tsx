@@ -13,7 +13,7 @@ export function BrandCheckoutForm({
   defaults,
   payment,
   submitLabel,
-  complete,
+  next,
 }: {
   country: string;
   countryName: string;
@@ -21,7 +21,8 @@ export function BrandCheckoutForm({
   defaults: { email: string; name: string };
   payment: PaymentOption[];
   submitLabel: string;
-  complete: boolean;
+  /** What happens after submit: pay now, an emailed confirmed total, or either depending on the city's delivery rate. */
+  next: "pay" | "confirm" | "city";
 }) {
   const [state, action, pending] = useActionState(placeBrandOrderAction, null);
   const fe = state?.fieldErrors ?? {};
@@ -50,7 +51,12 @@ export function BrandCheckoutForm({
           {pending ? "Placing your order…" : submitLabel}
         </button>
         <p className="text-center text-xs text-umber-500">
-          {complete ? "You'll pay on the next step." : "Nothing is charged now — we'll email you the confirmed total to approve."} We order from the brand once you&apos;ve paid.
+          {next === "pay"
+            ? "You'll pay on the next step."
+            : next === "city"
+              ? "Delivery is priced from your city. No rate for it yet? Nothing is charged — we email you the total to approve."
+              : "Nothing is charged now — we'll email you the confirmed total to approve."}{" "}
+          We order from the brand once you&apos;ve paid.
         </p>
       </div>
     </form>
