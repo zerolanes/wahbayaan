@@ -55,9 +55,16 @@ export function Chip({ tone = "magenta", className, children }: { tone?: Tone; c
   return <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[0.02em]", CHIP[tone], className)}>{children}</span>;
 }
 
+/** Plain coloured label text (no pill); the inks pass AA on the page background. */
+const EYEBROW: Record<Tone, string> = {
+  magenta: "text-[var(--pc-magenta-ink)]",
+  teal: "text-[var(--pc-teal-ink)]",
+  saffron: "text-[var(--pc-saffron-ink)]",
+};
+
 export const TONES: Tone[] = ["magenta", "teal", "saffron"];
 
-/** Section head: eyebrow chip, display title, Urdu accent line, one short line and an optional action. */
+/** Section head: small plain label, display title, Urdu accent line, one short line and an optional action. */
 export function SectionHead({
   id,
   eyebrow,
@@ -82,8 +89,8 @@ export function SectionHead({
   return (
     <div className={cn("flex gap-x-6 gap-y-4", align === "center" ? "flex-col items-center text-center" : "flex-wrap items-end justify-between", className)}>
       <div className={cn("flex max-w-2xl flex-col", align === "center" ? "items-center" : "items-start")}>
-        {eyebrow ? <Chip tone={tone}>{eyebrow}</Chip> : null}
-        <h2 id={id} className={cn(s.display, "mt-3 text-[2rem] text-[var(--pc-ink)] sm:text-[2.5rem] lg:text-[2.75rem]")}>
+        {eyebrow ? <p className={cn("text-sm font-medium", EYEBROW[tone])}>{eyebrow}</p> : null}
+        <h2 id={id} className={cn(s.display, eyebrow ? "mt-1.5" : "", "text-[2rem] text-[var(--pc-ink)] sm:text-[2.5rem] lg:text-[2.75rem]")}>
           {title}
         </h2>
         {urdu ? (

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { HeroWordmark } from "@/components/store/hero/hero-wordmark";
 import { cn } from "@/lib/utils/cn";
-import { Chip, PhoolStrip, PhotoNeeded } from "./motifs";
+import { PhoolStrip, PhotoNeeded } from "./motifs";
 import s from "./pc.module.css";
 
 export type HeroSlide = {
@@ -95,8 +95,7 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
                       <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_50%_45%,#ffffff_0%,#fbf8f3_60%,#f4ede2_100%)]" />
                     </div>
                     <div className={cn(s.slideContent, "relative flex h-full flex-col items-center justify-center px-4 pb-16 text-center")}>
-                      <Chip tone="saffron">Handmade in Pakistan</Chip>
-                      <HeroWordmark className="mt-2 max-w-4xl" />
+                      <HeroWordmark className="max-w-4xl" />
                       <p className="-mt-1 text-xl font-medium tracking-[-0.015em] text-[var(--pc-ink)] sm:text-2xl">{slide.line}</p>
                       <Link
                         href={slide.cta.href}
@@ -114,7 +113,7 @@ export function PcHeroSlider({ slides, label }: { slides: HeroSlide[]; label: st
                       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(13_17_36/0.45),rgb(13_17_36/0.7))]" />
                     </div>
                     <div className={cn(s.slideContent, "relative flex h-full flex-col items-center justify-center px-6 pb-16 text-center text-white")}>
-                      {slide.eyebrow ? <span className="glass-dark rounded-full px-3 py-1.5 text-xs font-semibold tracking-[0.04em]">{slide.eyebrow}</span> : null}
+                      {slide.eyebrow ? <p className="text-sm font-medium text-white/80">{slide.eyebrow}</p> : null}
                       <h2 className={cn(s.display, "mt-4 text-[2.6rem] text-white sm:text-6xl lg:text-7xl")}>{slide.title}</h2>
                       <p className="mt-3 max-w-md text-lg text-white/90">{slide.line}</p>
                       <Link
