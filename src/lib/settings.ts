@@ -12,6 +12,18 @@ import { DEFAULT_ANALYTICS, type AnalyticsSetting } from "@/lib/analytics/settin
 import type { SocialLinks } from "@/lib/db/schema";
 import { DEFAULT_FULFILMENT, type FulfilmentSetting } from "@/lib/fulfilment/settings";
 
+/** Brand outreach sender (admin only). Used by src/lib/outreach; kept here so settings never import outreach code. */
+export type OutreachSenderSetting = {
+  /** Who signs the email ({sender_name}). Sending is blocked until it is set. */
+  senderName: string | null;
+  senderPhone: string | null;
+  /** Replies go here (Reply-To). */
+  replyTo: string | null;
+  /** Business identity line in the footer, e.g. "Lahore, Pakistan". */
+  businessAddress: string | null;
+};
+const DEFAULT_OUTREACH_SENDER: OutreachSenderSetting = { senderName: null, senderPhone: null, replyTo: null, businessAddress: null };
+
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
  * gift wrap price) default to `pending` because they need a real decision.
@@ -68,6 +80,8 @@ export type SettingsShape = {
   social_links: SocialLinks;
   /** Hubs, consolidation, courier booking adapters (Admin → Hubs). */
   fulfilment: FulfilmentSetting;
+  /** Brand outreach sender: fills {sender_name} / {sender_phone}, the Reply-To and the email footer. */
+  outreach: OutreachSenderSetting;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -116,6 +130,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   visitor_map: { googleMapsKey: null },
   social_links: {},
   fulfilment: DEFAULT_FULFILMENT,
+  outreach: DEFAULT_OUTREACH_SENDER,
 };
 
 export type SettingKey = keyof SettingsShape;

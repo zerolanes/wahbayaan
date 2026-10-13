@@ -44,9 +44,9 @@ export function DetailGrid({ main, side }: { main: ReactNode; side: ReactNode })
   );
 }
 
-export function Panel({ title, description, action, children, className, bodyClassName }: { title: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; bodyClassName?: string }) {
+export function Panel({ title, description, action, children, className, bodyClassName, id }: { title: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; bodyClassName?: string; id?: string }) {
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card id={id} className={cn("overflow-hidden", className)}>
       <CardHeader title={title} description={description} action={action} />
       <div className={cn("p-5", bodyClassName)}>{children}</div>
     </Card>

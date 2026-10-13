@@ -35,6 +35,9 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
   const user = await requireStaff("brands.view");
   const { id } = await props.params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  // Brand outreach links here with a suggested permission note once a brand agrees; staff edit it before recording.
+  const suggested = (await props.searchParams).permissionNote;
+  const suggestedNote = typeof suggested === "string" ? suggested.slice(0, 2000) : null;
   const d = await db();
   const brand = await d.query.brands.findFirst({ where: eq(brands.id, id), with: { source: true } });
   if (!brand) notFound();
@@ -83,7 +86,12 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
       <DetailGrid
         main={
           <>
-            <Panel title="Permission & partnership" description="Who gave permission, when, and a note — every change is audited. Sync and the public catalogue both need it.">
+            <Panel id="permission" className="scroll-mt-24" title="Permission & partnership" description="Who gave permission, when, and a note — every change is audited. Sync and the public catalogue both need it.">
+              {suggestedNote && !permitted ? (
+                <Notice tone="indigo" title="From brand outreach" className="mb-4">
+                  The brand agreed in outreach. The note below is a suggestion — check it, add the date and evidence, then record the permission. Authorising the partnership stays a separate step.
+                </Notice>
+              ) : null}
               {permitted ? (
                 <KV
                   items={[
@@ -106,7 +114,7 @@ export default async function AdminBrandPage(props: PageProps<"/admin/brands/[id
                     <input type="hidden" name="id" value={brand.id} />
                     <p className="text-sm font-semibold text-umber-900">{permitted ? "Update the permission record" : "Record permission"}</p>
                     <FieldRow label="Who granted it and how (note)" htmlFor="note">
-                      <TextArea id="note" name="note" required placeholder="e.g. Email from the brand's e-commerce head, Ms X, allowing us to list and sync their catalogue." defaultValue={brand.permissionNote ?? ""} />
+                      <TextArea id="note" name="note" required placeholder="e.g. Email from the brand's e-commerce head, Ms X, allowing us to list and sync their catalogue." defaultValue={brand.permissionNote ?? (permitted ? "" : (suggestedNote ?? ""))} />
                     </FieldRow>
                     <div className="grid grid-cols-2 gap-3">
                       <FieldRow label="Date given" htmlFor="grantedOn">

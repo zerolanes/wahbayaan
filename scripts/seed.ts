@@ -14,6 +14,7 @@ import { DESTINATIONS } from "../src/lib/money/currency";
 import { CATEGORIES, DEMO_JOURNAL, DEMO_PRODUCTS, DEMO_VENDORS, FAQS, POLICY_PAGES, PRIVACY_POLICY_BODY, PRIVACY_POLICY_OLD_BODY } from "./seed-data";
 import { seedBrandsBase, seedBrandsDemo } from "./seed-brands";
 import { seedDirectory } from "../src/lib/directory-seed";
+import { seedOutreachTemplates } from "../src/lib/outreach/import";
 import { seedGrowthDemo } from "./seed-growth";
 import { seedFulfilmentBase, seedFulfilmentDemo } from "./seed-fulfilment";
 
@@ -106,6 +107,8 @@ export async function seedBase(db: Db) {
 
   await seedBrandsBase(db);
   await seedDirectory(db);
+  // Brand outreach: the two editable default templates (contacts are imported from the admin).
+  await seedOutreachTemplates(db);
   await seedFulfilmentBase(db);
 
   // Owner account from the environment (production bootstrap).

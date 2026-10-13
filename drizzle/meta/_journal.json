@@ -36,6 +36,13 @@
       "when": 1791928118198,
       "tag": "0004_fulfilment_hubs",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791929118671,
+      "tag": "0005_brand_outreach",
+      "breakpoints": true
     }
   ]
 }

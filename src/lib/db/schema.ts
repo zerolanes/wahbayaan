@@ -1188,6 +1188,118 @@ export const affiliateProducts = pgTable(
   (t) => [uniqueIndex("affiliate_products_external_idx").on(t.programmeId, t.externalId)],
 );
 
+// ── Brand outreach (admin only) ─────────────────────────────────────────────
+//
+// A small CRM for asking Pakistani brands for permission to list them. Contact
+// details live ONLY here — never in brand_directory_entries, never on a public
+// route or API (tests/outreach-no-public-leak.test.ts). Agreeing in outreach
+// never authorises a brand: permission is still recorded on the brand itself.
+
+export const outreachStatus = pgEnum("outreach_status", ["new", "contacted", "replied", "call_booked", "negotiating", "agreed", "declined", "do_not_contact"]);
+export const outreachEventKind = pgEnum("outreach_event_kind", [
+  "email",
+  "replied",
+  "call_booked",
+  "phone_call",
+  "instagram_dm",
+  "whatsapp",
+  "note",
+  "status",
+  "unsubscribed",
+]);
+
+export const outreachContacts = pgTable(
+  "outreach_contacts",
+  {
+    id: id(),
+    brandName: text("brand_name").notNull(),
+    /** Normalised brand name (slug) — the import matches on it. */
+    nameKey: text("name_key").notNull(),
+    /** Person to address; `{name}` falls back to "{brand} team". */
+    contactName: text("contact_name"),
+    brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
+    directoryEntryId: uuid("directory_entry_id").references(() => brandDirectoryEntries.id, { onDelete: "set null" }),
+    websiteUrl: text("website_url"),
+    email: text("email"),
+    emailType: text("email_type"),
+    phone: text("phone"),
+    instagram: text("instagram"),
+    city: text("city"),
+    category: text("category"),
+    shipsInternationally: text("ships_internationally"),
+    sourceUrl: text("source_url"),
+    notes: text("notes"),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    status: outreachStatus("status").notNull().default("new"),
+    lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+    nextFollowUpAt: timestamp("next_follow_up_at", { withTimezone: true }),
+    /** csv_seed | csv_upload | admin */
+    source: text("source").notNull().default("admin"),
+    /** Set when staff edit the contact: re-imports then only fill blank fields. */
+    staffEditedAt: timestamp("staff_edited_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    uniqueIndex("outreach_contacts_name_key_idx").on(t.nameKey),
+    index("outreach_contacts_status_idx").on(t.status),
+    index("outreach_contacts_follow_up_idx").on(t.nextFollowUpAt),
+  ],
+);
+
+export const outreachTemplates = pgTable("outreach_templates", {
+  id: id(),
+  /** Seeded templates carry a key (pitch, follow_up) so seeding stays idempotent. */
+  key: text("key").unique(),
+  name: text("name").notNull(),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  isArchived: boolean("is_archived").notNull().default(false),
+  sort: integer("sort").notNull().default(0),
+  updatedById: uuid("updated_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** Timeline: emails sent (or only logged), manual events (reply, call booked, DM, WhatsApp) and status changes. */
+export const outreachMessages = pgTable(
+  "outreach_messages",
+  {
+    id: id(),
+    contactId: uuid("contact_id")
+      .notNull()
+      .references(() => outreachContacts.id, { onDelete: "cascade" }),
+    kind: outreachEventKind("kind").notNull(),
+    toEmail: text("to_email"),
+    subject: text("subject"),
+    body: text("body"),
+    templateId: uuid("template_id").references(() => outreachTemplates.id, { onDelete: "set null" }),
+    outboxId: uuid("outbox_id").references(() => emailOutbox.id, { onDelete: "set null" }),
+    /** Emails: sent | logged (no provider configured) | failed. */
+    deliveryStatus: text("delivery_status"),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("outreach_messages_contact_idx").on(t.contactId, t.createdAt)],
+);
+
+/** Addresses that must never be emailed again (opt-out link, manual). Checked before every send. */
+export const outreachSuppressions = pgTable(
+  "outreach_suppressions",
+  {
+    id: id(),
+    email: text("email").notNull(),
+    /** unsubscribe | manual */
+    source: text("source").notNull().default("manual"),
+    reason: text("reason"),
+    contactId: uuid("contact_id").references(() => outreachContacts.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("outreach_suppressions_email_idx").on(sql`lower(${t.email})`)],
+);
+
 // ── Fulfilment: hubs, inbound parcels, outbound shipments, returns ─────────
 //
 // One cart, one payment, one order; behind the scenes one parcel per seller.
@@ -1749,6 +1861,8 @@ export const emailOutbox = pgTable("email_outbox", {
   subject: text("subject").notNull(),
   body: text("body").notNull(),
   template: text("template"),
+  /** Optional Reply-To (brand outreach uses the sender's address). */
+  replyTo: text("reply_to"),
   status: text("status").notNull().default("queued"), // queued | sent | failed | logged
   error: text("error"),
   createdAt: createdAt(),
@@ -2144,4 +2258,17 @@ export const affiliateProgrammesRelations = relations(affiliateProgrammes, ({ ma
 
 export const affiliateProductsRelations = relations(affiliateProducts, ({ one }) => ({
   programme: one(affiliateProgrammes, { fields: [affiliateProducts.programmeId], references: [affiliateProgrammes.id] }),
+}));
+
+export const outreachContactsRelations = relations(outreachContacts, ({ one, many }) => ({
+  brand: one(brands, { fields: [outreachContacts.brandId], references: [brands.id] }),
+  directoryEntry: one(brandDirectoryEntries, { fields: [outreachContacts.directoryEntryId], references: [brandDirectoryEntries.id] }),
+  owner: one(users, { fields: [outreachContacts.ownerId], references: [users.id] }),
+  messages: many(outreachMessages),
+}));
+
+export const outreachMessagesRelations = relations(outreachMessages, ({ one }) => ({
+  contact: one(outreachContacts, { fields: [outreachMessages.contactId], references: [outreachContacts.id] }),
+  template: one(outreachTemplates, { fields: [outreachMessages.templateId], references: [outreachTemplates.id] }),
+  actor: one(users, { fields: [outreachMessages.actorUserId], references: [users.id] }),
 }));
