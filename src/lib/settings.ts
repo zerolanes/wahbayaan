@@ -11,6 +11,18 @@ import { DEFAULT_CONSENT_BANNER, type ConsentBannerSetting } from "@/lib/consent
 import { DEFAULT_ANALYTICS, type AnalyticsSetting } from "@/lib/analytics/settings-shape";
 import type { SocialLinks } from "@/lib/db/schema";
 
+/** Brand outreach sender (admin only). Used by src/lib/outreach; kept here so settings never import outreach code. */
+export type OutreachSenderSetting = {
+  /** Who signs the email ({sender_name}). Sending is blocked until it is set. */
+  senderName: string | null;
+  senderPhone: string | null;
+  /** Replies go here (Reply-To). */
+  replyTo: string | null;
+  /** Business identity line in the footer, e.g. "Lahore, Pakistan". */
+  businessAddress: string | null;
+};
+const DEFAULT_OUTREACH_SENDER: OutreachSenderSetting = { senderName: null, senderPhone: null, replyTo: null, businessAddress: null };
+
 /**
  * Every setting has a typed default. Business numbers (commission, handling fee,
  * gift wrap price) default to `pending` because they need a real decision.
@@ -65,6 +77,8 @@ export type SettingsShape = {
   visitor_map: { googleMapsKey: string | null };
   /** Site social profiles (footer, mobile menu). Only networks with a URL are shown. */
   social_links: SocialLinks;
+  /** Brand outreach sender: fills {sender_name} / {sender_phone}, the Reply-To and the email footer. */
+  outreach: OutreachSenderSetting;
 };
 
 export const SETTING_DEFAULTS: SettingsShape = {
@@ -112,6 +126,7 @@ export const SETTING_DEFAULTS: SettingsShape = {
   analytics_maintenance: { lastCleanupAt: null, lastSummary: null },
   visitor_map: { googleMapsKey: null },
   social_links: {},
+  outreach: DEFAULT_OUTREACH_SENDER,
 };
 
 export type SettingKey = keyof SettingsShape;

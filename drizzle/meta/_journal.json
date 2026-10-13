@@ -29,6 +29,13 @@
       "when": 1791798316105,
       "tag": "0003_brand_sellers_directory_affiliates",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791798849612,
+      "tag": "0004_brand_outreach",
+      "breakpoints": true
     }
   ]
 }

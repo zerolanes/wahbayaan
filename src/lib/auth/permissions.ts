@@ -40,6 +40,8 @@ export const PERMISSIONS = {
   "payments.manage": "Payment methods (card, JazzCash, Easypaisa) — non-secret settings only",
   "analytics.view": "Visitor statistics, live visitors, journeys, consent log and their CSV exports",
   "analytics.manage": "Cookie banner, privacy & tracking settings, consent version, deleting visitor data",
+  "outreach.view": "Brand outreach: contacts (emails, phone numbers), pipeline and message history",
+  "outreach.manage": "Brand outreach: import contacts, edit templates and sender details, send outreach emails",
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;

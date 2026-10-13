@@ -19,7 +19,7 @@ async function counts() {
     const rows = Array.isArray(r) ? r : ((r as { rows?: { n: number }[] }).rows ?? []);
     return Number(rows[0]?.n ?? 0);
   };
-  const [awaitingQuote, openDisputes, pendingApplications, pendingListings, pendingReviews, newMessages, newRequests, brandQueue, brandApplications] = await Promise.all([
+  const [awaitingQuote, openDisputes, pendingApplications, pendingListings, pendingReviews, newMessages, newRequests, brandQueue, brandApplications, outreachDue] = await Promise.all([
     one(sql`select count(*)::int as n from orders where status = 'awaiting_quote'`),
     one(sql`select count(*)::int as n from disputes where status not in ('resolved','closed')`),
     one(sql`select count(*)::int as n from vendor_applications where status in ('submitted','in_review')`),
@@ -29,8 +29,9 @@ async function counts() {
     one(sql`select count(*)::int as n from custom_requests where status = 'new'`),
     one(sql`select count(*)::int as n from orders where kind = 'brand' and (status = 'awaiting_quote' or (payment_status = 'paid' and status in ('paid','in_fulfilment')))`),
     one(sql`select count(*)::int as n from brand_seller_applications where status in ('submitted','in_review')`),
+    one(sql`select count(*)::int as n from outreach_contacts where next_follow_up_at <= now() and status not in ('agreed','declined','do_not_contact')`),
   ]);
-  return { awaitingQuote, openDisputes, pendingApplications, pendingListings, pendingReviews, newMessages, newRequests, brandQueue, brandApplications };
+  return { awaitingQuote, openDisputes, pendingApplications, pendingListings, pendingReviews, newMessages, newRequests, brandQueue, brandApplications, outreachDue };
 }
 
 /** Company admin panel — internal amounts are PKR unless a page says otherwise. */

@@ -63,6 +63,7 @@ export default async function AdminDashboard(props: PageProps<"/admin">) {
     { n: a.payouts ?? 0, label: "artisan payouts to send", href: "/admin/payouts", perm: "payouts.view" },
     { n: a.awaiting_payment ?? 0, label: "quotes unpaid for over a week", href: "/admin/orders?status=quote_sent", perm: "orders.view" },
     { n: a.emails_failed ?? 0, label: "emails that failed to send", href: "/admin/emails?status=failed", perm: "settings.manage" },
+    { n: a.outreach_due ?? 0, label: "brand outreach follow-ups due", href: "/admin/outreach?due=1", perm: "outreach.view" },
   ].filter((x) => x.n > 0 && user.permissions.has(x.perm));
   const businessInputs = readiness.filter((r) => r.group === "Rates & fees");
 
