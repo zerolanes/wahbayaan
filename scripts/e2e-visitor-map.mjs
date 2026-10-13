@@ -320,7 +320,10 @@ await test("prefers-reduced-motion: jumps instead of flying or gliding", async (
   const { ctx, page } = await open({ hooks: { startDelayMs: 300, holdMs: 1e9 }, reducedMotion: "reduce" });
   assert((await attr(page, "data-reduced-motion")) === "1", "reduced motion detected");
   await until(page, `(d) => d.flyPhase === "hold"`, 10000);
-  assert(close(await zoom(page), 16, 0.01), "at the visit");
+  // data-zoom is written on the next render after the jump; give it a moment on a busy machine.
+  await until(page, `(d) => Math.abs(Number(d.zoom) - 16) < 0.01`, 3000).catch(() => {});
+  const z0 = await zoom(page);
+  assert(close(z0, 16, 0.01), `at the visit (zoom ${z0})`);
   const zooms = (await since(page, 0)).map((r) => r.zoom);
   assert(!zooms.some((z) => z > 1.001 && z < 15.99), `jumped straight to the visit, no in-between frames (${[...new Set(zooms)].join(", ")})`);
   await page.click(".vm-more > summary");

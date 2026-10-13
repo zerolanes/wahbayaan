@@ -301,7 +301,8 @@ try {
   }
   for (const url of ["/admin/analytics", "/admin/analytics/live"]) {
     await staff.goto(`${BASE}${url}`);
-    const mounted = await staff.locator("[data-visitor-map]").first().waitFor({ timeout: 30000 }).then(() => true, () => false);
+    // Background mode: the root takes no space (its layers are fixed behind the page), so wait for it to be attached and loaded, not "visible".
+    const mounted = await staff.locator('[data-visitor-map][data-loaded="1"]').first().waitFor({ state: "attached", timeout: 30000 }).then(() => true, () => false);
     check(`visitor map mounted on ${url}`, mounted);
   }
   const map = await staff.request.get(`${BASE}/admin/api/analytics/map?range=24h&live=1`);
