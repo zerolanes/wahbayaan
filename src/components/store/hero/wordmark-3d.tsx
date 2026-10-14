@@ -19,14 +19,16 @@ export default function Wordmark3D({ onReady, running }: { onReady: () => void; 
   return (
     <Canvas
       dpr={[1, 2.5]}
+      // No filmic tone mapping: it washes the navy towards grey. Colours stay as in the static wordmark.
+      flat
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       camera={{ position: [0, 0, 9], fov: 30 }}
       frameloop={running ? "always" : "demand"}
       aria-hidden
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[-4, 5, 6]} intensity={1.05} color="#ffffff" />
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[-4, 5, 6]} intensity={0.85} color="#ffffff" />
       <directionalLight position={[5, -2, 4]} intensity={0.35} color="#eef1f8" />
       <Environment resolution={256} frames={1}>
         {/* Neutral surroundings: soft white highlights on the navy, never a gold or warm cast. */}
@@ -93,9 +95,9 @@ function Wordmark({ onReady }: { onReady: () => void }) {
               >
                 Wahbayaan
                 {/* Group 0: front/back faces — solid deep navy (indigo-800/900). */}
-                <meshPhysicalMaterial attach="material-0" color="#141c3c" roughness={0.4} metalness={0} clearcoat={0.45} clearcoatRoughness={0.22} envMapIntensity={0.18} />
+                <meshPhysicalMaterial attach="material-0" color="#18224a" roughness={0.45} metalness={0} specularIntensity={0.2} clearcoat={0.15} clearcoatRoughness={0.3} envMapIntensity={0.05} />
                 {/* Group 1: sides and bevels — darker ink, so the depth reads without any colour. */}
-                <meshStandardMaterial attach="material-1" color="#080c1d" roughness={0.8} metalness={0} envMapIntensity={0.04} />
+                <meshPhysicalMaterial attach="material-1" color="#080b18" roughness={0.85} metalness={0} specularIntensity={0.15} envMapIntensity={0.02} />
               </Text3D>
           </group>
         </Float>

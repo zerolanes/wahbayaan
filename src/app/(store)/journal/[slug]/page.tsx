@@ -40,7 +40,7 @@ export default async function JournalPostPage(props: PageProps<"/journal/[slug]"
       <header className="pt-10 md:pt-14">
         <Container className="max-w-4xl text-center">
           <Breadcrumbs items={[{ label: "Journal", href: "/journal" }, { label: post.title }]} className="flex justify-center" />
-          <p className="mt-8 text-xs font-semibold tracking-[0.22em] text-gold-600 uppercase">
+          <p className="mt-8 text-xs font-semibold tracking-[0.22em] text-gold-700 uppercase">
             {post.categorySlug ? (
               <Link href={`/category/${post.categorySlug}`} className="hover:text-gold-800">
                 {post.categoryName}

@@ -300,7 +300,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 {!estimate.complete ? (
                   <p className="text-umber-600 mt-3 text-sm">
                     <span className="text-pending-600 font-medium">Pending</span> lines are confirmed — and approved by you — before anything is charged.{" "}
-                    <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
+                    <Link href="/how-importing-works" className="text-terracotta-700 underline underline-offset-4">
                       How importing works
                     </Link>
                   </p>

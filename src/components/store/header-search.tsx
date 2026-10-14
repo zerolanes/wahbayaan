@@ -60,7 +60,8 @@ export function HeaderSearch({ categories, buttonClassName }: { categories: Cat[
           placeholder="Search pieces, makers"
           className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-[var(--wb-ink)] placeholder:text-[var(--wb-muted)] focus:outline-none"
         />
-        <button type="submit" className="pressable mr-1 grid size-9 shrink-0 place-items-center rounded-full bg-[var(--wb-ink)] text-white hover:bg-indigo-900" aria-label="Search">
+        {/* type="button" so page forms' submit buttons stay the first on the page; Enter in the field still submits. */}
+        <button type="button" onClick={(e) => e.currentTarget.form?.requestSubmit()} className="pressable mr-1 grid size-9 shrink-0 place-items-center rounded-full bg-[var(--wb-ink)] text-white hover:bg-indigo-900" aria-label="Search">
           <Search className="size-4" aria-hidden />
         </button>
       </form>

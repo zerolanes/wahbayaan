@@ -39,7 +39,7 @@ export default async function CollectionsPage() {
                 {isSvg(c.coverImageUrl) ? <IllustrationTag className="absolute right-4 bottom-4" /> : null}
               </Link>
               <div>
-                <p className="text-xs font-semibold tracking-[0.22em] text-gold-600 uppercase">
+                <p className="text-xs font-semibold tracking-[0.22em] text-gold-700 uppercase">
                   {c.kind === "bundle" ? `Bundle${c.bundleDiscountBps ? ` · save ${c.bundleDiscountBps / 100}%` : ""}` : "Collection"} · {c.products.length} pieces
                 </p>
                 <h2 className="mt-3 font-display text-4xl leading-[1.08] text-umber-900 md:text-5xl">

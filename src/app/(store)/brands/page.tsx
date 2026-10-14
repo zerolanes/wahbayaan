@@ -34,7 +34,7 @@ export default async function BrandsPage() {
       <section className="border-b border-umber-200/60 bg-sand-50/60">
         <Container className="grid gap-10 py-14 md:py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
           <div>
-            <p className="text-xs font-semibold tracking-[0.22em] text-gold-600 uppercase">Pakistani Brands</p>
+            <p className="text-xs font-semibold tracking-[0.22em] text-gold-700 uppercase">Pakistani Brands</p>
             <h1 className="mt-3 font-display text-5xl leading-[1.05] text-umber-900 md:text-6xl">Your favourite labels, delivered.</h1>
             <p className="mt-5 max-w-xl text-lg text-umber-600">
               Lawn, pret, formals and menswear from Pakistani brands. We order from the brand and deliver {domestic ? "across Pakistan" : `to ${destinationName(ctx.destination)} — or to family in Pakistan`}, with every cost shown before you pay.
