@@ -29,8 +29,7 @@ function check(name, ok, detail = "") {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await chromium.launch({ executablePath: fs.existsSync(CHROME) ? CHROME : undefined });
-// Reduced motion: no slide-in animation, and the homepage's 3D wordmark falls back to its static
-// image, which keeps runs stable on a busy machine.
+// Reduced motion: no slide-in animation and no hero autoplay, which keeps runs stable on a busy machine.
 const visitor = (width = 1440, ua = UA) => browser.newContext({ viewport: { width, height: width < 600 ? 844 : 900 }, userAgent: ua, reducedMotion: "reduce" });
 
 // ── Staff session (for settings and checking what was stored) ───────────────

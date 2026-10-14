@@ -31,10 +31,19 @@ const INTERVAL = 9000;
 export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: string }) {
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
+  // Photo slides' artwork loads after the page has painted (it is off-screen until the first slide change).
+  const [photos, setPhotos] = useState(false);
   const [held, setHeld] = useState(false);
   const touchX = useRef<number | null>(null);
   const n = slides.length;
   const go = useCallback((i: number) => setActive(((i % n) + n) % n), [n]);
+
+  useEffect(() => {
+    const show = () => setPhotos(true);
+    if (document.readyState === "complete") show();
+    else window.addEventListener("load", show, { once: true });
+    return () => window.removeEventListener("load", show);
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -110,7 +119,7 @@ export function HeroSlider({ slides, label }: { slides: HeroSlide[]; label: stri
                 ) : (
                   <>
                     <div className={s.slideBg} style={{ transform: `translateX(${(i - active) * -30}%)` }} aria-hidden>
-                      {slide.image ? <Image src={slide.image} alt="" fill sizes="100vw" unoptimized className="object-cover" /> : null}
+                      {slide.image && (photos || on) ? <Image src={slide.image} alt="" fill sizes="100vw" unoptimized className="object-cover" /> : null}
                       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(13_17_36/0.45),rgb(13_17_36/0.7))]" />
                     </div>
                     <div className={cn(s.slideContent, "relative flex h-full flex-col items-center justify-center px-6 pb-16 text-center text-white")}>

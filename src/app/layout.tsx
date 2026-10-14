@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/fraunces/full.css";
+import { preload } from "react-dom";
+import "./fonts.css";
 import "@fontsource-variable/fraunces/full-italic.css";
-import "@fontsource-variable/inter/index.css";
-import "@fontsource/noto-nastaliq-urdu/400.css";
-import "@fontsource/noto-nastaliq-urdu/700.css";
+// Noto Nastaliq Urdu is loaded after the page by <UrduFont /> (decorative, never render-critical).
 import "./globals.css";
+import { UrduFont } from "@/components/fonts/urdu-font";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 // Every page reads the database or the buyer's cookies; render on request.
@@ -27,9 +27,15 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Only Inter and Fraunces (Latin) are render-critical: fetch them with the HTML, not after the CSS.
+  preload("/fonts/inter-latin-wght-normal.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  preload("/fonts/fraunces-latin-full-normal.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   return (
     <html lang="en">
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <UrduFont />
+      </body>
     </html>
   );
 }

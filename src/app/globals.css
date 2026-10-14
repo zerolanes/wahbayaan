@@ -578,8 +578,9 @@
     transition: opacity var(--dur-base) ease;
   }
 
-  /* Static hero wordmark (instant paint; fallback for no-WebGL / reduced motion):
-     an indigo lacquer face with a gilded edge and a stepped gold "extrusion". */
+  /* Hero wordmark (the only one; pure CSS): solid deep navy with a stepped, darker
+     ink extrusion. No gold. Each step is at least 1px so the depth stays crisp on
+     small phones, and scales with the type on large screens. */
   .wordmark-static {
     font-family: var(--font-serif);
     font-size: clamp(3.25rem, 15vw, 9.5rem);
@@ -587,13 +588,12 @@
     font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 1;
     letter-spacing: -0.01em;
     line-height: 1;
-    /* Solid deep navy with a darker ink extrusion, matching the 3D wordmark. No gold. */
     color: var(--color-indigo-800);
     text-shadow:
-      0 0.01em 0 #141b3a,
-      0 0.02em 0 #10162f,
-      0 0.03em 0 #0d1124,
-      0 0.04em 0 #0a0d1c,
+      0 max(1px, 0.01em) 0 #141b3a,
+      0 max(2px, 0.02em) 0 #10162f,
+      0 max(3px, 0.03em) 0 #0d1124,
+      0 max(4px, 0.04em) 0 #0a0d1c,
       0 0.12em 0.18em rgb(21 25 46 / 0.22);
   }
 
