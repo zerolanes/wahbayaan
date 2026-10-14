@@ -14,7 +14,7 @@ export async function generateMetadata(props: PageProps<"/[page]">): Promise<Met
   const { page } = await props.params;
   const p = await getPublishedPage(page);
   if (!p) return { title: "Page not found" };
-  return { title: p.title, description: p.seoDescription ?? undefined };
+  return { alternates: { canonical: `/${page}` }, title: p.title, description: p.seoDescription ?? undefined };
 }
 
 export default async function CmsPage(props: PageProps<"/[page]">) {

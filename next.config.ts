@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { legacyRedirectRules } from "./src/lib/legacy-redirects";
 
 const nextConfig: NextConfig = {
   // No Next.js dev badge ("N" / issue chips) on customer-facing pages, even in development.
@@ -10,6 +11,10 @@ const nextConfig: NextConfig = {
   images: {
     // Uploaded media is served by our own /media route; artwork by /art.
     localPatterns: [{ pathname: "/media/**" }, { pathname: "/art/**" }, { pathname: "/brand-art/**" }, { pathname: "/demo/**" }, { pathname: "/brand/**" }],
+  },
+  // 301s from the old WordPress site (theme-source/LAYOUT.md §7). One-off redirects live in Admin → Redirects.
+  async redirects() {
+    return legacyRedirectRules();
   },
   experimental: {
     serverActions: { bodySizeLimit: "60mb" },

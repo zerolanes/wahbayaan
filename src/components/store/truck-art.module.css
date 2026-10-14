@@ -1,0 +1,76 @@
+/*
+ * Truck-art accents for the storefront (design direction C). The colour tokens
+ * (--wb-*) live on `.storefront` in globals.css. Truck-art appears only as
+ * accents: thin phool-patti strips, a painted floral corner on card hover.
+ */
+/* ── Phool-patti strip (repeating painted flowers and leaves) ───────────── */
+.phool {
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='14' viewBox='0 0 64 14'%3E%3Cpath d='M0 7h64' stroke='%2300796f' stroke-width='.7' opacity='.45'/%3E%3Cg fill='%23b5175e' stroke='%23221a13' stroke-width='.35'%3E%3Ccircle cx='12' cy='4.2' r='2.3'/%3E%3Ccircle cx='14.7' cy='6.1' r='2.3'/%3E%3Ccircle cx='13.7' cy='9.2' r='2.3'/%3E%3Ccircle cx='10.3' cy='9.2' r='2.3'/%3E%3Ccircle cx='9.3' cy='6.1' r='2.3'/%3E%3C/g%3E%3Ccircle cx='12' cy='7' r='1.6' fill='%23f2a007'/%3E%3Cg fill='%2300796f'%3E%3Cellipse cx='22' cy='5' rx='4' ry='1.4' transform='rotate(-24 22 5)'/%3E%3Cellipse cx='22' cy='9' rx='4' ry='1.4' transform='rotate(24 22 9)'/%3E%3Cellipse cx='54' cy='5' rx='4' ry='1.4' transform='rotate(-24 54 5)'/%3E%3Cellipse cx='54' cy='9' rx='4' ry='1.4' transform='rotate(24 54 9)'/%3E%3C/g%3E%3Cg fill='%23f2a007' stroke='%23221a13' stroke-width='.3'%3E%3Ccircle cx='40' cy='4.6' r='1.7'/%3E%3Ccircle cx='42.4' cy='7' r='1.7'/%3E%3Ccircle cx='40' cy='9.4' r='1.7'/%3E%3Ccircle cx='37.6' cy='7' r='1.7'/%3E%3C/g%3E%3Ccircle cx='40' cy='7' r='1' fill='%23b5175e'/%3E%3Ccircle cx='31' cy='7' r='.9' fill='%23b5175e'/%3E%3Ccircle cx='62' cy='7' r='.9' fill='%23b5175e'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: 64px 14px;
+}
+.phoolThin {
+  height: 10px;
+  background-size: 46px 10px;
+}
+
+/* Section divider: a hairline with a short phool strip in the middle. */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--wb-line);
+}
+
+/* ── Painted floral corner on card hover ────────────────────────────────── */
+.card {
+  position: relative;
+  isolation: isolate;
+}
+.corner {
+  position: absolute;
+  z-index: 2;
+  top: -6px;
+  right: -6px;
+  width: 76px;
+  height: 76px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.85) rotate(-6deg);
+  transform-origin: top right;
+  transition:
+    opacity var(--dur-base) ease,
+    transform var(--dur-base) var(--ease-spring);
+}
+.card:hover .corner,
+.card:focus-within .corner {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+.display {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 0, "WONK" 0, "opsz" 96;
+  font-weight: 560;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+}
+.urdu {
+  font-family: var(--font-urdu);
+  line-height: 1.9;
+}
+@media (prefers-reduced-motion: reduce) {
+  .corner {
+    transition: none;
+  }
+}

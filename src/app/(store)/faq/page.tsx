@@ -10,6 +10,7 @@ import { db } from "@/lib/db/client";
 import { faqs } from "@/lib/db/schema";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/faq" },
   title: "Frequently asked questions",
   description: "Shipping from Pakistan, import duty and tax, payment protection, commissions, returns and caring for handmade pieces.",
 };

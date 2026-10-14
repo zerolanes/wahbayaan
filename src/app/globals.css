@@ -230,6 +230,34 @@
     background-image: radial-gradient(120% 60% at 50% -10%, rgb(255 255 255 / 0.7), transparent 60%);
     background-repeat: no-repeat;
   }
+  /*
+   * Storefront surface (design direction C, "modern glass with truck-art
+   * accents"): a calm cream page, white cards and glass chrome. Truck-art
+   * colour appears only as accents (phool-patti strips, a painted corner on
+   * hover, coloured eyebrow text). Accent inks pass AA as text on white, the
+   * page and their own tints: magenta-ink 6.6:1, teal-ink 5.9:1, saffron-ink
+   * 6.6:1. Plain magenta / teal / saffron are decorative only.
+   */
+  .storefront {
+    --wb-bg: #fbf8f3;
+    --wb-cream: #f7f1e6;
+    --wb-surface: #ffffff;
+    --wb-line: rgb(34 26 19 / 0.09);
+    --wb-ink: #221a13;
+    --wb-muted: #5e4f3e;
+    --wb-magenta: #b5175e;
+    --wb-magenta-ink: #9c1250;
+    --wb-magenta-tint: #fbe3ee;
+    --wb-teal: #00796f;
+    --wb-teal-ink: #00665d;
+    --wb-teal-tint: #ddf3f0;
+    --wb-saffron: #f2a007;
+    --wb-saffron-ink: #7a4a00;
+    --wb-saffron-tint: #fff0cc;
+    background-color: var(--wb-bg);
+    color: var(--wb-ink);
+    overflow-x: clip;
+  }
   /* Deep indigo surface — plain, no ornament. */
   .night {
     background-color: var(--color-indigo-950);
@@ -550,8 +578,9 @@
     transition: opacity var(--dur-base) ease;
   }
 
-  /* Static hero wordmark (instant paint; fallback for no-WebGL / reduced motion):
-     an indigo lacquer face with a gilded edge and a stepped gold "extrusion". */
+  /* Hero wordmark (the only one; pure CSS): solid deep navy with a stepped, darker
+     ink extrusion. No gold. Each step is at least 1px so the depth stays crisp on
+     small phones, and scales with the type on large screens. */
   .wordmark-static {
     font-family: var(--font-serif);
     font-size: clamp(3.25rem, 15vw, 9.5rem);
@@ -559,15 +588,13 @@
     font-variation-settings: "opsz" 72, "SOFT" 100, "WONK" 1;
     letter-spacing: -0.01em;
     line-height: 1;
-    color: var(--color-indigo-900);
-    -webkit-text-stroke: 0.012em var(--color-gold-500);
-    paint-order: stroke fill;
+    color: var(--color-indigo-800);
     text-shadow:
-      0 0.01em 0 #c99a48,
-      0 0.02em 0 #b8893b,
-      0 0.03em 0 #9a6f2d,
-      0 0.04em 0 #7b5724,
-      0 0.12em 0.18em rgb(74 61 48 / 0.28);
+      0 max(1px, 0.01em) 0 #141b3a,
+      0 max(2px, 0.02em) 0 #10162f,
+      0 max(3px, 0.03em) 0 #0d1124,
+      0 max(4px, 0.04em) 0 #0a0d1c,
+      0 0.12em 0.18em rgb(21 25 46 / 0.22);
   }
 
   /* Scroll-edge effect under floating chrome instead of a hard divider. */

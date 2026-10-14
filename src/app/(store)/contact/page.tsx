@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/misc";
 import { getCurrentUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact us",
   description: "Questions about an order, import costs, a commission or selling on Wahbayaan — write to our team.",
 };

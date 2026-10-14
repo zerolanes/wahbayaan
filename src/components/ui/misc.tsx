@@ -185,7 +185,7 @@ export function SectionHeading({ eyebrow, title, description, action, align = "l
   return (
     <div className={cn("flex flex-wrap items-end justify-between gap-6", align === "center" && "flex-col items-center text-center", className)}>
       <div className={cn("max-w-2xl", align === "center" && "mx-auto")}>
-        {eyebrow ? <p className={cn("mb-3 text-xs font-semibold tracking-[0.22em] uppercase", dark ? "text-gold-300" : "text-gold-600")}>{eyebrow}</p> : null}
+        {eyebrow ? <p className={cn("mb-3 text-xs font-semibold tracking-[0.22em] uppercase", dark ? "text-gold-300" : "text-gold-700")}>{eyebrow}</p> : null}
         <h2 className={cn("font-display text-3xl leading-[1.08] tracking-[-0.03em] md:text-5xl", dark ? "text-sand-50" : "text-umber-900")}>{title}</h2>
         {description ? <p className={cn("mt-4 text-lg", dark ? "text-sand-200/80" : "text-umber-600")}>{description}</p> : null}
       </div>

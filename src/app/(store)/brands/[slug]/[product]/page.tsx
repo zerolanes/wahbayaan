@@ -25,7 +25,7 @@ import { getCompareBrandIds } from "@/lib/queries/storefront";
 export async function generateMetadata(props: PageProps<"/brands/[slug]/[product]">): Promise<Metadata> {
   const { slug, product } = await props.params;
   const p = await getPublicBrandProduct(slug, product);
-  return p ? { title: `${p.title} — ${p.brand.name}`, description: p.description?.slice(0, 160) ?? undefined } : { title: "Not found" };
+  return p ? { alternates: { canonical: `/brands/${slug}/${product}` }, title: `${p.title} — ${p.brand.name}`, description: p.description?.slice(0, 160) ?? undefined } : { title: "Not found" };
 }
 
 export default async function BrandProductPage(props: PageProps<"/brands/[slug]/[product]">) {

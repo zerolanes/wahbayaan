@@ -15,7 +15,7 @@ import { getPublicBrand, getPublicBrandProducts, getPublicBrandProfile } from "@
 export async function generateMetadata(props: PageProps<"/brands/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const brand = await getPublicBrand(slug);
-  return brand ? { title: brand.name, description: brand.description ?? brand.partnerLine } : { title: "Brand not found" };
+  return brand ? { alternates: { canonical: `/brands/${slug}` }, title: brand.name, description: brand.description ?? brand.partnerLine } : { title: "Brand not found" };
 }
 
 export default async function BrandPage(props: PageProps<"/brands/[slug]">) {

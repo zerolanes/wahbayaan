@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Search, X } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
+import { searchHref } from "./search-href";
 
 const SUGGESTIONS = ["Nastaliq calligraphy", "Bukhara rug", "Salt lamp", "Blue pottery", "Truck art", "Carved sideboard", "Snooker table", "Ajrak"];
 
@@ -14,7 +15,16 @@ const SUGGESTIONS = ["Nastaliq calligraphy", "Bukhara rug", "Salt lamp", "Blue p
  * searches within that craft on /shop; otherwise it runs the full-site search
  * (pieces, crafts and artisans).
  */
-export function SearchDialog({ categories, className }: { categories: { slug: string; name: string }[]; className?: string }) {
+export function SearchDialog({
+  categories,
+  className,
+  inlineInputId,
+}: {
+  categories: { slug: string; name: string }[];
+  className?: string;
+  /** An inline header field: while it is on screen the shortcuts focus it instead of opening the dialog. */
+  inlineInputId?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
@@ -28,20 +38,20 @@ export function SearchDialog({ categories, className }: { categories: { slug: st
       const typing = e.target instanceof HTMLElement && (e.target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName));
       if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) {
         e.preventDefault();
-        setOpen(true);
+        const inline = inlineInputId ? document.getElementById(inlineInputId) : null;
+        if (inline && inline.getClientRects().length > 0) inline.focus();
+        else setOpen(true);
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  }, [inlineInputId]);
   useEffect(() => {
     if (open) requestAnimationFrame(() => input.current?.focus());
   }, [open]);
 
   function go(term: string) {
-    const t = term.trim();
-    if (category) router.push(`/shop?${new URLSearchParams({ category, ...(t ? { q: t } : {}) })}`);
-    else router.push(t ? `/search?${new URLSearchParams({ q: t })}` : "/search");
+    router.push(searchHref(term, category));
     setOpen(false);
   }
 

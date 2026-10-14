@@ -14,6 +14,7 @@ import { brandSellerApplications } from "@/lib/db/schema";
 import { featureFlags } from "@/lib/features";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/brands/join" },
   title: "Sell your brand on Wahbayaan",
   description: "For Pakistani labels, designers and Instagram boutiques: list your collection, we sell it in Pakistan and abroad.",
 };
@@ -39,7 +40,7 @@ export default async function BrandJoinPage() {
       <Breadcrumbs items={[{ label: "Pakistani Brands", href: "/brands" }, { label: "Sell your brand" }]} />
       <div className="mt-6 grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div>
-          <p className="text-xs font-semibold tracking-[0.22em] text-gold-600 uppercase">For Pakistani brands</p>
+          <p className="text-xs font-semibold tracking-[0.22em] text-gold-700 uppercase">For Pakistani brands</p>
           <h1 className="mt-3 font-display text-5xl leading-[1.05] text-umber-900">Sell your brand on Wahbayaan</h1>
           <p className="mt-4 text-lg text-umber-600">For small labels, designers and Instagram boutiques. Free to apply.</p>
           <ul className="mt-8 space-y-5">

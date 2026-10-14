@@ -10,6 +10,7 @@ import { featureFlags } from "@/lib/features";
 import { getPublicDirectory } from "@/lib/queries/directory";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/brands/directory" },
   title: "Pakistani brand directory",
   description: "Pakistani clothing and footwear brands, with links to their websites. Paste any product link and we'll buy it for you.",
 };

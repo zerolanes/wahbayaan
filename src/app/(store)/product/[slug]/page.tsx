@@ -41,6 +41,7 @@ export async function generateMetadata(props: PageProps<"/product/[slug]">): Pro
   if (!p) return { title: "Piece not found" };
   const description = p.summary ?? p.description?.slice(0, 160) ?? undefined;
   return {
+    alternates: { canonical: `/product/${slug}` },
     title: `${p.title} by ${p.vendor.displayName}`,
     description,
     openGraph: { title: p.title, description, images: p.images[0] ? [{ url: p.images[0].url, alt: p.images[0].alt ?? p.title }] : undefined },
@@ -299,7 +300,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
                 {!estimate.complete ? (
                   <p className="text-umber-600 mt-3 text-sm">
                     <span className="text-pending-600 font-medium">Pending</span> lines are confirmed — and approved by you — before anything is charged.{" "}
-                    <Link href="/how-importing-works" className="text-terracotta-600 underline-offset-4 hover:underline">
+                    <Link href="/how-importing-works" className="text-terracotta-700 underline underline-offset-4">
                       How importing works
                     </Link>
                   </p>

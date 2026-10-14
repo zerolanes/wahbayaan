@@ -13,6 +13,7 @@ import { DESTINATIONS } from "@/lib/money/currency";
 import { getProductDetail, getPublicCategories, getPublicVendors } from "@/lib/queries/catalog";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/custom" },
   title: "Commission a piece",
   description: "Ask a verified Pakistani artisan to make something just for you — your name in Nastaliq, a rug in your room's exact size, a carving for a gift. Free quotes; nothing charged until you accept.",
 };

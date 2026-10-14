@@ -26,6 +26,7 @@ export async function generateMetadata(props: PageProps<"/artisans/[slug]">): Pr
   const v = await getPublicVendor(slug);
   if (!v) return { title: "Artisan not found" };
   return {
+    alternates: { canonical: `/artisans/${slug}` },
     title: `${v.displayName} — ${v.craft}`,
     description: v.tagline ?? v.story?.slice(0, 160) ?? undefined,
     openGraph: { title: `${v.displayName}, ${v.workshopCity}`, description: v.tagline ?? undefined, images: v.bannerUrl ? [v.bannerUrl] : undefined },

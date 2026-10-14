@@ -43,16 +43,15 @@ export function MenuOverlay({
 
   const explore = [
     { href: "/shop", label: "Shop everything" },
+    { href: "/artisans", label: "Marketplace: our artisans" },
     { href: "/brands", label: "Pakistani brands" },
-    { href: "/artisans", label: "Meet the artisans" },
-    { href: "/brands", label: "Pakistani Brands" },
     { href: "/brands/request", label: "Shop any brand by link" },
     { href: "/brands/directory", label: "Brand directory" },
+    { href: "/compare", label: "Compare" },
     { href: "/collections", label: "Collections & bundles" },
     { href: "/drops", label: "Limited drops" },
     { href: "/custom", label: "Commission a piece" },
-    { href: "/journal", label: "Heritage journal" },
-    { href: "/compare", label: "Compare" },
+    { href: "/journal", label: "Journal" },
     { href: "/haveli", label: "Walk through the haveli" },
   ].filter((l) => !hidden.includes(l.href));
   const help = [
@@ -61,7 +60,7 @@ export function MenuOverlay({
     { href: "/track", label: "Track an order" },
     { href: "/faq", label: "FAQ" },
     { href: "/contact", label: "Contact us" },
-    { href: "/about", label: "About Wahbayaan" },
+    { href: "/about", label: "About us" },
     { href: "/wholesale", label: "Trade & wholesale" },
     { href: "/become-a-seller", label: "Sell on Wahbayaan" },
     { href: "/brands/join", label: "Sell your brand" },
@@ -124,7 +123,7 @@ export function MenuOverlay({
               </ul>
             </nav>
             <nav aria-label="Help">
-              <p className={group}>Buying from Pakistan</p>
+              <p className={group}>Help</p>
               <ul className="mt-2 grid gap-0.5">
                 {help.map((l) => (
                   <li key={l.href}>
