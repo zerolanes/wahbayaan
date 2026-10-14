@@ -9,6 +9,9 @@ import { isDemoMode } from "@/lib/settings";
 import { journalPostLive } from "@/lib/queries/storefront";
 import { siteUrl } from "@/lib/seo";
 
+// Built per request from the live catalogue (otherwise it is frozen at build time).
+export const dynamic = "force-dynamic";
+
 /**
  * Public pages only. Admin, seller, brand portal, account, cart, checkout,
  * search and compare are never listed (robots.ts disallows them too); pages

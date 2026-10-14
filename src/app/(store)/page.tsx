@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { desc, isNotNull, sql } from "drizzle-orm";
+import { loadBestsellerPanel } from "@/app/actions/home";
 import { HeroSlider } from "@/components/store/home/hero-slider";
 import {
   BestsellersSection,
@@ -12,16 +12,14 @@ import {
   WeekSection,
   type BestsellerTab,
 } from "@/components/store/home/sections";
-import { flagOn } from "@/components/store/site-header";
 import { PhoolDivider } from "@/components/store/truck-art";
 import content from "@/content/home.json";
 import { getBuyerContext } from "@/lib/buyer-context";
 import { getWishlistIds } from "@/lib/commerce/cart";
-import { db } from "@/lib/db/client";
-import { orderItems } from "@/lib/db/schema";
 import { featureFlags } from "@/lib/features";
 import { getPublicBrandProducts, getPublicBrands } from "@/lib/queries/brands";
 import { getPublicCategories, getPublicProducts, getPublicVendors, type ProductCardData } from "@/lib/queries/catalog";
+import { bestsellerTab, bestsellerTabDefs, rankedByOrders } from "@/lib/queries/home";
 import { getCompareIds, getJournalPosts, getPublicCollections } from "@/lib/queries/storefront";
 import { SETTING_DEFAULTS, getSetting, isDemoMode } from "@/lib/settings";
 import { SITE_DESCRIPTION, SITE_NAME, siteJsonLd } from "@/lib/seo";
@@ -32,19 +30,6 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
 };
-
-/** Product ids ranked by units ordered (real order lines only; the public guards decide what shows). */
-async function rankedByOrders(limit = 30): Promise<string[]> {
-  const d = await db();
-  const rows = await d
-    .select({ id: orderItems.productId, units: sql<number>`sum(${orderItems.qty})::int` })
-    .from(orderItems)
-    .where(isNotNull(orderItems.productId))
-    .groupBy(orderItems.productId)
-    .orderBy(desc(sql`sum(${orderItems.qty})`))
-    .limit(limit);
-  return rows.map((r) => r.id!).filter(Boolean);
-}
 
 const uniq = (list: ProductCardData[]) => list.filter((p, i) => list.findIndex((q) => q.id === p.id) === i);
 
@@ -68,31 +53,20 @@ export default async function HomePage() {
     rankedByOrders(),
   ]);
 
-  const tabDefs = content.bestsellers.tabs.filter((t) => flagOn(flags, "flag" in t ? t.flag : undefined));
-  const craftTabs = tabDefs.filter((t) => t.id !== "all" && t.id !== "brands" && categories.some((c) => c.slug === t.id));
-  const [saved, ranked, featured, newest, brandList, brandProducts, ...perCraft] = await Promise.all([
+  const tabDefs = await bestsellerTabDefs(flags);
+  const [saved, featured, newest, brandList, brandProducts, firstTab] = await Promise.all([
     getWishlistIds(ctx.ownerKey),
-    rankedIds.length ? getPublicProducts({ ids: rankedIds, limit: 30 }) : Promise.resolve({ items: [], total: 0 }),
     getPublicProducts({ featured: true, limit: 12 }),
     getPublicProducts({ sort: "newest", limit: 40 }),
     flags.pakistaniBrands ? getPublicBrands() : Promise.resolve([]),
     flags.pakistaniBrands ? getPublicBrandProducts() : Promise.resolve([]),
-    ...craftTabs.map((t) => getPublicProducts({ categorySlug: t.id, sort: "featured", limit: 10 })),
+    tabDefs[0] ? bestsellerTab(tabDefs[0], rankedIds) : Promise.resolve(null),
   ]);
 
-  // Bestsellers: order-ranked first (in rank order), topped up with featured, then newest.
-  const rankedSorted = rankedIds.map((id) => ranked.items.find((p) => p.id === id)).filter((p): p is ProductCardData => !!p);
-  const all = uniq([...rankedSorted, ...featured.items, ...newest.items]).slice(0, 10);
-  const rank = (p: ProductCardData) => rankedIds.indexOf(p.id) + 1 || 999;
+  // Bestsellers: the first tab renders with the page; the others load on first open (server action).
   const tabs: BestsellerTab[] = tabDefs
-    .map((t): BestsellerTab | null => {
-      if (t.id === "all") return { id: t.id, label: t.label, products: all, href: "/shop" };
-      if (t.id === "brands") return brandProducts.length ? { id: t.id, label: t.label, brandProducts: brandProducts.filter((p) => p.inStock).slice(0, 10), href: "/brands" } : null;
-      const i = craftTabs.findIndex((c) => c.id === t.id);
-      if (i < 0) return null;
-      return { id: t.id, label: t.label, products: [...perCraft[i].items].sort((a, b) => rank(a) - rank(b)), href: `/category/${t.id}` };
-    })
-    .filter((t): t is BestsellerTab => !!t);
+    .filter((t) => t.id !== "brands" || brandProducts.some((p) => p.inStock))
+    .map((t, i) => (i === 0 && firstTab ? { id: t.id, label: t.label, data: firstTab } : { id: t.id, label: t.label, load: loadBestsellerPanel.bind(null, t.id) }));
 
   // Collections in the old site's order, then the rest.
   const order = content.collections.order;

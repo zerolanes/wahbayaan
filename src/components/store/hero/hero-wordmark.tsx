@@ -22,7 +22,7 @@ function canUse3D() {
 /**
  * Hero centrepiece. The static wordmark (real text, vector-crisp) paints
  * instantly and is the fallback for no-WebGL, reduced motion and Save-Data.
- * Otherwise the 3D wordmark loads after first paint, when the browser is idle,
+ * Otherwise the 3D wordmark loads on the first interaction (then when idle)
  * and cross-fades in once its first frame is drawn. The 3D pauses offscreen.
  */
 export function HeroWordmark({ className }: { className?: string }) {
@@ -34,12 +34,19 @@ export function HeroWordmark({ className }: { className?: string }) {
 
   useEffect(() => {
     if (!canUse3D()) return;
+    // The 3D bundle (three.js, ~1 MB unpacked) loads on the visitor's first
+    // interaction — a pointer move, touch, scroll or key — then when the browser
+    // is idle. Until then the static wordmark (same navy letters) shows, so the
+    // first paint and first input stay fast, and nobody downloads 3D they never see.
     const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-    const start = () => setLoad(true);
-    const id = w.requestIdleCallback ? w.requestIdleCallback(start, { timeout: 1500 }) : window.setTimeout(start, 300);
-    return () => {
-      if (!w.requestIdleCallback) window.clearTimeout(id);
+    const events = ["pointermove", "pointerdown", "touchstart", "wheel", "scroll", "keydown"] as const;
+    const start = () => {
+      events.forEach((e) => window.removeEventListener(e, start));
+      if (w.requestIdleCallback) w.requestIdleCallback(() => setLoad(true), { timeout: 800 });
+      else window.setTimeout(() => setLoad(true), 100);
     };
+    events.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, start));
   }, []);
 
   useEffect(() => {

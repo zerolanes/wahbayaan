@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { isDemoMode } from "@/lib/settings";
 import { siteUrl } from "@/lib/seo";
 
+// Decided per request: DEMO_MODE at run time, not at build time.
+export const dynamic = "force-dynamic";
+
 /** Private and per-visitor areas: never crawled (and never in the sitemap). */
 export const ROBOTS_DISALLOW = [
   "/admin",

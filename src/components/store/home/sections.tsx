@@ -7,7 +7,9 @@ import { BrandLogo } from "@/components/store/brands/brand-tile";
 import { readingMinutes } from "@/components/store/journal-card";
 import { NewsletterForm } from "@/components/store/newsletter-form";
 import { ProductCard } from "@/components/store/product-card";
-import type { PublicBrand, PublicBrandProduct } from "@/lib/queries/brands";
+import type { ReactNode } from "react";
+import type { PublicBrand } from "@/lib/queries/brands";
+import type { BestsellerData } from "@/lib/queries/home";
 import type { ProductCardData, PublicCategory, PublicVendor } from "@/lib/queries/catalog";
 import type { JournalCard, PublicCollection } from "@/lib/queries/storefront";
 import { cn } from "@/lib/utils/cn";
@@ -77,13 +79,47 @@ export function CollectionsSection({ categories }: { categories: PublicCategory[
 
 // ── 3 · Bestsellers (tabs) ────────────────────────────────────────────────
 
-export type BestsellerTab = { id: string; label: string; products?: ProductCardData[]; brandProducts?: PublicBrandProduct[]; href: string };
+export type BestsellerTab = { id: string; label: string; data?: BestsellerData; load?: () => Promise<ReactNode> };
 
 /** 2 / 3 / 5 columns. Phones show 6, tablets 9, desktop 10 — full rows each time. */
 const gridItem = (i: number) => cn(i >= 6 && "max-md:hidden", i >= 9 && "md:max-lg:hidden");
 
+/** One bestseller tab's grid and its "more" link (also rendered by the lazy-tab server action). */
+export function BestsellerPanel({ tab, saved, compared }: { tab: BestsellerData; saved: Set<string>; compared: string[] | null }) {
+  return (
+    <>
+      {(tab.products?.length ?? 0) + (tab.brandProducts?.length ?? 0) === 0 ? (
+        <p className="rounded-[var(--radius-card)] bg-white px-5 py-10 text-center text-sm text-[var(--wb-muted)] shadow-[0_0_0_1px_var(--wb-line)]">
+          Nothing listed here yet.{" "}
+          <Link href={tab.href} className="font-medium text-[var(--wb-ink)] underline underline-offset-4">
+            Browse the craft
+          </Link>
+        </p>
+      ) : (
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-3 lg:grid-cols-5">
+          {tab.products?.slice(0, 10).map((p, i) => (
+            <li key={p.id} className={gridItem(i)}>
+              <ProductCard product={p} saved={saved.has(p.id)} compared={compared ? compared.includes(p.id) : undefined} />
+            </li>
+          ))}
+          {tab.brandProducts?.slice(0, 10).map((p, i) => (
+            <li key={p.id} className={gridItem(i)}>
+              <BrandProductCard product={p} />
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="mt-8 flex justify-center">
+        <PillLink href={tab.href}>{tab.id === "all" ? "Shop all pieces" : `More ${tab.label.toLowerCase()}`}</PillLink>
+      </div>
+    </>
+  );
+}
+
+/** Bestsellers: the first tab is server-rendered; the others load when first opened or hovered. */
 export function BestsellersSection({ tabs, saved, compared }: { tabs: BestsellerTab[]; saved: Set<string>; compared: string[] | null }) {
   const c = content.bestsellers;
+  if (!tabs.length) return null;
   return (
     <Section id="home-best">
       <Wrap>
@@ -94,34 +130,8 @@ export function BestsellersSection({ tabs, saved, compared }: { tabs: Bestseller
           tabs={tabs.map((t) => ({
             id: t.id,
             label: t.label,
-            panel: (
-              <>
-                {(t.products?.length ?? 0) + (t.brandProducts?.length ?? 0) === 0 ? (
-                  <p className="rounded-[var(--radius-card)] bg-white px-5 py-10 text-center text-sm text-[var(--wb-muted)] shadow-[0_0_0_1px_var(--wb-line)]">
-                    Nothing listed here yet.{" "}
-                    <Link href={t.href} className="font-medium text-[var(--wb-ink)] underline underline-offset-4">
-                      Browse the craft
-                    </Link>
-                  </p>
-                ) : (
-                  <ul className="grid grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-3 lg:grid-cols-5">
-                    {t.products?.slice(0, 10).map((p, i) => (
-                      <li key={p.id} className={gridItem(i)}>
-                        <ProductCard product={p} saved={saved.has(p.id)} compared={compared ? compared.includes(p.id) : undefined} />
-                      </li>
-                    ))}
-                    {t.brandProducts?.slice(0, 10).map((p, i) => (
-                      <li key={p.id} className={gridItem(i)}>
-                        <BrandProductCard product={p} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="mt-8 flex justify-center">
-                  <PillLink href={t.href}>{t.id === "all" ? "Shop all pieces" : `More ${t.label.toLowerCase()}`}</PillLink>
-                </div>
-              </>
-            ),
+            panel: t.data ? <BestsellerPanel tab={t.data} saved={saved} compared={compared} /> : undefined,
+            load: t.load,
           }))}
         />
       </Wrap>

@@ -1,23 +1,49 @@
 "use client";
 
-import { useId, useRef, useState, type ReactNode } from "react";
+import { useCallback, useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 import s from "./home.module.css";
 
-export type Tab = { id: string; label: string; count?: number; panel: ReactNode };
+/**
+ * A tab's content is either `panel` (rendered on the server with the page) or
+ * `load` (a bound server action that renders it on first open — or on hover /
+ * focus of its tab, so it is usually ready by the time it is clicked).
+ */
+export type Tab = { id: string; label: string; count?: number; panel?: ReactNode; load?: () => Promise<ReactNode> };
 
 /**
- * Accessible tabs over server-rendered panels (WAI-ARIA tabs pattern: arrow
- * keys, Home/End, roving tabindex). The strip scrolls sideways on phones.
+ * Accessible tabs (WAI-ARIA tabs pattern: arrow keys, Home/End, roving
+ * tabindex). The strip scrolls sideways on phones.
  */
 export function Tabs({ tabs, label, className, align = "left" }: { tabs: Tab[]; label: string; className?: string; align?: "left" | "center" }) {
   const [active, setActive] = useState(0);
+  const [loaded, setLoaded] = useState<Record<string, ReactNode | "error">>({});
+  const pending = useRef(new Set<string>());
   const base = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
+  const prefetch = useCallback(
+    (t: Tab) => {
+      if (t.panel !== undefined || !t.load || pending.current.has(t.id)) return;
+      pending.current.add(t.id);
+      t.load().then(
+        (node) => setLoaded((m) => ({ ...m, [t.id]: node })),
+        () => {
+          pending.current.delete(t.id);
+          setLoaded((m) => ({ ...m, [t.id]: "error" }));
+        },
+      );
+    },
+    [],
+  );
+
+  const select = (i: number) => {
+    setActive(i);
+    prefetch(tabs[i]);
+  };
   const focus = (i: number) => {
     const next = (i + tabs.length) % tabs.length;
-    setActive(next);
+    select(next);
     refs.current[next]?.focus();
   };
 
@@ -39,7 +65,9 @@ export function Tabs({ tabs, label, className, align = "left" }: { tabs: Tab[]; 
                 aria-selected={on}
                 aria-controls={`${base}-panel-${t.id}`}
                 tabIndex={on ? 0 : -1}
-                onClick={() => setActive(i)}
+                onClick={() => select(i)}
+                onPointerEnter={() => prefetch(t)}
+                onFocus={() => prefetch(t)}
                 onKeyDown={(e) => {
                   if (e.key === "ArrowRight") focus(i + 1);
                   else if (e.key === "ArrowLeft") focus(i - 1);
@@ -60,11 +88,34 @@ export function Tabs({ tabs, label, className, align = "left" }: { tabs: Tab[]; 
           })}
         </div>
       </div>
-      {tabs.map((t, i) => (
-        <div key={t.id} id={`${base}-panel-${t.id}`} role="tabpanel" aria-labelledby={`${base}-tab-${t.id}`} hidden={i !== active} tabIndex={0} className="mt-8 focus-visible:outline-offset-4">
-          {t.panel}
-        </div>
-      ))}
+      {tabs.map((t, i) => {
+        const content = t.panel !== undefined ? t.panel : loaded[t.id];
+        return (
+          <div
+            key={t.id}
+            id={`${base}-panel-${t.id}`}
+            role="tabpanel"
+            aria-labelledby={`${base}-tab-${t.id}`}
+            aria-busy={content === undefined && i === active ? true : undefined}
+            hidden={i !== active}
+            tabIndex={0}
+            className="mt-8 focus-visible:outline-offset-4"
+          >
+            {content === "error" ? (
+              <p className="py-10 text-center text-sm text-[var(--wb-muted)]">This list didn&apos;t load. Please try again.</p>
+            ) : content === undefined ? (
+              // Holds the grid's height while the tab loads, so the page doesn't jump.
+              <div className="grid min-h-[30rem] grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-3 lg:grid-cols-5" aria-hidden>
+                {Array.from({ length: 5 }, (_, k) => (
+                  <div key={k} className={cn("aspect-[4/5] animate-pulse rounded-[var(--radius-card)] bg-[var(--wb-ink)]/[0.05] motion-reduce:animate-none", k >= 2 && "max-md:hidden", k >= 3 && "md:max-lg:hidden")} />
+                ))}
+              </div>
+            ) : (
+              content
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
